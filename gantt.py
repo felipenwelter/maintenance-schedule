@@ -4,6 +4,15 @@ import plotly.figure_factory as ff
 import jsonManipulate as jm
 import pandas as pd
 
+import datetime
+
+
+
+def myFunc(e):
+  return e['start']
+
+
+
 print( jm.loadJSON()['workload'][0]['employee'] )
 
 wl = jm.loadJSON()
@@ -24,12 +33,60 @@ df = []
 #### TODO
 # check if it is possible to show the time as hint
 # use colors to identify: green - allocated; gray - unavaiable, red - idle
+# calcular qual a ociosidade geral e por funcionario no comeco e depois no final, pra ver se aumenta ou diminui
 
+start_date = '2020-10-01 00:00'
+list_so = []
+list_gaps = []
+work_shift = [ { 'employee': 'Luiza',
+                 'shift_start': ['08:00','08:00','08:00','08:00','08:00','',''],
+                 'shift_end': ['18:00','18:00','18:00','18:00','18:00','',''] }  ]
 
 for so in wl['workload']:
     new = dict(Task=so['employee'], Start=so['start'],
             Finish=so['end'], Resource='busy') #Resource=so['number'])
     df.append(new)
+    
+    if (so['employee'] == 'Luiza'):
+        list_so.append({ 'employee': so['employee'], 'start': so['start'], 'end': so['end'] })
+
+# order the list by start date
+list_so.sort(key=myFunc)
+
+# check if first value is lower then gantt start_date
+if (list_so[0]['start'] < start_date):
+    start_date = list_so[0]['start']
+
+# get the gaps between service orders
+index = 0
+while index < len(list_so):
+    if index == 0:
+        list_gaps.append({ 'employee': list_so[index]['employee'],
+                           'start': start_date, 'end': list_so[index]['start'] })
+    else:
+        list_gaps.append({ 'employee': list_so[index]['employee'],
+                           'start': list_so[index-1]['end'], 'end': list_so[index]['start'] })
+    index += 1
+
+# extract the unavaiable periods into the idle periods identified previously
+#index = 0
+#while index > len(list_gaps):
+#    weekday = (datetime.datetime.strptime(list_gaps[0]['start'], '%Y-%m-%d %H:%M')).weekday()
+    
+    #list_gaps[index]['start']
+    #work_shift[0]['shift_start'][weekday]
+        
+    
+
+    
+
+
+# add the gaps into the gantt chart
+for so in list_gaps:
+    new = dict(Task=so['employee'], Start=so['start'],
+            Finish=so['end'], Resource='idle') #Resource=so['number'])
+    df.append(new)
+
 
 #colors = {'000881': 'rgb(220, 0, 0)',
 #          '009372': (1, 0.9, 0.16),
