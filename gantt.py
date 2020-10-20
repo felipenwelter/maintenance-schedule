@@ -11,24 +11,102 @@ import datetime
 def myFunc(e):
   return e['start']
 
+def getIdle(list_so):
+    index = 0
+    list_idle = []
+    while index < len(list_so):
+        if index == 0:
+            list_idle.append({ 'employee': list_so[index]['employee'],
+                            'start': start_date, 'end': list_so[index]['start'] })
+        else:
+            list_idle.append({ 'employee': list_so[index]['employee'],
+                            'start': list_so[index-1]['end'], 'end': list_so[index]['start'] })
+        index += 1
+    return list_idle
 
 
-print( jm.loadJSON()['workload'][0]['employee'] )
+def getUnavailable(list_idle):
+
+    # check if there are itens with different start/end day, then separate day by day
+    index = 0
+    while index < len(list_idle):
+        if (list_idle[index]['start'][:10] != list_idle[index]['end'][:10]):
+
+            end_day = datetime.datetime.strptime(list_idle[index]['start'], '%Y-%m-%d %H:%M').date()
+            
+            # fill all the days in the middle of the gap, if it has more than 2 days length
+            while (end_day.strftime("%Y-%m-%d") != list_idle[index]['end'][:10]):
+                end_day = end_day + datetime.timedelta(days=1)
+                if (end_day.strftime("%Y-%m-%d") != list_idle[index]['end'][:10]):
+                    list_idle.append({ 'employee': list_idle[index]['employee'],
+                                'start': end_day.strftime("%Y-%m-%d")+" 00:00", 'end': end_day.strftime("%Y-%m-%d") + " 23:59" })
+
+            list_idle.append({ 'employee': list_idle[index]['employee'],
+                            'start': list_idle[index]['end'][:10]+" 00:00", 'end': list_idle[index]['end'] })
+            list_idle[index]['end'] = list_idle[index]['start'][:10] + " 23:59"
+
+        index += 1 
+
+    # order by start date
+    list_idle.sort(key=myFunc)
+
+    index = 0
+    while index < len(list_idle):
+        weekday = (datetime.datetime.strptime(list_idle[index]['start'], '%Y-%m-%d %H:%M')).weekday()
+        shift = work_shift[0]['shift'][weekday]
+        
+        #index2 = 0
+        #while index2 < len(shift):
+        start = list_idle[index]['start'][11:]
+        end = list_idle[index]['end'][11:]
+
+        ## dias que nao trabalha ta dando pau!!!
+        
+        if (end >= shift[0] and end <= shift[1]):
+            list_unavailable.append({ 'employee': list_idle[index]['employee'],
+                                    'start': list_idle[index]['start'][:11] + start, 
+                                    'end': list_idle[index]['end'][:11] + shift[0] })
+            list_idle[index]['start'] = list_idle[index]['start'][:11] + shift[0]
+
+        if (start >= shift[0] and start <= shift[1]):
+            list_unavailable.append({ 'employee': list_idle[index]['employee'],
+                                    'start': list_idle[index]['start'][:11] + shift[1], 
+                                    'end': list_idle[index]['end'][:11] + end})
+            list_idle[index]['end'] = list_idle[index]['end'][:11] + shift[1]
+
+        if (start < shift[0] and end >= shift[1]):
+            list_unavailable.append({ 'employee': list_idle[index]['employee'],
+                                    'start': list_idle[index]['start'][:11] + "00:00", 
+                                    'end': list_idle[index]['end'][:11] + shift[0]})
+            list_unavailable.append({ 'employee': list_idle[index]['employee'],
+                                    'start': list_idle[index]['start'][:11] + shift[1], 
+                                    'end': list_idle[index]['end'][:11] + "23:59"})
+            list_idle[index]['start'] = list_idle[index]['start'][:11] + shift[0]
+            list_idle[index]['end'] = list_idle[index]['end'][:11] + shift[1]
+
+            #index2 += 1
+
+        index += 1
+
+    # run the whole list_idle to get items to eliminate
+    index = 0
+    while index < len(list_idle):
+        if (list_idle[index]['start'] == list_idle[index]['end']):
+            list_idle.pop(index)
+            index -= 1
+        index += 1
+
+    return list_unavailable
+
+
+
+
+
+
 
 wl = jm.loadJSON()
 
 df = []
-#[[dict(Task="Nelson", Start='2020-01-01 10:00', Finish='2020-02-02 03:00', Resource='009372'),
-#      dict(Task="Nelson", Start='2020-02-15', Finish='2020-03-15', Resource='003711'),
-#      dict(Task="Mauricio", Start='2020-01-01', Finish='2020-02-02 11:00', Resource='000881'),
-#      dict(Task="Luiza", Start='2020-03-10', Finish='2020-03-20', Resource='009372'),
-#      dict(Task="Luiza", Start='2020-04-01', Finish='2020-04-20', Resource='034830'),
-#      dict(Task="Luiza", Start='2020-05-18', Finish='2020-06-18', Resource='000881'),
-#      dict(Task="Antonio", Start='2020-01-14', Finish='2020-03-14', Resource='003711')]
-#]
-#df2 = dict(Task=wl['workload'][0]['employee'], Start=wl['workload'][0]['start'],
-#           Finish=wl['workload'][0]['end'], Resource=wl['workload'][0]['number'])
-#df.append(df2)
 
 #### TODO
 # check if it is possible to show the time as hint
@@ -37,17 +115,17 @@ df = []
 
 start_date = '2020-10-01 00:00'
 list_so = []
-list_gaps = []
+list_idle = []
+list_unavailable = []
 work_shift = [ { 'employee': 'Luiza',
-                 'shift_start': ['08:00','08:00','08:00','08:00','08:00','',''],
-                 'shift_end': ['18:00','18:00','18:00','18:00','18:00','',''] }  ]
+                 'shift': [['08:00','18:00'], ['08:00','18:00'], ['08:00','18:00'], ['09:00','14:00'], ['08:00','18:00'],'',''] }  ]
 
 for so in wl['workload']:
     new = dict(Task=so['employee'], Start=so['start'],
             Finish=so['end'], Resource='busy') #Resource=so['number'])
     df.append(new)
     
-    if (so['employee'] == 'Luiza'):
+    if (so['employee'] == 'Nelson'):
         list_so.append({ 'employee': so['employee'], 'start': so['start'], 'end': so['end'] })
 
 # order the list by start date
@@ -58,35 +136,28 @@ if (list_so[0]['start'] < start_date):
     start_date = list_so[0]['start']
 
 # get the gaps between service orders
-index = 0
-while index < len(list_so):
-    if index == 0:
-        list_gaps.append({ 'employee': list_so[index]['employee'],
-                           'start': start_date, 'end': list_so[index]['start'] })
-    else:
-        list_gaps.append({ 'employee': list_so[index]['employee'],
-                           'start': list_so[index-1]['end'], 'end': list_so[index]['start'] })
-    index += 1
+list_idle = getIdle(list_so)
 
 # extract the unavaiable periods into the idle periods identified previously
-#index = 0
-#while index > len(list_gaps):
-#    weekday = (datetime.datetime.strptime(list_gaps[0]['start'], '%Y-%m-%d %H:%M')).weekday()
-    
-    #list_gaps[index]['start']
-    #work_shift[0]['shift_start'][weekday]
+list_unavailable = getUnavailable(list_idle)
+
         
     
 
     
 
 
-# add the gaps into the gantt chart
-for so in list_gaps:
+# add the idle into the gantt chart
+for so in list_idle:
     new = dict(Task=so['employee'], Start=so['start'],
             Finish=so['end'], Resource='idle') #Resource=so['number'])
     df.append(new)
 
+# add the unavailable into the gantt chart
+for so in list_unavailable:
+    new = dict(Task=so['employee'], Start=so['start'],
+            Finish=so['end'], Resource='unavailable') #Resource=so['number'])
+    df.append(new)
 
 #colors = {'000881': 'rgb(220, 0, 0)',
 #          '009372': (1, 0.9, 0.16),
@@ -94,8 +165,8 @@ for so in list_gaps:
 #          '034830': 'rgb(100, 255, 100)'}
 
 colors = {'busy': 'rgb(30,144,255)',
-          'idle': 'rgb(178,34,34)',
-          'unavaiable': 'rgb(176,196,222)'}
+          'idle': 'rgb(230,90,90)',
+          'unavailable': 'rgb(205,205,205)'}
 
 fig = ff.create_gantt(df, colors=colors, index_col='Resource', show_colorbar=True,
                       group_tasks=True)
