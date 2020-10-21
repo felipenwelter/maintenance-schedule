@@ -130,6 +130,19 @@ wl = jm.loadJSON()
 df = []
 
 #### TODO
+# implement turnos quebrados - testar com trabalhos comecando e acabando no turno da manha e no turno da tarde (4 teste)
+# teste OS comecando antes do turno da manha e acabando antes              x-x[      ]
+# teste OS comecando antes do turno da manha e acabando dentro              x-[----x-]
+# teste OS comecando antes do turno da manha e acabando fora                x-[------]-x
+# teste OS comecando exatamente no turno da manha e acabando dentro           x---x  ]
+# teste OS comecando exatamente no turno da manha e acabando fora             x------]-x
+# teste OS comecando dentro do turno da manha e acabando dentro               [ x--x ]
+# teste OS comecando dentro do turno da manha e acabando fora                 [ x----]-x
+# teste OS comecando exatamente no fim do turno da manha e acabando fora      [      x-x
+# teste OS comecando depois do turno da manha e acabando depois               [      ] x-x
+
+
+
 # calcular qual a ociosidade geral e por funcionario no comeco e depois no final, pra ver se aumenta ou diminui
 
 start_date = '2020-10-01 00:00'
