@@ -22,6 +22,12 @@ def getIdle(list_so):
             list_idle.append({ 'employee': list_so[index]['employee'],
                             'start': list_so[index-1]['end'], 'end': list_so[index]['start'] })
         index += 1
+
+    # fill the last time with idle period, to show gantt
+    if (list_so[-1]['end'] < end_date):
+        list_idle.append({ 'employee': list_so[-1]['employee'],
+                            'start': list_so[-1]['end'], 'end': end_date })
+
     return list_idle
 
 
@@ -61,30 +67,37 @@ def getUnavailable(list_idle):
         end = list_idle[index]['end'][11:]
 
         ## dias que nao trabalha ta dando pau!!!
-        
-        if (end >= shift[0] and end <= shift[1]):
-            list_unavailable.append({ 'employee': list_idle[index]['employee'],
-                                    'start': list_idle[index]['start'][:11] + start, 
-                                    'end': list_idle[index]['end'][:11] + shift[0] })
-            list_idle[index]['start'] = list_idle[index]['start'][:11] + shift[0]
+        if len(shift) > 0:
+            if (end >= shift[0] and end <= shift[1]):
+                list_unavailable.append({ 'employee': list_idle[index]['employee'],
+                                        'start': list_idle[index]['start'][:11] + start, 
+                                        'end': list_idle[index]['end'][:11] + shift[0] })
+                list_idle[index]['start'] = list_idle[index]['start'][:11] + shift[0]
 
-        if (start >= shift[0] and start <= shift[1]):
-            list_unavailable.append({ 'employee': list_idle[index]['employee'],
-                                    'start': list_idle[index]['start'][:11] + shift[1], 
-                                    'end': list_idle[index]['end'][:11] + end})
-            list_idle[index]['end'] = list_idle[index]['end'][:11] + shift[1]
+            if (start >= shift[0] and start <= shift[1]):
+                list_unavailable.append({ 'employee': list_idle[index]['employee'],
+                                        'start': list_idle[index]['start'][:11] + shift[1], 
+                                        'end': list_idle[index]['end'][:11] + end})
+                list_idle[index]['end'] = list_idle[index]['end'][:11] + shift[1]
 
-        if (start < shift[0] and end >= shift[1]):
-            list_unavailable.append({ 'employee': list_idle[index]['employee'],
-                                    'start': list_idle[index]['start'][:11] + "00:00", 
-                                    'end': list_idle[index]['end'][:11] + shift[0]})
-            list_unavailable.append({ 'employee': list_idle[index]['employee'],
-                                    'start': list_idle[index]['start'][:11] + shift[1], 
-                                    'end': list_idle[index]['end'][:11] + "23:59"})
-            list_idle[index]['start'] = list_idle[index]['start'][:11] + shift[0]
-            list_idle[index]['end'] = list_idle[index]['end'][:11] + shift[1]
+            if (start < shift[0] and end >= shift[1]):
+                list_unavailable.append({ 'employee': list_idle[index]['employee'],
+                                        'start': list_idle[index]['start'][:11] + "00:00", 
+                                        'end': list_idle[index]['end'][:11] + shift[0]})
+                list_unavailable.append({ 'employee': list_idle[index]['employee'],
+                                        'start': list_idle[index]['start'][:11] + shift[1], 
+                                        'end': list_idle[index]['end'][:11] + "23:59"})
+                list_idle[index]['start'] = list_idle[index]['start'][:11] + shift[0]
+                list_idle[index]['end'] = list_idle[index]['end'][:11] + shift[1]
 
-            #index2 += 1
+                #index2 += 1
+        else: #if len(shift) == 0
+            list_unavailable.append({ 'employee': list_idle[index]['employee'],
+                                        'start': list_idle[index]['start'], 
+                                        'end': list_idle[index]['end']})
+            list_idle.pop(index)
+            index -= 1
+
 
         index += 1
 
@@ -114,6 +127,7 @@ df = []
 # calcular qual a ociosidade geral e por funcionario no comeco e depois no final, pra ver se aumenta ou diminui
 
 start_date = '2020-10-01 00:00'
+end_date = ''
 list_so = []
 list_idle = []
 list_unavailable = []
@@ -130,6 +144,9 @@ for so in wl['workload']:
 
 # order the list by start date
 list_so.sort(key=myFunc)
+
+#after getting all the service orders, update the last date to gantt
+end_date = list_so[-1]['end'][:11]+"23:59"
 
 # check if first value is lower then gantt start_date
 if (list_so[0]['start'] < start_date):
