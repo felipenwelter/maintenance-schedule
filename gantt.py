@@ -66,7 +66,6 @@ def getUnavailable(list_idle):
         start = list_idle[index]['start'][11:]
         end = list_idle[index]['end'][11:]
 
-        ## dias que nao trabalha ta dando pau!!!
         if len(shift) > 0:
             if (end >= shift[0] and end <= shift[1]):
                 list_unavailable.append({ 'employee': list_idle[index]['employee'],
