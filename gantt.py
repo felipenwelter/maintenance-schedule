@@ -42,13 +42,29 @@ def checkPeriods(ds):
         
 
 #---------------------------------------------------------------
+# Função: getWorkShift
+# Parâmetros: employee - name of the employee
+# Retorno: using the imported work_shift json file, find the one
+# #        corresponding to the name of the employee
+#---------------------------------------------------------------
+def getWorkShift(employee):
+    ret = []
+    for ws in work_shift['workshift']:
+        if (ws['employee'] == employee):
+            ret = ws['shift']
+            break
+    return ret
+
+
+#---------------------------------------------------------------
 # Função: getSchedule
 # Parâmetros: list_so - list of service_orders
+#             list_ws - list of the work_shift
 # Retorno: using list_os, fill all the blanks between tasks
 #          with what is called idle schedules and also with 
 #          the unavailable periods (off schedule)
 #---------------------------------------------------------------
-def getSchedule(list_so):
+def getSchedule(list_so, list_ws):
 
     full_periods = []
     dt = datetime.datetime.strptime(start_date, '%Y-%m-%d %H:%M').date()
@@ -88,11 +104,8 @@ def getSchedule(list_so):
         
         # now join with the schedule info
         weekday = dt.weekday()
-        shift = work_shift[0]['shift'][weekday]
-
-        if (shift[0] != ''):
-
-            for sc in shift:
+        if list_ws[weekday]:
+            for sc in list_ws[weekday]:
                 ds.append({ 'start': sc[0],
                             'end': sc[1],
                             'type': 'idle' })
@@ -171,25 +184,18 @@ def getSchedule(list_so):
 
 
 
-wl = jm.loadJSON()
+wl = jm.loadJSON_SO() #load list of service orders from JSON
+work_shift = jm.loadJSON_WS() #load list of work shifts from JSON
+
+#initialize global variables
 start_date = ''
 end_date = ''
 gantt = []
 list_so = []
 full_schedule = []
-work_shift = [ { 'employee': 'Nelson',
-                'shift': [
-                    [ ['08:00','12:00'], ['13:00','18:00'] ], #monday
-                    [ ['08:00','12:00'], ['13:00','18:00'] ], #tuesday
-                    [ ['08:00','12:00'], ['13:00','18:00'] ], #wednesday
-                    [ ['08:00','12:00'], ['13:00','18:00'] ], #thursday
-                    [ ['08:00','12:00'], ['13:00','18:00'] ], #friday
-                    [ '' ], #saturday
-                    [ '' ]  #sunday
-                ] }  ]
 
+# aggregate service orders by employee
 for so in wl['workload']:
-    
     idx = -1
     i = 0
     
@@ -205,7 +211,7 @@ for so in wl['workload']:
         list_so[idx]['schedule'].append( {'start': so['start'], 'end': so['end']} )
 
 
-# order each list by start date
+# order each list of service_orders by start date
 for i in list_so:
     i['schedule'].sort(key=sortingRule)
 
@@ -219,9 +225,10 @@ for i in list_so:
 start_date = start_date[:11]+"00:00"
 end_date = end_date[:11]+"23:59"
 
-# get full schedule
+# get full schedule (with busy, idle and unavailable time)
 for i in list_so:
-    full_schedule.append( { 'employee': i['employee'], 'schedule': getSchedule(i['schedule']) } ) 
+    full_schedule.append( { 'employee': i['employee'],
+                            'schedule': getSchedule(i['schedule'], getWorkShift(i['employee']) ) } ) 
 
 # add the whole schedule into the gantt chart
 for emp in full_schedule:
@@ -236,6 +243,7 @@ colors = {'so': 'rgb(30,144,255)',
           'idle': 'rgb(230,90,90)',
           'unavailable': 'rgb(205,205,205)'}
 
+# shows the gantt chart on screen
 fig = ff.create_gantt(gantt, colors=colors, index_col='Resource',
                     show_colorbar=True, group_tasks=True)
 fig.show()
