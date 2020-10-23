@@ -1,9 +1,14 @@
 # https://plotly.com/python/gantt/
 
+# TODO
+# calcular qual a ociosidade geral e por funcionario no comeco e depois no final, pra ver se aumenta ou diminui
+
+
 import plotly.figure_factory as ff
 import jsonManipulate as jm
 import pandas as pd
 import datetime
+
 
 #---------------------------------------------------------------
 # Função: sortingRule
@@ -12,6 +17,7 @@ import datetime
 #---------------------------------------------------------------
 def sortingRule(e):
   return e['start']
+
 
 #--------------------------------------------------------------------
 # Função: checkPeriods
@@ -162,65 +168,15 @@ def getSchedule(list_so):
 
     return full_periods
 
-#### TODO
-#OK teste OS comecando antes do turno da tarde e acabando antes              x-x[      ]
-#OK 11:00 - 12:50 / 12:10 - 12:50
-#OK teste OS comecando antes do turno da tarde e acabando dentro              x-[----x-]
-#OK 11:00 - 14:00 / 12:10 - 14:00
-#OK teste OS comecando antes do turno da tarde e acabando fora                x-[------]-x
-#OK 11:00 - 19:00 / 12:10 - 19:00
-#OK teste OS comecando exatamente no turno da tarde e acabando dentro           x---x  ]
-#OK 13:00 - 15:00
-#OK teste OS comecando exatamente no turno da tarde e acabando fora             x------]-x
-#OK 13:00 - 19:00
-#OK teste OS comecando dentro do turno da tarde e acabando dentro               [ x--x ]
-#OK 14:00 - 15:00
-#OK teste OS comecando dentro do turno da tarde e acabando fora                 [ x----]-x
-#OK 14:00 - 19:00
-#OK teste OS comecando exatamente no fim do turno da tarde e acabando fora      [      x-x
-#OK 18:00 - 19:00
-#teste OS comecando depois do turno da tarde e acabando depois               [      ] x-x
-#20:00 - 21:00
-
-#OK teste OS comecando antes do turno da manha e acabando antes              x-x[      ]
-#OK 06:00 - 07:00 
-#OK teste OS comecando antes do turno da manha e acabando dentro              x-[----x-]
-#OK 06:00 - 09:00
-#OK teste OS comecando antes do turno da manha e acabando fora                x-[------]-x
-#OK 06:00 - 12:30
-#OK teste OS comecando exatamente no turno da manha e acabando dentro           x---x  ]
-#OK 08:00 - 10:00
-#OK teste OS comecando exatamente no turno da manha e acabando fora             x------]-x
-#OK 08:00 - 12:30
-#OK teste OS comecando dentro do turno da manha e acabando dentro               [ x--x ]
-#OK 09:00 - 10:00
-#OK teste OS comecando dentro do turno da manha e acabando fora                 [ x----]-x
-#OK 09:00 - 12:30
-#OK teste OS comecando exatamente no fim do turno da manha e acabando fora      [      x-x
-#OK 12:00 - 12:30
-#OK teste OS comecando depois do turno da manha e acabando depois               [      ] x-x
-#OK 12:10 - 12:50
-
-
-
 
 
 
 wl = jm.loadJSON()
-df = []
-
-
-
-# TODO
-# calcular qual a ociosidade geral e por funcionario no comeco e depois no final, pra ver se aumenta ou diminui
-# poder incluir agenda de varias pessoas ao mesmo tempo no gantt
-# poder usar o calendario individual e cada um (json)
-
-start_date = '2020-10-01 00:00'
+start_date = ''
 end_date = ''
+gantt = []
 list_so = []
-list_idle = []
-list_unavailable = []
+full_schedule = []
 work_shift = [ { 'employee': 'Nelson',
                 'shift': [
                     [ ['08:00','12:00'], ['13:00','18:00'] ], #monday
@@ -233,39 +189,53 @@ work_shift = [ { 'employee': 'Nelson',
                 ] }  ]
 
 for so in wl['workload']:
-    #new = dict(Task=so['employee'], Start=so['start'],
-    #           Finish=so['end'], Resource='busy')
-    #df.append(new)
-    if (so['employee'] == 'Nelson'):
-        list_so.append({ 'employee': so['employee'], 'start': so['start'], 'end': so['end'] })
+    
+    idx = -1
+    i = 0
+    
+    while i < len(list_so):
+        if (list_so[i]['employee'] == so['employee']):
+            idx = i
+        i += 1
+    
+    if (idx < 0):
+        list_so.append( { 'employee': so['employee'], 'schedule': [] } )
+        list_so[-1]['schedule'].append( {'start': so['start'], 'end': so['end']} )
+    else:
+        list_so[idx]['schedule'].append( {'start': so['start'], 'end': so['end']} )
 
-# order the list by start date
-list_so.sort(key=sortingRule)
 
-#after getting all the service orders, update the last date to gantt
-end_date = list_so[-1]['end'][:11]+"23:59"
+# order each list by start date
+for i in list_so:
+    i['schedule'].sort(key=sortingRule)
 
-# check if first value is lower then gantt start_date
-if (list_so[0]['start'] < start_date):
-    start_date = list_so[0]['start']
+# identifies the first and last date at all
+for i in list_so:
+    if ( start_date == '' or i['schedule'][0]['start'] < start_date):
+        start_date = i['schedule'][0]['start']
+    if ( end_date == '' or i['schedule'][-1]['end'] > end_date):
+        end_date = i['schedule'][-1]['end']
+
+start_date = start_date[:11]+"00:00"
+end_date = end_date[:11]+"23:59"
 
 # get full schedule
-full_schedule = getSchedule(list_so)
+for i in list_so:
+    full_schedule.append( { 'employee': i['employee'], 'schedule': getSchedule(i['schedule']) } ) 
 
-# add the idle into the gantt chart
-for sc in full_schedule:
-    for appt in sc['list']:
-        day = sc['day'].strftime('%Y-%m-%d') + " "
-        new = dict(Task='Nelson', Start=(day+appt['start']),
-                Finish=(day+appt['end']), Resource=appt['type'])
-        df.append(new)
+# add the whole schedule into the gantt chart
+for emp in full_schedule:
+    for sc in emp['schedule']:
+        for appt in sc['list']:
+            day = sc['day'].strftime('%Y-%m-%d') + " "
+            new = dict(Task=emp['employee'], Start=(day+appt['start']),
+                    Finish=(day+appt['end']), Resource=appt['type'])
+            gantt.append(new)
 
 colors = {'so': 'rgb(30,144,255)',
           'idle': 'rgb(230,90,90)',
           'unavailable': 'rgb(205,205,205)'}
 
-fig = ff.create_gantt(df, colors=colors, index_col='Resource',
+fig = ff.create_gantt(gantt, colors=colors, index_col='Resource',
                     show_colorbar=True, group_tasks=True)
 fig.show()
-
-
