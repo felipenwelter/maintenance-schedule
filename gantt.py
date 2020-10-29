@@ -53,6 +53,7 @@ def getWorkShift(employee):
         if (ws['employee'] == employee):
             ret = ws['shift']
             break
+    
     return ret
 
 
@@ -73,6 +74,7 @@ def getSchedule(list_so, list_ws):
     while (dt <= dt_end):
         
         ds = [] #day_schedule
+        weekday = dt.weekday()
 
         for so in list_so:
 
@@ -101,9 +103,38 @@ def getSchedule(list_so, list_ws):
                                 'end': so['end'][-5:],
                                 'type': 'so' })
 
-        
+
+        # identify the overtime periods and split them from the s.o.
+        for so in ds:
+
+            # so, first split all the s.o's that cross any shift start or end
+            for sc in list_ws[weekday]:
+                
+                if sc[0] > so['start'] and sc[0] < so['end']:
+                    ds.append({ 'start': sc[0],
+                                'end': so['end'],
+                                'type': 'so' })
+                    so['end'] = sc[0]
+
+                if sc[1] > so['start'] and sc[1] < so['end']:
+                    ds.append({ 'start': sc[1],
+                                'end': so['end'],
+                                'type': 'so' })
+                    so['end'] = sc[1]
+
+        # second, label correctly each period
+        for so in ds:
+            
+            inshift = 0
+            for sc in list_ws[weekday]:
+                if (so['start'] >= sc[0] and so['end'] <= sc[1]):
+                    inshift += 1
+            
+            if (inshift == 0):
+                so['type'] = 'overtime'
+
+
         # now join with the schedule info
-        weekday = dt.weekday()
         if list_ws[weekday]:
             for sc in list_ws[weekday]:
                 ds.append({ 'start': sc[0],
@@ -174,43 +205,6 @@ def getSchedule(list_so, list_ws):
                 idx += 1
 
 
-        # from the busy (so) periods, split the overtime
-        #overtime = []
-        #ds.sort(key=sortingRule)
-        #idx = 0
-
-        #while idx < len(ds):
-                
-        #    if ds[idx]['type']  == 'so':
-        #        if list_ws[weekday]:
-
-        #            inschedule = False
-        #            for sc in list_ws[weekday]:
-                        
-                        #check if the busy period starts in the shift
-        #                if (ds[idx]['start'] >= sc[0] and ds[idx]['start'] < sc[1]):
-        #                    a = 1
-        #                    inschedule = True
-        #                    overtime.append({ 'start': sc[1], #split the time off shift
-        #                                      'end': ds[idx]['end'],
-        #                                      'type': 'overtime' })
-        #                    ds[idx]['end'] = sc[1] #from the time in shift
-                        
-                        #check if the busy period end in the shift
-        #                if (ds[idx]['end'] > sc[0] and ds[idx]['end'] <= sc[1]):
-        #                    a = 1
-        #                    inschedule = True
-        #                    overtime.append({ 'start': ds[idx]['start'], #split the time off shift
-        #                                      'end': sc[0],
-        #                                      'type': 'overtime' })
-        #                    ds[idx]['start'] = sc[0] #from the time in shift
-                            
-                
-        #        if not inschedule:
-        #            ds[idx]['type'] = 'overtime'
-
-        #    idx += 1
-
         ds.sort(key=sortingRule)
         checkPeriods(ds)  # only development
         full_periods.append({ 'day': dt, 'list': ds })
@@ -278,6 +272,7 @@ for emp in full_schedule:
             gantt.append(new)
 
 colors = {'so': 'rgb(30,144,255)',
+          'overtime': 'rgb(24,96,255)',
           'idle': 'rgb(230,90,90)',
           'unavailable': 'rgb(205,205,205)'}
 

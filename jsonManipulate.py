@@ -34,7 +34,10 @@ def loadJSON_WS():
                 matches = [x for x in p['shift'] if x['day'] == d]
                 for m in matches:
                     details[-1].append( [ m['start'], m['end'] ] )
-            
+                
+                #sort by start hour
+                details[-1].sort()
+
             data['workshift'].append( {'employee': p['employee'], 'shift': details } )
 
     return data
