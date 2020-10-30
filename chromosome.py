@@ -3,9 +3,6 @@ import config
 import json
 import datetime
 
-def sortingRule(e):
-  return e['start']
-
 def search(list,value):
     try:
         return list.index(value)
@@ -15,12 +12,12 @@ def search(list,value):
 class Chromosome:
     '''Classe que representa um indíviduo (cromossomo), sua composição de genes e suas características'''
 
-    def __init__(self):
+    def __init__(self,pop):
         #self.weight = 0  # peso do cromossomo (pela soma dos genes)
         #self.value = 0  # valor do cromossomo (pela soma dos genes)
-        self.length = 0 #config.composition_size  # número de genes do cromossomo
-        # inicializa todos os genes com 0
-        self.genes = [] # [0 for i in range(self.length)]
+        self.length = pop.chromosome_length # the chromosome lenght is calculated once in the population
+        self.genes = [0 for i in range(self.length)] # initialize all genes as 0
+        self.limits = pop.chromosome_limits  # defined by number ofdays and number of time blocks
         # atributo que define se cromosso atende critério de aceitação (fitness)
         #self.fitness = False
         # atributo informativo para saber o percentual de ocupação em relação ao limite de peso
@@ -28,7 +25,7 @@ class Chromosome:
         #self.mutateMethod = config.mutateMethod  # método de mutação de genes
 
         # dados dos itens a serem avaliados para a mochila
-        self.file = config.dataset
+        #self.file = config.dataset
         # valor dos itens da mochila (respectivo ao peso)
         #self.available_itens_value = []
         # peso dos itens da mochila (respectivo ao valor)
@@ -36,12 +33,15 @@ class Chromosome:
         # capacidade máxima de peso para a mochila, em kg
         #self.knapsackCapacity = 0
         # realiza a leitura do arquivo de dataset
-        self.readJson()
+        #self.readJson()
 
     def initialize(self):
-        '''Define 0s e 1s aleatórios para compor o cromossomo'''
+        '''Define 0s and 1s randomly to compose the chromosome'''
         for i in range(self.length):
-            self.genes[i] = random.randint(0, 1)
+            if divmod(i,2)[1] == 0:
+                self.genes[i] = random.randint(0, self.limits[0])
+            else:
+                self.genes[i] = random.randint(0, self.limits[1])
         #self.evaluate_fitness()  # atualiza características do cromossomo
 
     #def evaluate_fitness(self):

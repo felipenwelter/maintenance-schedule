@@ -51,4 +51,6 @@ def geneticAlgorithm():
     #print(f"value: {best.value}")
     #print(f"weight: {best.weight}")
 
-    return best
+    #return best
+    return True
+    

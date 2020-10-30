@@ -11,3 +11,6 @@ population_size = 10
 
 #define o método de procriação (geração de nova população): "first_elite", "all_elite" ou "random"
 #procreateMethod = "all_elite"
+
+#for controlling the time scheduling, in minutes
+block_size = 10 # in minutes (less than or equal 1 hour)

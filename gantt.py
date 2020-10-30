@@ -9,6 +9,9 @@ import jsonManipulate as jm
 import pandas as pd
 import datetime
 
+work_shift = []
+start_date = ''
+end_date = ''
 
 #---------------------------------------------------------------
 # Função: sortingRule
@@ -48,6 +51,8 @@ def checkPeriods(ds):
 # #        corresponding to the name of the employee
 #---------------------------------------------------------------
 def getWorkShift(employee):
+    global work_shift
+
     ret = []
     for ws in work_shift['workshift']:
         if (ws['employee'] == employee):
@@ -66,6 +71,8 @@ def getWorkShift(employee):
 #          the unavailable periods (off schedule)
 #---------------------------------------------------------------
 def getSchedule(list_so, list_ws):
+    
+    global start_date, end_date
 
     full_periods = []
     dt = datetime.datetime.strptime(start_date, '%Y-%m-%d %H:%M').date()
@@ -214,69 +221,86 @@ def getSchedule(list_so, list_ws):
     return full_periods
 
 
-
-
-wl = jm.loadJSON_SO() #load list of service orders from JSON
-work_shift = jm.loadJSON_WS() #load list of work shifts from JSON
-
-#initialize global variables
-start_date = ''
-end_date = ''
-gantt = []
-list_so = []
-full_schedule = []
-
-# aggregate service orders by employee
-for so in wl['workload']:
-    idx = -1
-    i = 0
+#---------------------------------------------------------------
+# Função: getSchedule
+# Parâmetros: list_so - list of service_orders
+#             list_ws - list of the work_shift
+# Retorno: using list_os, fill all the blanks between tasks
+#          with what is called idle schedules and also with 
+#          the unavailable periods (off schedule)
+#---------------------------------------------------------------
+def showGantt(wl=[]):
     
-    while i < len(list_so):
-        if (list_so[i]['employee'] == so['employee']):
-            idx = i
-        i += 1
-    
-    if (idx < 0):
-        list_so.append( { 'employee': so['employee'], 'schedule': [] } )
-        list_so[-1]['schedule'].append( {'start': so['start'], 'end': so['end']} )
-    else:
-        list_so[idx]['schedule'].append( {'start': so['start'], 'end': so['end']} )
+    global work_shift, start_date, end_date
+
+    # if do not receive a list of service_orders, load from json
+    if len(wl) == 0:
+        wl = jm.loadJSON_SO() #load list of service orders from JSON
+
+    work_shift = jm.loadJSON_WS() #load list of work shifts from JSON
+
+    #initialize global variables
+    start_date = ''
+    end_date = ''
+    gantt = []
+    list_so = []
+    full_schedule = []
+
+    # aggregate service orders by employee
+    for so in wl['workload']:
+        idx = -1
+        i = 0
+        
+        while i < len(list_so):
+            if (list_so[i]['employee'] == so['employee']):
+                idx = i
+            i += 1
+        
+        if (idx < 0):
+            list_so.append( { 'employee': so['employee'], 'schedule': [] } )
+            list_so[-1]['schedule'].append( {'start': so['start'], 'end': so['end']} )
+        else:
+            list_so[idx]['schedule'].append( {'start': so['start'], 'end': so['end']} )
 
 
-# order each list of service_orders by start date
-for i in list_so:
-    i['schedule'].sort(key=sortingRule)
+    # order each list of service_orders by start date
+    for i in list_so:
+        i['schedule'].sort(key=sortingRule)
 
-# identifies the first and last date at all
-for i in list_so:
-    if ( start_date == '' or i['schedule'][0]['start'] < start_date):
-        start_date = i['schedule'][0]['start']
-    if ( end_date == '' or i['schedule'][-1]['end'] > end_date):
-        end_date = i['schedule'][-1]['end']
+    # identifies the first and last date at all
+    for i in list_so:
+        if ( start_date == '' or i['schedule'][0]['start'] < start_date):
+            start_date = i['schedule'][0]['start']
+        if ( end_date == '' or i['schedule'][-1]['end'] > end_date):
+            end_date = i['schedule'][-1]['end']
 
-start_date = start_date[:11]+"00:00"
-end_date = end_date[:11]+"23:59"
+    start_date = start_date[:11]+"00:00"
+    end_date = end_date[:11]+"23:59"
 
-# get full schedule (with busy, idle and unavailable time)
-for i in list_so:
-    full_schedule.append( { 'employee': i['employee'],
-                            'schedule': getSchedule(i['schedule'], getWorkShift(i['employee']) ) } ) 
+    # get full schedule (with busy, idle and unavailable time)
+    for i in list_so:
+        full_schedule.append( { 'employee': i['employee'],
+                                'schedule': getSchedule(i['schedule'], getWorkShift(i['employee']) ) } ) 
 
-# add the whole schedule into the gantt chart
-for emp in full_schedule:
-    for sc in emp['schedule']:
-        for appt in sc['list']:
-            day = sc['day'].strftime('%Y-%m-%d') + " "
-            new = dict(Task=emp['employee'], Start=(day+appt['start']),
-                    Finish=(day+appt['end']), Resource=appt['type'])
-            gantt.append(new)
+    # add the whole schedule into the gantt chart
+    for emp in full_schedule:
+        for sc in emp['schedule']:
+            for appt in sc['list']:
+                day = sc['day'].strftime('%Y-%m-%d') + " "
+                new = dict(Task=emp['employee'], Start=(day+appt['start']),
+                        Finish=(day+appt['end']), Resource=appt['type'])
+                gantt.append(new)
 
-colors = {'so': 'rgb(30,144,255)',
-          'overtime': 'rgb(24,96,255)',
-          'idle': 'rgb(230,90,90)',
-          'unavailable': 'rgb(205,205,205)'}
+    colors = {'so': 'rgb(30,144,255)',
+            'overtime': 'rgb(24,96,255)',
+            'idle': 'rgb(230,90,90)',
+            'unavailable': 'rgb(205,205,205)'}
 
-# shows the gantt chart on screen
-fig = ff.create_gantt(gantt, colors=colors, index_col='Resource',
-                    show_colorbar=True, group_tasks=True)
-fig.show()
+    # shows the gantt chart on screen
+    fig = ff.create_gantt(gantt, colors=colors, index_col='Resource',
+                        show_colorbar=True, group_tasks=True)
+    fig.show()
+
+
+if __name__ == "__main__":
+    showGantt()

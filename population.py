@@ -3,8 +3,13 @@
 #import numpy as np
 #import operator
 import config
+from datetime import datetime, timedelta
 from chromosome import Chromosome
+from gantt import showGantt
 import json
+
+def sortingRule(e):
+  return e['start']
 
 
 #def sortPopulation(newList: list):
@@ -23,45 +28,121 @@ class Population:
     '''Classe que representa a população de uma geração com um determinado número de indivíduos (cromossomos)'''
 
     def __init__(self):
-        self.cromossomos = []  # armazena os indivíduos (classe cromossomo)
-        self.size = config.population_size  # define o número de invíduos da população
+
+        self.chromosomes = []  # keep each chromosome (individuals)
+        self.chromosome_length = 0 # composed by [days,time] * number of service orders
+        self.chromosome_limits = [0,0] # defined by number ofdays and number of time blocks
+        self.size = config.population_size  # define the number of chromosomes (individuals) for the population
+        
+        self.data = {}
+        self.dayone = ''
+
+        self.file = config.dataset # json file with the entry data
+        self.config() # read the json file and set some configurations for the population
+        
+        
+
         # a média de peso dos indivíduos da população (informativo)
         #self.weightAverage = 0
         # método de procriação (geração de nova população)
         #self.procreateMethod = config.procreateMethod
+        
+        
 
     def initialize(self):
         '''inicializa a população de cromossomos com valores aleatórios'''
         for i in range(self.size):
-            cromossomo = Chromosome()
+            cromossomo = Chromosome(self)
             cromossomo.initialize()
-            self.cromossomos.append(cromossomo)
+            self.chromosomes.append(cromossomo)
+
+    def config(self):
+        '''Read json file and set some attributes for the population'''
+        with open(f'datasets/{self.file}.json') as json_file:
+            self.data = json.load(json_file)
+
+        #-----------------------------------------
+        # to calculate the number of days
+        start_date = ''
+        end_date = ''
+
+        # order the list of service_orders by start date
+        self.data['service_orders'].sort(key=sortingRule)
+
+        # identifies the first and last dates at all
+        start_date = self.data['service_orders'][0]['start'] + " " + "00:00"
+        end_date = self.data['service_orders'][-1]['start'] + " " + "23:59"
+        dt = datetime.strptime(start_date, '%Y-%m-%d %H:%M')
+        dt_end = datetime.strptime(end_date, '%Y-%m-%d %H:%M')
+        self.dayone = dt
+
+        # calculate the total of days (period)
+        tot_days = (dt_end.date() - dt.date()).days
+
+        #-------------------------------------------------
+        # to calculate the number of time blocks in a day
+        tot_blocks = int( (60 / config.block_size) * 24 )
+        #-----------------------------------------
+
+        # update the limits for the genes
+        self.chromosome_limits = [tot_days,tot_blocks]
+        # update the number of genes in each chromosome
+        self.chromosome_length = len(self.data['service_orders']) * len(self.chromosome_limits)
+
+        #employees = []
+        #for so in data['service_orders']:
+        #    if search(employees, so['employee']) < 0:
+        #        employees.append(so['employee'])
+
+        #genes_employees = len("{0:b}".format( len(employees) ))
+        #genes_days = len("{0:b}".format( (dt_end - dt).days )) 
+        #genes_time = len("{0:b}".format(144)) #10min blocks (60/10 = 6 * 24 = 144)
+        #genes_length = genes_days + genes_time # + genes_employees 
+        
+        #self.length = genes_length * len(data['service_orders'])
+        #self.genes = [0 for i in range(self.length)]
+
 
     def gantt(self):
-        print('a')
-
-        with open(f'datasets/entry.json') as json_file:
-            data = json.load(json_file)
         
-        count = 0
-        for so in data['service_orders']:
-            obj = self.cromossomos[0].genes[ (count*10) : (count+1)*10 ]
-            so_day = obj[:2]
-            so_day = ''.join(map(str, so_day))
-            so_day = int(so_day,2)
-            so_time = obj[2:]
-            so_time = ''.join(map(str, so_time))
-            so_time = int(so_time,2)
+        for c in self.chromosomes:
 
-            # pegar leituras do cromossome e trazer pra dentro de population ou de ga mesmo 
-            # ja que as configuracoes sao mais pesadas, pode fazer uma vez só no inicio de tudo
-            # converter so_day pro dia efetivamente
-            # converter so_time pra hora desse dia
-            # jogar isso num novo array, jogar no gantt
+            count = 0
+            for so in self.data['service_orders']:
+                obj = c.genes[ (count*2) : (count*2)+2 ]
+
+                so_day = obj[0]
+                so_time = obj[1]
+
+                start = self.dayone + timedelta(days=so_day)
+                start += timedelta(minutes=(so_time * config.block_size))
+                end = start + timedelta(hours=so['duration'])
 
 
-            count += 1
+                so.update( [('schedule', {'start': start.strftime("%Y-%m-%d %H:%M"),
+                                        'end': end.strftime("%Y-%m-%d %H:%M") } )] )
+                #so_day = obj[:2]
+                #so_day = ''.join(map(str, so_day))
+                #so_day = int(so_day,2)
+                #so_time = obj[2:]
+                #so_time = ''.join(map(str, so_time))
+                #so_time = int(so_time,2)
 
+                count += 1
+
+            # aggregate the scheduled time to show gantt
+            data = {}
+            data['workload'] = []
+            for so in self.data['service_orders']:
+                data['workload'].append({
+                            'number': so['number'],
+                            'start': so['schedule']['start'],
+                            'end': so['schedule']['end'],
+                            'employee': so['employee']
+                        })
+
+            showGantt(data)
+        
     #def evaluate(self):
         #'''Avalia cada cromossomo individualmente e recalcula seus atributos. Também realiza 
         #cálculos relativos a própria população, como por exemplo a média de peso.'''
