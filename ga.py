@@ -18,8 +18,9 @@ def geneticAlgorithm():
     population = Population()
     population.initialize()
     
-    population.gantt()
-    #population.evaluate()
+    ### population.gantt()
+
+    population.evaluate()
 
     #print(f"Initial Population")
     #population.print()

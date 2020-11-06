@@ -30,8 +30,8 @@ class Population:
     def __init__(self):
 
         self.chromosomes = []  # keep each chromosome (individuals)
-        self.chromosome_length = 0 # composed by [days,time] * number of service orders
-        self.chromosome_limits = [0,0] # defined by number ofdays and number of time blocks
+        self.chromosome_length = 0 # composed by [days,time block] * number of service orders
+        self.chromosome_limits = [0,0] # defined by number of days and number of time blocks
         self.size = config.population_size  # define the number of chromosomes (individuals) for the population
         
         self.data = {}
@@ -121,12 +121,6 @@ class Population:
 
                 so.update( [('schedule', {'start': start.strftime("%Y-%m-%d %H:%M"),
                                         'end': end.strftime("%Y-%m-%d %H:%M") } )] )
-                #so_day = obj[:2]
-                #so_day = ''.join(map(str, so_day))
-                #so_day = int(so_day,2)
-                #so_time = obj[2:]
-                #so_time = ''.join(map(str, so_time))
-                #so_time = int(so_time,2)
 
                 count += 1
 
@@ -143,12 +137,17 @@ class Population:
 
             showGantt(data)
         
-    #def evaluate(self):
-        #'''Avalia cada cromossomo individualmente e recalcula seus atributos. Também realiza 
+    def evaluate(self):
+        '''Avalia cada cromossomo individualmente e recalcula seus atributos. Também realiza 
         #cálculos relativos a própria população, como por exemplo a média de peso.'''
         #self.weightAverage = 0
-        #for c in self.cromossomos:
-        #    c.evaluate_fitness()
+
+        for c in self.chromosomes:
+
+            c.checkHardConstraints(self)
+            a = 1
+
+            #c.evaluate_fitness()
         #    self.weightAverage += c.weight
         #self.weightAverage = round(self.weightAverage/self.size, 2)
 
@@ -160,6 +159,7 @@ class Population:
         #    print(
         #        f"composition {c.composition} weight {c.weight} | value {c.value} | %limit Weight {c.usedWeightPercent} | fitness {c.fitness}")
         #print(f" population weight average is {self.weightAverage} kg")
+
 
     def procreate(self, ancestral: object):
         '''Geração de uma nova população a partir de uma população ancestral. Permite três formas diferentes:

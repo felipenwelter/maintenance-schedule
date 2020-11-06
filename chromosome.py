@@ -1,13 +1,16 @@
 import random
 import config
 import json
-import datetime
+from datetime import datetime, timedelta
 
 def search(list,value):
     try:
         return list.index(value)
     except ValueError:
         return -1
+
+def sortingRule(e):
+  return e['start']
 
 class Chromosome:
     '''Classe que representa um indíviduo (cromossomo), sua composição de genes e suas características'''
@@ -19,7 +22,7 @@ class Chromosome:
         self.genes = [0 for i in range(self.length)] # initialize all genes as 0
         self.limits = pop.chromosome_limits  # defined by number ofdays and number of time blocks
         # atributo que define se cromosso atende critério de aceitação (fitness)
-        #self.fitness = False
+        self.fitness = 0
         # atributo informativo para saber o percentual de ocupação em relação ao limite de peso
         #self.usedWeightPercent = 0
         #self.mutateMethod = config.mutateMethod  # método de mutação de genes
@@ -44,6 +47,57 @@ class Chromosome:
                 self.genes[i] = random.randint(0, self.limits[1])
         #self.evaluate_fitness()  # atualiza características do cromossomo
 
+
+
+    def checkHardConstraints(self,pop):
+
+        # check if there is overlap of jobs for a single employee
+        employees = []
+        jobs = []
+        
+        # so, first convert the genes into readable day-time info
+        # and aggregate them by employee
+        count = 0
+        for so in pop.data['service_orders']:
+            obj = self.genes[ (count*2) : (count*2)+2 ]
+
+            so_day = obj[0]
+            so_time = obj[1]
+
+            start = pop.dayone + timedelta(days=so_day)
+            start += timedelta(minutes=(so_time * config.block_size))
+            end = start + timedelta(hours=so['duration'])
+
+            idx = search(employees, so['employee'])
+            if idx < 0:
+                employees.append( so['employee'] )
+                jobs.append( [ {'start': start.strftime("%Y-%m-%d %H:%M"),
+                                'end': end.strftime("%Y-%m-%d %H:%M") } ] )
+            else:
+                jobs[idx].append( {'start': start.strftime("%Y-%m-%d %H:%M"),
+                                   'end': end.strftime("%Y-%m-%d %H:%M") } )
+
+            count += 1
+
+        # then check the periods for each employee, searching for overlap
+        overlap = False
+        emp = 0
+        while emp < (len(jobs[emp])):
+            jobs[emp].sort(key=sortingRule)
+            count = 0
+            while count < (len(jobs[emp])-1):
+                if jobs[emp][count]['end'] > jobs[emp][count+1]['start']:
+                    overlap = True
+                    break
+                count += 1
+            if overlap:
+                break
+            emp += 1
+
+        if overlap:
+            self.fitness = -1
+
+        return
     #def evaluate_fitness(self):
     #    '''Calcula e atualiza  as características do cromossomo'''
     #    self.value = 0
