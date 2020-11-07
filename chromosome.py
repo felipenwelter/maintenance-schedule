@@ -2,6 +2,7 @@ import random
 import config
 import json
 from datetime import datetime, timedelta
+import schedule
 
 def search(list,value):
     try:
@@ -16,6 +17,8 @@ class Chromosome:
     '''Classe que representa um indíviduo (cromossomo), sua composição de genes e suas características'''
 
     def __init__(self,pop):
+
+        self.pop = pop
         #self.weight = 0  # peso do cromossomo (pela soma dos genes)
         #self.value = 0  # valor do cromossomo (pela soma dos genes)
         self.length = pop.chromosome_length # the chromosome lenght is calculated once in the population
@@ -45,11 +48,15 @@ class Chromosome:
                 self.genes[i] = random.randint(0, self.limits[0])
             else:
                 self.genes[i] = random.randint(0, self.limits[1])
-        #self.evaluate_fitness()  # atualiza características do cromossomo
+
+        self.calcFitness()
 
 
 
-    def checkHardConstraints(self,pop):
+
+
+    def calcFitness(self):
+        self.checkHardConstraints()
 
         # check if there is overlap of jobs for a single employee
         employees = []
@@ -58,13 +65,13 @@ class Chromosome:
         # so, first convert the genes into readable day-time info
         # and aggregate them by employee
         count = 0
-        for so in pop.data['service_orders']:
+        for so in self.pop.so_list:
             obj = self.genes[ (count*2) : (count*2)+2 ]
 
             so_day = obj[0]
             so_time = obj[1]
 
-            start = pop.dayone + timedelta(days=so_day)
+            start = self.pop.start_date + timedelta(days=so_day)
             start += timedelta(minutes=(so_time * config.block_size))
             end = start + timedelta(hours=so['duration'])
 
@@ -80,24 +87,20 @@ class Chromosome:
             count += 1
 
         # then check the periods for each employee, searching for overlap
-        overlap = False
         emp = 0
         while emp < (len(jobs[emp])):
-            jobs[emp].sort(key=sortingRule)
-            count = 0
-            while count < (len(jobs[emp])-1):
-                if jobs[emp][count]['end'] > jobs[emp][count+1]['start']:
-                    overlap = True
-                    break
-                count += 1
-            if overlap:
-                break
+            list_so = jobs[emp]
+            list_ws = schedule.getWorkShift(employees[emp])
+            start_date = self.pop.start_date.strftime("%Y-%m-%d %H:%M")
+            end_date = self.pop.end_date.strftime("%Y-%m-%d %H:%M")
+
+            emp_schedule = schedule.getSchedule( list_so, list_ws, start_date, end_date)
+
             emp += 1
 
-        if overlap:
-            self.fitness = -1
 
-        return
+        
+
     #def evaluate_fitness(self):
     #    '''Calcula e atualiza  as características do cromossomo'''
     #    self.value = 0
@@ -151,6 +154,62 @@ class Chromosome:
     #def locus_change(self, m):
     #    '''Faz a mutação de um gene em específico para um valor aleatório'''
     #    self.composition[m] = random.randint(0, 1)
+
+
+
+
+
+    def checkHardConstraints(self):
+
+        # check if there is overlap of jobs for a single employee
+        employees = []
+        jobs = []
+        
+        # so, first convert the genes into readable day-time info
+        # and aggregate them by employee
+        count = 0
+        for so in self.pop.so_list:
+            obj = self.genes[ (count*2) : (count*2)+2 ]
+
+            so_day = obj[0]
+            so_time = obj[1]
+
+            start = self.pop.start_date + timedelta(days=so_day)
+            start += timedelta(minutes=(so_time * config.block_size))
+            end = start + timedelta(hours=so['duration'])
+
+            idx = search(employees, so['employee'])
+            if idx < 0:
+                employees.append( so['employee'] )
+                jobs.append( [ {'start': start.strftime("%Y-%m-%d %H:%M"),
+                                'end': end.strftime("%Y-%m-%d %H:%M") } ] )
+            else:
+                jobs[idx].append( {'start': start.strftime("%Y-%m-%d %H:%M"),
+                                   'end': end.strftime("%Y-%m-%d %H:%M") } )
+
+            count += 1
+
+        # then check the periods for each employee, searching for overlap
+        overlap = False
+        emp = 0
+        while emp < (len(jobs[emp])):
+            jobs[emp].sort(key=sortingRule)
+            count = 0
+            while count < (len(jobs[emp])-1):
+                if jobs[emp][count]['end'] > jobs[emp][count+1]['start']:
+                    overlap = True
+                    break
+                count += 1
+            if overlap:
+                break
+            emp += 1
+
+        if overlap:
+            self.fitness = -1
+
+        return
+
+
 
     def readJson(self):
         with open(f'datasets/{self.file}.json') as json_file:

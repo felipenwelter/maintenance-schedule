@@ -9,42 +9,24 @@ import jsonManipulate as jm
 import pandas as pd
 import schedule
 
-work_shift = []
 start_date = ''
 end_date = ''
-
-#---------------------------------------------------------------
-# Função: getWorkShift
-# Parâmetros: employee - name of the employee
-# Retorno: using the imported work_shift json file, find the one
-# #        corresponding to the name of the employee
-#---------------------------------------------------------------
-def getWorkShift(employee):
-    global work_shift
-
-    ret = []
-    for ws in work_shift['workshift']:
-        if (ws['employee'] == employee):
-            ret = ws['shift']
-            break
-    
-    return ret
-
 
 #---------------------------------------------------------------
 # Function: showGantt
 # Description: Display the gantt chart for the scheduled
 #              service orders
 #---------------------------------------------------------------
-def showGantt(wl=[]):
+def showGantt(wl=[], ws=[]):
     
-    global work_shift, start_date, end_date
+    global start_date, end_date
 
     # if do not receive a list of service_orders, load from json
     if len(wl) == 0:
         wl = jm.loadJSON_SO() #load list of service orders from JSON
 
-    work_shift = jm.loadJSON_WS() #load list of work shifts from JSON
+    if len(ws) == 0:
+        work_shift = jm.loadJSON_WS() #load list of work shifts from JSON
 
     #initialize global variables
     start_date = ''
@@ -87,7 +69,7 @@ def showGantt(wl=[]):
     # get full schedule (with busy, idle and unavailable time)
     for i in list_so:
         full_schedule.append( { 'employee': i['employee'],
-                                'schedule': schedule.getSchedule(i['schedule'], getWorkShift(i['employee']),
+                                'schedule': schedule.getSchedule(i['schedule'], schedule.getWorkShift(i['employee']),
                                 start_date, end_date ) } ) 
 
     # add the whole schedule into the gantt chart

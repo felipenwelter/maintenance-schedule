@@ -1,4 +1,5 @@
 import datetime
+import jsonManipulate as jm
 
 #---------------------------------------------------------------
 # Função: sortingRule
@@ -30,6 +31,25 @@ def checkPeriods(ds):
             print("ERRO - PERIODO NAO COMECA NO TERMINO DO ANTERIOR")
         idx += 1
         
+
+#---------------------------------------------------------------
+# Função: getWorkShift
+# Parâmetros: employee - name of the employee
+# Retorno: using the imported work_shift json file, find the one
+# #        corresponding to the name of the employee
+#---------------------------------------------------------------
+def getWorkShift(employee):
+
+    work_shift = jm.loadJSON_WS() #load list of work shifts from JSON
+
+    ret = []
+    for ws in work_shift['workshift']:
+        if (ws['employee'] == employee):
+            ret = ws['shift']
+            break
+    
+    return ret
+
 
 #---------------------------------------------------------------
 # Função: getSchedule

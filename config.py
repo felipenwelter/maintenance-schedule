@@ -1,4 +1,4 @@
-dataset = "entry"
+service_order_dataset = "entry"
 
 #número de cromossomos (indivíduos) que deve existir em cada população gerada
 population_size = 10

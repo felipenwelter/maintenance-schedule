@@ -3,55 +3,64 @@ import config
 #from cromossomo import Cromossomo
 from population import Population
 #import plot
+import json
 
 
-def geneticAlgorithm():
 
-    print("Agenda de Manutenção usando Algoritmo Genético")
-    print("Felipe Nathan Welter")
-    print("UDESC 2020 - Computação Natural")
 
-    # armazena o histórico de gerações
-    #chronology = []
+class geneticAlgorithm:
 
-    # inicializa uma população aleatoriamente
-    population = Population()
-    population.initialize()
-    
-    ### population.gantt()
+    def __init__(self):
 
-    population.evaluate()
+        self.so_list_original = {}
+        self.file_so = config.service_order_dataset
 
-    #print(f"Initial Population")
-    #population.print()
+        # Read json file and set some attributes for the population
+        with open(f'datasets/{self.file_so}.json') as json_file:
+            self.so_list_original = json.load(json_file)
 
-    #chronology.append(population)
 
-    # executa as rodadas de sucessias gerações
-    #for i in range(config.generations-1):
+    def run(self):
+        # armazena o histórico de gerações
+        #chronology = []
 
-        # gera uma nova população baseada no antecessor
-        #newPop = Population()
-        #newPop.procreate(chronology[-1])
-        #newPop.evaluate()
+        # inicializa uma população aleatoriamente
+        population = Population(self)
+        population.initialize()
+        
+        #population.gantt()
+        ### population.evaluate()
 
-        #print(f"Population {i+1}")
-        #newPop.print()
+        #print(f"Initial Population")
+        #population.print()
 
-        #chronology.append(newPop)
+        #chronology.append(population)
 
-    # imprime o gráfico para até 50 populações
-    #if len(chronology) <= 50:
-        # plot.plot(chronology)
+        # executa as rodadas de sucessias gerações
+        #for i in range(config.generations-1):
 
-    #best = chronology[-1].cromossomos[0]
+            # gera uma nova população baseada no antecessor
+            #newPop = Population()
+            #newPop.procreate(chronology[-1])
+            #newPop.evaluate()
 
-    #print("Knapsack Problem - Genetic Algorithm")
-    #print("A melhor resposta encontrada foi:")
-    #print(f"composition: {best.composition}")
-    #print(f"value: {best.value}")
-    #print(f"weight: {best.weight}")
+            #print(f"Population {i+1}")
+            #newPop.print()
 
-    #return best
-    return True
-    
+            #chronology.append(newPop)
+
+        # imprime o gráfico para até 50 populações
+        #if len(chronology) <= 50:
+            # plot.plot(chronology)
+
+        #best = chronology[-1].cromossomos[0]
+
+        #print("Knapsack Problem - Genetic Algorithm")
+        #print("A melhor resposta encontrada foi:")
+        #print(f"composition: {best.composition}")
+        #print(f"value: {best.value}")
+        #print(f"weight: {best.weight}")
+
+        #return best
+        return True
+        

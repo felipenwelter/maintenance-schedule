@@ -6,6 +6,7 @@ import config
 from datetime import datetime, timedelta
 from chromosome import Chromosome
 from gantt import showGantt
+import jsonManipulate as jm
 import json
 
 def sortingRule(e):
@@ -27,18 +28,21 @@ def sortingRule(e):
 class Population:
     '''Classe que representa a população de uma geração com um determinado número de indivíduos (cromossomos)'''
 
-    def __init__(self):
+    def __init__(self,ga):
+
+        self.ga = ga
 
         self.chromosomes = []  # keep each chromosome (individuals)
         self.chromosome_length = 0 # composed by [days,time block] * number of service orders
         self.chromosome_limits = [0,0] # defined by number of days and number of time blocks
         self.size = config.population_size  # define the number of chromosomes (individuals) for the population
         
-        self.data = {}
-        self.dayone = ''
+        self.so_list = {}
+        self.start_date = ''
+        self.end_date = ''
+        self.total_days = 0
 
-        self.file = config.dataset # json file with the entry data
-        self.config() # read the json file and set some configurations for the population
+        self.config() # set some configurations for the population
         
         
 
@@ -57,9 +61,7 @@ class Population:
             self.chromosomes.append(cromossomo)
 
     def config(self):
-        '''Read json file and set some attributes for the population'''
-        with open(f'datasets/{self.file}.json') as json_file:
-            self.data = json.load(json_file)
+        self.so_list = self.ga.so_list_original['service_orders'].copy()
 
         #-----------------------------------------
         # to calculate the number of days
@@ -67,17 +69,19 @@ class Population:
         end_date = ''
 
         # order the list of service_orders by start date
-        self.data['service_orders'].sort(key=sortingRule)
+        self.so_list.sort(key=sortingRule)
 
         # identifies the first and last dates at all
-        start_date = self.data['service_orders'][0]['start'] + " " + "00:00"
-        end_date = self.data['service_orders'][-1]['start'] + " " + "23:59"
+        start_date = self.so_list[0]['start'] + " " + "00:00"
+        end_date = self.so_list[-1]['start'] + " " + "23:59"
         dt = datetime.strptime(start_date, '%Y-%m-%d %H:%M')
         dt_end = datetime.strptime(end_date, '%Y-%m-%d %H:%M')
-        self.dayone = dt
+        self.start_date = dt
+        self.end_date = dt_end
 
         # calculate the total of days (period)
         tot_days = (dt_end.date() - dt.date()).days
+        self.total_days = tot_days + 1
 
         #-------------------------------------------------
         # to calculate the number of time blocks in a day
@@ -87,7 +91,7 @@ class Population:
         # update the limits for the genes
         self.chromosome_limits = [tot_days,tot_blocks]
         # update the number of genes in each chromosome
-        self.chromosome_length = len(self.data['service_orders']) * len(self.chromosome_limits)
+        self.chromosome_length = len(self.so_list) * len(self.chromosome_limits)
 
         #employees = []
         #for so in data['service_orders']:
@@ -108,13 +112,13 @@ class Population:
         for c in self.chromosomes:
 
             count = 0
-            for so in self.data['service_orders']:
+            for so in self.so_list:
                 obj = c.genes[ (count*2) : (count*2)+2 ]
 
                 so_day = obj[0]
                 so_time = obj[1]
 
-                start = self.dayone + timedelta(days=so_day)
+                start = self.start_date + timedelta(days=so_day)
                 start += timedelta(minutes=(so_time * config.block_size))
                 end = start + timedelta(hours=so['duration'])
 
@@ -127,7 +131,7 @@ class Population:
             # aggregate the scheduled time to show gantt
             data = {}
             data['workload'] = []
-            for so in self.data['service_orders']:
+            for so in self.so_list:
                 data['workload'].append({
                             'number': so['number'],
                             'start': so['schedule']['start'],
@@ -135,7 +139,10 @@ class Population:
                             'employee': so['employee']
                         })
 
-            showGantt(data)
+
+            work_shift = jm.loadJSON_WS() #load list of work shifts from JSON
+
+            showGantt(data,work_shift)
         
     def evaluate(self):
         '''Avalia cada cromossomo individualmente e recalcula seus atributos. Também realiza 
@@ -144,8 +151,9 @@ class Population:
 
         for c in self.chromosomes:
 
-            c.checkHardConstraints(self)
-            a = 1
+            c.checkHardConstraints()
+            c.calcFitness()
+
 
             #c.evaluate_fitness()
         #    self.weightAverage += c.weight
