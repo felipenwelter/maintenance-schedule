@@ -1,9 +1,17 @@
 {
+   "_comment": { "number": "must be the primary key of the service order",
+                 "date": "date suggested to execution, format YYYY-MM-DD",
+                 "duration": "duration time, in hours",
+                 "employee": "name of the employee who execute the service",
+                 "equipment": "identification of the equipment",
+                 "equipment-criticality": "1 (more), 2 or 3 (less) indicates the criticality"
+               },
+
    "service_orders": [
 
       {
-         "number":"000881",
-         "start": "2020-10-01",
+         "number":"000881", 
+         "date": "2020-10-01",
          "duration": 2,
          "employee": "Antonio",
          "equipment": "A1",
@@ -12,7 +20,7 @@
 
       {
          "number":"000882",
-         "start": "2020-10-02",
+         "date": "2020-10-02",
          "duration": 3,
          "employee": "Antonio",
          "equipment": "A2",
@@ -21,17 +29,8 @@
 
       {
          "number":"000139",
-         "start": "2020-10-01",
+         "date": "2020-10-01",
          "duration": 4,
-         "employee": "Luiza",
-         "equipment": "A2",
-         "equipment-criticality": 2
-      },
-
-      {
-         "number":"000140",
-         "start": "2020-10-02",
-         "duration": 1,
          "employee": "Luiza",
          "equipment": "A2",
          "equipment-criticality": 2
@@ -39,7 +38,7 @@
 
       {
          "number":"038203",
-         "start": "2020-10-01",
+         "date": "2020-10-01",
          "duration": 4,
          "employee": "Nelson",
          "equipment": "A2",
@@ -47,17 +46,8 @@
       },
 
       {
-         "number":"038204",
-         "start": "2020-10-02",
-         "duration": 3,
-         "employee": "Nelson",
-         "equipment": "A2",
-         "equipment-criticality": 2
-      },
-
-      {
          "number":"001171",
-         "start": "2020-10-01",
+         "date": "2020-10-01",
          "duration": 4,
          "employee": "Max",
          "equipment": "A3",
@@ -66,7 +56,7 @@
 
       {
          "number":"001172",
-         "start": "2020-10-02",
+         "date": "2020-10-02",
          "duration": 3,
          "employee": "Max",
          "equipment": "A3",

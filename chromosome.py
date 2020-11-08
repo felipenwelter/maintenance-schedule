@@ -3,6 +3,7 @@ import config
 import json
 from datetime import datetime, timedelta
 import schedule
+import copy
 
 def search(list,value):
     try:
@@ -26,6 +27,13 @@ class Chromosome:
         self.limits = pop.chromosome_limits  # defined by number ofdays and number of time blocks
         # atributo que define se cromosso atende critério de aceitação (fitness)
         self.fitness = 0
+
+        # deep copy of the service order list
+        self.so_list = []
+        for li in self.pop.so_list:
+            d2 = copy.deepcopy(li)
+            self.so_list.append(d2)
+
         # atributo informativo para saber o percentual de ocupação em relação ao limite de peso
         #self.usedWeightPercent = 0
         #self.mutateMethod = config.mutateMethod  # método de mutação de genes
@@ -49,23 +57,18 @@ class Chromosome:
             else:
                 self.genes[i] = random.randint(0, self.limits[1])
 
+        self.updateSOList() #update service order list using the new genes
         self.calcFitness()
 
 
 
-
-
-    def calcFitness(self):
-        self.checkHardConstraints()
-
-        # check if there is overlap of jobs for a single employee
-        employees = []
-        jobs = []
-        
-        # so, first convert the genes into readable day-time info
-        # and aggregate them by employee
+    def updateSOList(self):
+        # convert the genes into readable day-time info
+        # and save it in arrays list_so and list_dates
         count = 0
-        for so in self.pop.so_list:
+        list_so = []
+        list_dates = []
+        for so in self.pop.ga.so_list_original['service_orders']:
             obj = self.genes[ (count*2) : (count*2)+2 ]
 
             so_day = obj[0]
@@ -75,20 +78,43 @@ class Chromosome:
             start += timedelta(minutes=(so_time * config.block_size))
             end = start + timedelta(hours=so['duration'])
 
+            list_so.append(so['number'])
+            list_dates.append([ start.strftime("%Y-%m-%d %H:%M"),
+                                end.strftime("%Y-%m-%d %H:%M") ])
+            count += 1
+
+        # then use the saved arrays to append the start/end infos
+        for so in self.so_list:
+            idx = search(list_so, so['number'])
+            so['start'] = list_dates[idx][0]
+            so['end'] = list_dates[idx][1]
+
+
+    def calcFitness(self):
+        self.checkHardConstraints()
+
+
+        employees = []
+        jobs = []
+        
+        # aggregate them by employee
+        count = 0
+        for so in self.so_list:
+
             idx = search(employees, so['employee'])
             if idx < 0:
                 employees.append( so['employee'] )
-                jobs.append( [ {'start': start.strftime("%Y-%m-%d %H:%M"),
-                                'end': end.strftime("%Y-%m-%d %H:%M") } ] )
+                jobs.append( [ {'start': so['start'],
+                                'end': so['end'] } ] )
             else:
-                jobs[idx].append( {'start': start.strftime("%Y-%m-%d %H:%M"),
-                                   'end': end.strftime("%Y-%m-%d %H:%M") } )
+                jobs[idx].append( {'start': so['start'],
+                                   'end': so['end'] } )
 
             count += 1
 
         # then check the periods for each employee, searching for overlap
         emp = 0
-        while emp < (len(jobs[emp])):
+        while emp < (len(employees)):
             list_so = jobs[emp]
             list_ws = schedule.getWorkShift(employees[emp])
             start_date = self.pop.start_date.strftime("%Y-%m-%d %H:%M")
@@ -96,6 +122,9 @@ class Chromosome:
 
             emp_schedule = schedule.getSchedule( list_so, list_ws, start_date, end_date)
 
+            # TODO - identify overtime cost
+            # TODO - identify stopped equipment cost
+            
             emp += 1
 
 
@@ -161,38 +190,29 @@ class Chromosome:
 
     def checkHardConstraints(self):
 
-        # check if there is overlap of jobs for a single employee
+        # 01 - check if there is overlap of jobs for a single employee
         employees = []
         jobs = []
         
-        # so, first convert the genes into readable day-time info
-        # and aggregate them by employee
+        # aggregate them by employee
         count = 0
-        for so in self.pop.so_list:
-            obj = self.genes[ (count*2) : (count*2)+2 ]
-
-            so_day = obj[0]
-            so_time = obj[1]
-
-            start = self.pop.start_date + timedelta(days=so_day)
-            start += timedelta(minutes=(so_time * config.block_size))
-            end = start + timedelta(hours=so['duration'])
+        for so in self.so_list:
 
             idx = search(employees, so['employee'])
             if idx < 0:
                 employees.append( so['employee'] )
-                jobs.append( [ {'start': start.strftime("%Y-%m-%d %H:%M"),
-                                'end': end.strftime("%Y-%m-%d %H:%M") } ] )
+                jobs.append( [ {'start': so['start'],
+                                'end': so['end'] } ] )
             else:
-                jobs[idx].append( {'start': start.strftime("%Y-%m-%d %H:%M"),
-                                   'end': end.strftime("%Y-%m-%d %H:%M") } )
+                jobs[idx].append( {'start': so['start'],
+                                   'end': so['end'] } )
 
             count += 1
 
         # then check the periods for each employee, searching for overlap
         overlap = False
         emp = 0
-        while emp < (len(jobs[emp])):
+        while emp < (len(employees)):
             jobs[emp].sort(key=sortingRule)
             count = 0
             while count < (len(jobs[emp])-1):
@@ -206,6 +226,19 @@ class Chromosome:
 
         if overlap:
             self.fitness = -1
+            return
+
+        # 02 - check if any period overflow the limit (end date)
+        emp = 0
+        while emp < (len(employees)):
+            jobs[emp].sort(key=sortingRule)
+
+            end_date = self.pop.end_date.strftime("%Y-%m-%d %H:%M")
+            if ( jobs[emp][-1]['end'] > end_date ):
+                self.fitness = -1
+                return
+            emp += 1
+
 
         return
 

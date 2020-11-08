@@ -63,11 +63,12 @@ def getWorkShift(employee):
 #---------------------------------------------------------------
 def getSchedule(list_so, list_ws, start_date, end_date):
     
+    #overflow = False
     full_periods = []
     dt = datetime.datetime.strptime(start_date, '%Y-%m-%d %H:%M').date()
     dt_end = datetime.datetime.strptime(end_date, '%Y-%m-%d %H:%M').date()
 
-    while (dt <= dt_end):
+    while (dt <= dt_end): # or overflow:
         
         ds = [] #day_schedule
         weekday = dt.weekday()
@@ -99,6 +100,9 @@ def getSchedule(list_so, list_ws, start_date, end_date):
                                 'end': so['end'][-5:],
                                 'type': 'so' })
 
+            # and if it is the last day, check if there is overflow
+            #if (dt == dt_end) and (datetime.datetime.strptime(so['end'], '%Y-%m-%d %H:%M').date() > dt_end):
+            #    overFlow = True
 
         # identify the overtime periods and split them from the s.o.
         for so in ds:

@@ -8,9 +8,10 @@ from chromosome import Chromosome
 from gantt import showGantt
 import jsonManipulate as jm
 import json
+import copy
 
 def sortingRule(e):
-  return e['start']
+  return e['date']
 
 
 #def sortPopulation(newList: list):
@@ -61,7 +62,13 @@ class Population:
             self.chromosomes.append(cromossomo)
 
     def config(self):
-        self.so_list = self.ga.so_list_original['service_orders'].copy()
+
+        # deep copy of the service order list
+        self.so_list = []
+        for li in self.ga.so_list_original['service_orders']:
+            d2 = copy.deepcopy(li)
+            self.so_list.append(d2)
+
 
         #-----------------------------------------
         # to calculate the number of days
@@ -72,8 +79,8 @@ class Population:
         self.so_list.sort(key=sortingRule)
 
         # identifies the first and last dates at all
-        start_date = self.so_list[0]['start'] + " " + "00:00"
-        end_date = self.so_list[-1]['start'] + " " + "23:59"
+        start_date = self.so_list[0]['date'] + " " + "00:00"
+        end_date = self.so_list[-1]['date'] + " " + "23:59"
         dt = datetime.strptime(start_date, '%Y-%m-%d %H:%M')
         dt_end = datetime.strptime(end_date, '%Y-%m-%d %H:%M')
         self.start_date = dt
