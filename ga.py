@@ -12,12 +12,12 @@ class geneticAlgorithm:
 
     def __init__(self):
 
-        self.so_list_original = {}
+        self.entry = {}
         self.file_so = config.service_order_dataset
 
         # Read json file and set some attributes for the population
         with open(f'datasets/{self.file_so}.json') as json_file:
-            self.so_list_original = json.load(json_file)
+            self.entry = json.load(json_file)
 
 
     def run(self):
@@ -28,7 +28,9 @@ class geneticAlgorithm:
         population = Population(self)
         population.initialize()
         
-        #population.gantt()
+
+        population.gantt()
+        #a = 0
         ### population.evaluate()
 
         #print(f"Initial Population")

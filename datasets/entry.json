@@ -7,6 +7,29 @@
                  "equipment-criticality": "1 (more), 2 or 3 (less) indicates the criticality"
                },
 
+   "employees": [
+
+      {
+         "name": "Antonio",
+         "hourly-wage": "7.16"
+      },
+      
+      {
+         "name": "Luiza",
+         "hourly-wage": "8.39"
+      },
+
+      {
+         "name": "Nelson",
+         "hourly-wage": "12.90"
+      },
+
+      {
+         "name": "Max",
+         "hourly-wage": "9.19"
+      }
+   ],
+
    "service_orders": [
 
       {

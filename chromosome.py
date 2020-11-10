@@ -14,6 +14,13 @@ def search(list,value):
 def sortingRule(e):
   return e['start']
 
+def getHourlyWage(cr,e):
+    hourly_wage = 999
+    for emp in cr.pop.ga.entry['employees']:
+        if (emp['name'] == e):
+            hourly_wage = float(emp['hourly-wage'])
+    return hourly_wage
+
 class Chromosome:
     '''Classe que representa um indíviduo (cromossomo), sua composição de genes e suas características'''
 
@@ -61,14 +68,13 @@ class Chromosome:
         self.calcFitness()
 
 
-
     def updateSOList(self):
         # convert the genes into readable day-time info
         # and save it in arrays list_so and list_dates
         count = 0
         list_so = []
         list_dates = []
-        for so in self.pop.ga.so_list_original['service_orders']:
+        for so in self.pop.ga.entry['service_orders']:
             obj = self.genes[ (count*2) : (count*2)+2 ]
 
             so_day = obj[0]
@@ -93,6 +99,10 @@ class Chromosome:
     def calcFitness(self):
         self.checkHardConstraints()
 
+        # continue checking the soft constraints only if
+        # passed through hard constraints
+        if (self.fitness < 0):
+            return
 
         employees = []
         jobs = []
@@ -112,9 +122,12 @@ class Chromosome:
 
             count += 1
 
-        # then check the periods for each employee, searching for overlap
+        # calculate the overtime cost
+        overtime_cost = 0
         emp = 0
         while emp < (len(employees)):
+            sum_overtime = 0
+
             list_so = jobs[emp]
             list_ws = schedule.getWorkShift(employees[emp])
             start_date = self.pop.start_date.strftime("%Y-%m-%d %H:%M")
@@ -122,13 +135,26 @@ class Chromosome:
 
             emp_schedule = schedule.getSchedule( list_so, list_ws, start_date, end_date)
 
-            # TODO - identify overtime cost
-            # TODO - identify stopped equipment cost
+            for day in emp_schedule:
+                for period in day['list']:
+                    if (period['type'] == 'overtime'):
+                        p1 = period['start']
+                        p2 = period['end']
+                        tdelta = datetime.strptime(p2, '%H:%M') - datetime.strptime(p1, '%H:%M')
+                        sum_overtime += tdelta.seconds / 60 # in minutes
+
             
+            hourly_wage = getHourlyWage( self, employees[emp] )
+            overtime_cost += hourly_wage * (sum_overtime / 60) # in hours
+
             emp += 1
 
+        self.fitness = overtime_cost
 
-        
+
+
+
+            # TODO - identify stopped equipment cost        
 
     #def evaluate_fitness(self):
     #    '''Calcula e atualiza  as características do cromossomo'''

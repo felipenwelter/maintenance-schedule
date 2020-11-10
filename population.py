@@ -13,6 +13,12 @@ import copy
 def sortingRule(e):
   return e['date']
 
+def search(list,value):
+    try:
+        return list.index(value)
+    except ValueError:
+        return -1
+
 
 #def sortPopulation(newList: list):
     #'''ordena primeiro os valores fitness = true, depois value, depois weight, por exemplo:
@@ -65,7 +71,7 @@ class Population:
 
         # deep copy of the service order list
         self.so_list = []
-        for li in self.ga.so_list_original['service_orders']:
+        for li in self.ga.entry['service_orders']:
             d2 = copy.deepcopy(li)
             self.so_list.append(d2)
 
@@ -118,31 +124,33 @@ class Population:
         
         for c in self.chromosomes:
 
-            count = 0
-            for so in self.so_list:
-                obj = c.genes[ (count*2) : (count*2)+2 ]
+            #count = 0
+            #list_so = []
+            #list_dates = []
+            #for so in self.ga.entry['service_orders']:
+                #obj = c.genes[ (count*2) : (count*2)+2 ]
 
-                so_day = obj[0]
-                so_time = obj[1]
+                #so_day = obj[0]
+                #so_time = obj[1]
 
-                start = self.start_date + timedelta(days=so_day)
-                start += timedelta(minutes=(so_time * config.block_size))
-                end = start + timedelta(hours=so['duration'])
+                #start = self.start_date + timedelta(days=so_day)
+                #start += timedelta(minutes=(so_time * config.block_size))
+                #end = start + timedelta(hours=so['duration'])
 
+                #list_so.append(so['number'])
+                #list_dates.append([ start.strftime("%Y-%m-%d %H:%M"),
+                #                    end.strftime("%Y-%m-%d %H:%M") ])
+                #count += 1
 
-                so.update( [('schedule', {'start': start.strftime("%Y-%m-%d %H:%M"),
-                                        'end': end.strftime("%Y-%m-%d %H:%M") } )] )
-
-                count += 1
 
             # aggregate the scheduled time to show gantt
             data = {}
             data['workload'] = []
-            for so in self.so_list:
+            for so in c.so_list:
                 data['workload'].append({
                             'number': so['number'],
-                            'start': so['schedule']['start'],
-                            'end': so['schedule']['end'],
+                            'start': so['start'],
+                            'end': so['end'],
                             'employee': so['employee']
                         })
 
