@@ -29,21 +29,23 @@ class geneticAlgorithm:
         population.initialize()
         
 
-        population.gantt()
+        #population.gantt()
         #a = 0
         ### population.evaluate()
 
         #print(f"Initial Population")
-        #population.print()
+        population.print()
 
         #chronology.append(population)
 
         # executa as rodadas de sucessias gerações
         #for i in range(config.generations-1):
 
-            # gera uma nova população baseada no antecessor
+            # generate a new population based on the ancestor
             #newPop = Population()
-            #newPop.procreate(chronology[-1])
+            #newPop.crossover( population )
+
+
             #newPop.evaluate()
 
             #print(f"Population {i+1}")

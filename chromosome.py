@@ -156,29 +156,6 @@ class Chromosome:
 
             # TODO - identify stopped equipment cost        
 
-    #def evaluate_fitness(self):
-    #    '''Calcula e atualiza  as características do cromossomo'''
-    #    self.value = 0
-    #    self.weight = 0
-    #    for i in range(self.compositionSize):
-    #        # cada gene ativo '1' indica que peso e valor desse gene são somados no cromossomo
-    #        if (self.composition[i] == 1):
-    #            self.value += self.available_itens_value[i]
-    #            self.weight += self.available_itens_weight[i]
-
-    #    # calcula o percentual do peso que o cromossomo está usando em relação ao limite (carater informativo)
-    #    # e se ultrapassar a capacidade da mochila, zera seu valor
-    #    self.usedWeightPercent = (self.weight * 100) / \
-    #        (self.knapsackCapacity)
-    #    if (self.usedWeightPercent > 100):
-    #        self.usedWeightPercent = 0
-    #    self.usedWeightPercent = int(self.usedWeightPercent)
-
-    #    # avalia se o cromossomo atende as expectativas de fitness (se não ultrapassa capacidade da mochila)
-    #    if (self.weight <= self.knapsackCapacity):
-    #        self.fitness = True
-    #    else:
-    #        self.fitness = False
 
     #def mutate(self):
     #    '''Método que realiza a mutação de um cromossomo, que pode ser feito de duas formas:

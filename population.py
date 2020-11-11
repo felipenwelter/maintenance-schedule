@@ -170,13 +170,29 @@ class Population:
             c.calcFitness()
 
 
-            #c.evaluate_fitness()
-        #    self.weightAverage += c.weight
-        #self.weightAverage = round(self.weightAverage/self.size, 2)
 
-    #def print(self):
+    def print(self):
         #'''Imprime em tela cada cromossomo da população e suas características principais '''
         # ordena pelo maior valor
+
+        ordered_list = []
+        idx = 0
+        # first identify which chromosomes gave best fitness
+        while idx < len(self.chromosomes):
+            c = self.chromosomes[idx]
+            if c.fitness > 0:
+                ordered_list.append( [ idx, c.fitness ] )
+            idx += 1
+
+        if ( len(ordered_list) > 0 ):
+            # order list by fitness (from better to worst)
+            ordered_list.sort(key=lambda x: x[1])
+            
+            pct = ( len(ordered_list) / config.population_size ) * 100
+            print("total of feasible solutions: ", len(ordered_list),"(", int(pct) ,"% ) ")
+            print("best fitness = ", ordered_list[0][1])
+        else:
+            print("no feasible solutions")
         #sortedList = sortPopulation(self.cromossomos)
         #for c in sortedList:
         #    print(
@@ -184,7 +200,7 @@ class Population:
         #print(f" population weight average is {self.weightAverage} kg")
 
 
-    def procreate(self, ancestral: object):
+    def crossover(self, ancestral: object):
         '''Geração de uma nova população a partir de uma população ancestral. Permite três formas diferentes:
         - random: a seleção dos progenitores é feita de forma aleatória
         - all_elite: todos os elementos que atendem ao critério fitness são copiados para a próxima geração
