@@ -1,7 +1,7 @@
-#import random
 #import time
 #import numpy as np
 #import operator
+import random
 import config
 from datetime import datetime, timedelta
 from chromosome import Chromosome
@@ -49,6 +49,8 @@ class Population:
         self.end_date = ''
         self.total_days = 0
 
+        self.list_fitness = [] # [chromosome position, fitness value]
+
         self.config() # set some configurations for the population
         
         
@@ -66,6 +68,24 @@ class Population:
             cromossomo = Chromosome(self)
             cromossomo.initialize()
             self.chromosomes.append(cromossomo)
+
+
+        # fill the list_fitness (must me removed from here)
+        # --------------------------------------------------
+        self.list_fitness = []
+        idx = 0
+        # first identify which chromosomes gave best fitness
+        while idx < len(self.chromosomes):
+            c = self.chromosomes[idx]
+            if c.fitness >= 0:
+                self.list_fitness.append( [ idx, c.fitness ] )
+            idx += 1
+        
+        if ( len(self.list_fitness) > 0 ):
+            # order list by fitness (from better to worst)
+            self.list_fitness.sort(key=lambda x: x[1])
+            
+
 
     def config(self):
 
@@ -159,15 +179,15 @@ class Population:
 
             showGantt(data,work_shift)
         
-    def evaluate(self):
-        '''Avalia cada cromossomo individualmente e recalcula seus atributos. Também realiza 
-        #cálculos relativos a própria população, como por exemplo a média de peso.'''
+    #def evaluate(self):
+        #'''Avalia cada cromossomo individualmente e recalcula seus atributos. Também realiza 
+        ##cálculos relativos a própria população, como por exemplo a média de peso.'''
         #self.weightAverage = 0
 
-        for c in self.chromosomes:
+        #for c in self.chromosomes:
 
-            c.checkHardConstraints()
-            c.calcFitness()
+        #    c.checkHardConstraints()
+        #    c.calcFitness()
 
 
 
@@ -175,24 +195,13 @@ class Population:
         #'''Imprime em tela cada cromossomo da população e suas características principais '''
         # ordena pelo maior valor
 
-        ordered_list = []
-        idx = 0
-        # first identify which chromosomes gave best fitness
-        while idx < len(self.chromosomes):
-            c = self.chromosomes[idx]
-            if c.fitness > 0:
-                ordered_list.append( [ idx, c.fitness ] )
-            idx += 1
-
-        if ( len(ordered_list) > 0 ):
-            # order list by fitness (from better to worst)
-            ordered_list.sort(key=lambda x: x[1])
-            
-            pct = ( len(ordered_list) / config.population_size ) * 100
-            print("total of feasible solutions: ", len(ordered_list),"(", int(pct) ,"% ) ")
-            print("best fitness = ", ordered_list[0][1])
+        if ( len(self.list_fitness) > 0 ):
+            pct = ( len(self.list_fitness) / config.population_size ) * 100
+            print("total of feasible solutions: ", len(self.list_fitness),"(", int(pct) ,"% ) ")
+            print("best fitness = ", self.list_fitness[0][1])
         else:
             print("no feasible solutions")
+            
         #sortedList = sortPopulation(self.cromossomos)
         #for c in sortedList:
         #    print(
@@ -201,11 +210,33 @@ class Population:
 
 
     def crossover(self, ancestral: object):
-        '''Geração de uma nova população a partir de uma população ancestral. Permite três formas diferentes:
-        - random: a seleção dos progenitores é feita de forma aleatória
-        - all_elite: todos os elementos que atendem ao critério fitness são copiados para a próxima geração
-        - first_elite: apenas o elemento mais próximo ao critério fitness é copiado para a próxima geração
-        em seguida é realizado o processo de crossover e mutação dos novos cromossomos, em casos específicos.'''
+        #'''Geração de uma nova população a partir de uma população ancestral. Permite três formas diferentes:
+        #- random: a seleção dos progenitores é feita de forma aleatória
+        #- all_elite: todos os elementos que atendem ao critério fitness são copiados para a próxima geração
+        #- first_elite: apenas o elemento mais próximo ao critério fitness é copiado para a próxima geração
+        #em seguida é realizado o processo de crossover e mutação dos novos cromossomos, em casos específicos.'''
+
+        #    # replica para a nova população todos os cromossomos que atendem criterio de fitness
+        #    selected = []
+        #    newList = sortPopulation(ancestral.cromossomos)
+        #    for i in range(self.size):
+        #        if (newList[i].fitness == True):
+        #            self.cromossomos.append(newList[i])
+        #        else:
+        #            break
+
+            # completa a população fazendo crossover dos cromossomos selecionados
+        #    missingCromossomos = len(ancestral.cromossomos) - len(self.cromossomos)
+        #    for i in range(missingCromossomos):
+        #        p1, p2 = self.selectParents(selected if len(
+        #            selected) > 0 else ancestral.cromossomos)
+        #        new_cromossomo = self.crossover(p1, p2)
+        #        new_cromossomo.mutate()  # mutação do novo cromossomo
+        #        self.cromossomos.append(new_cromossomo)
+
+        # select parents (chromosome position in self.chromosomes)
+        c1, c2 = self.selectParents(ancestral)
+        test = 0
 
         #if (self.procreateMethod == "random"):
         #    for i in range(self.size):
@@ -253,7 +284,7 @@ class Population:
         #        new_cromossomo.mutate()  # mutação do novo cromossomo
         #        self.cromossomos.append(new_cromossomo)
 
-    #def selectParents(self, cromossomoList: list) -> tuple: 
+    def selectParents(self, ancestor_pop: object) -> tuple: 
     #    '''Seleciona os pais para realizar o cruzamento. Busca os pais a partir de uma lista
     #    restrita de cromossomos de uma população anterior enviada como parâmetro.'''
     #    limit = len(cromossomoList)
@@ -261,7 +292,17 @@ class Population:
     #    p1 = cromossomoList[r]
     #    s = random.randint(0, limit-1)
     #    p2 = cromossomoList[s]
-    #    return p1, p2
+        
+        # what if there is no feasible parents or only one?
+        limit = len(ancestor_pop.list_fitness)-1
+
+        p1 = random.randint(0, limit)
+        c1 = ancestor_pop.list_fitness[p1][0] # get the position of the chromosome in self.chromosomes
+        
+        p2 = random.randint(0, limit)
+        c2 = ancestor_pop.list_fitness[p2][0] # get the position of the chromosome in self.chromosomes
+
+        return c1, c2
 
     #def crossover(self, p1: object, p2: object) -> object:
     #    '''Faz cruzamento (crossover) unindo a primeira metade de genes do primeiro progenitor

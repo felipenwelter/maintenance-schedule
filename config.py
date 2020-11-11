@@ -4,7 +4,7 @@ service_order_dataset = "entry"
 population_size = 10
 
 #número de gerações (rodadas)
-#generations = 24
+generations = 5
 
 #define o método para mutação de genes: "random", "fix" ou "none"
 #mutateMethod = "random" 

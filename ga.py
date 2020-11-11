@@ -39,11 +39,11 @@ class geneticAlgorithm:
         #chronology.append(population)
 
         # executa as rodadas de sucessias gerações
-        #for i in range(config.generations-1):
+        for i in range(config.generations-1):
 
             # generate a new population based on the ancestor
-            #newPop = Population()
-            #newPop.crossover( population )
+            newPop = Population(self)
+            newPop.crossover( population )
 
 
             #newPop.evaluate()
