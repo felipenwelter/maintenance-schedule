@@ -142,42 +142,42 @@ class Population:
 
     def gantt(self):
         
-        for c in self.chromosomes:
+        #for c in self.chromosomes:
+        c = self.chromosomes[self.list_fitness[0][0]] # pega o melhor individuo
+        #count = 0
+        #list_so = []
+        #list_dates = []
+        #for so in self.ga.entry['service_orders']:
+            #obj = c.genes[ (count*2) : (count*2)+2 ]
 
-            #count = 0
-            #list_so = []
-            #list_dates = []
-            #for so in self.ga.entry['service_orders']:
-                #obj = c.genes[ (count*2) : (count*2)+2 ]
+            #so_day = obj[0]
+            #so_time = obj[1]
 
-                #so_day = obj[0]
-                #so_time = obj[1]
+            #start = self.start_date + timedelta(days=so_day)
+            #start += timedelta(minutes=(so_time * config.block_size))
+            #end = start + timedelta(hours=so['duration'])
 
-                #start = self.start_date + timedelta(days=so_day)
-                #start += timedelta(minutes=(so_time * config.block_size))
-                #end = start + timedelta(hours=so['duration'])
-
-                #list_so.append(so['number'])
-                #list_dates.append([ start.strftime("%Y-%m-%d %H:%M"),
-                #                    end.strftime("%Y-%m-%d %H:%M") ])
-                #count += 1
-
-
-            # aggregate the scheduled time to show gantt
-            data = {}
-            data['workload'] = []
-            for so in c.so_list:
-                data['workload'].append({
-                            'number': so['number'],
-                            'start': so['start'],
-                            'end': so['end'],
-                            'employee': so['employee']
-                        })
+            #list_so.append(so['number'])
+            #list_dates.append([ start.strftime("%Y-%m-%d %H:%M"),
+            #                    end.strftime("%Y-%m-%d %H:%M") ])
+            #count += 1
 
 
-            work_shift = jm.loadJSON_WS() #load list of work shifts from JSON
+        # aggregate the scheduled time to show gantt
+        data = {}
+        data['workload'] = []
+        for so in c.so_list:
+            data['workload'].append({
+                        'number': so['number'],
+                        'start': so['start'],
+                        'end': so['end'],
+                        'employee': so['employee']
+                    })
 
-            showGantt(data,work_shift)
+
+        work_shift = jm.loadJSON_WS() #load list of work shifts from JSON
+
+        showGantt(data,work_shift)
         
     #def evaluate(self):
         #'''Avalia cada cromossomo individualmente e recalcula seus atributos. Também realiza 
@@ -216,73 +216,54 @@ class Population:
         #- first_elite: apenas o elemento mais próximo ao critério fitness é copiado para a próxima geração
         #em seguida é realizado o processo de crossover e mutação dos novos cromossomos, em casos específicos.'''
 
-        #    # replica para a nova população todos os cromossomos que atendem criterio de fitness
-        #    selected = []
-        #    newList = sortPopulation(ancestral.cromossomos)
-        #    for i in range(self.size):
-        #        if (newList[i].fitness == True):
-        #            self.cromossomos.append(newList[i])
-        #        else:
-        #            break
+        for i in range(self.size):
 
-            # completa a população fazendo crossover dos cromossomos selecionados
-        #    missingCromossomos = len(ancestral.cromossomos) - len(self.cromossomos)
-        #    for i in range(missingCromossomos):
-        #        p1, p2 = self.selectParents(selected if len(
-        #            selected) > 0 else ancestral.cromossomos)
-        #        new_cromossomo = self.crossover(p1, p2)
-        #        new_cromossomo.mutate()  # mutação do novo cromossomo
-        #        self.cromossomos.append(new_cromossomo)
+            # select parents (chromosome position in self.chromosomes)
+            c1, c2 = self.selectParents(ancestral)
 
-        # select parents (chromosome position in self.chromosomes)
-        c1, c2 = self.selectParents(ancestral)
-        test = 0
+            p1 = ancestral.chromosomes[c1]
+            p2 = ancestral.chromosomes[c2]
 
-        #if (self.procreateMethod == "random"):
-        #    for i in range(self.size):
-        #        # não replica nenhum item da população ancestral para a nova população
-        #        p1, p2 = self.selectParents(ancestral.cromossomos)
-        #        new_cromossomo = self.crossover(p1, p2)
-        #        new_cromossomo.mutate()
-        #        self.cromossomos.append(new_cromossomo)
+            limit = len(ancestral.so_list) #numero de OS
+            locus_by_SO = int(self.chromosome_length / limit)
+            cut = random.randint(0, limit-1)
 
-        #elif (self.procreateMethod == "all_elite"):
-        #    # replica para a nova população todos os cromossomos que atendem criterio de fitness
-        #    selected = []
-        #    newList = sortPopulation(ancestral.cromossomos)
-        #    for i in range(self.size):
-        #        if (newList[i].fitness == True):
-        #            self.cromossomos.append(newList[i])
-        #        else:
-        #            break
+            genes = p1.genes[:(cut*locus_by_SO)] + p2.genes[(cut*locus_by_SO):]
 
-        #    # completa a população fazendo crossover dos cromossomos selecionados
-        #    missingCromossomos = len(
-        #        ancestral.cromossomos) - len(self.cromossomos)
-        #    for i in range(missingCromossomos):
-        #        p1, p2 = self.selectParents(selected if len(
-        #            selected) > 0 else ancestral.cromossomos)
-        #        new_cromossomo = self.crossover(p1, p2)
-        #        new_cromossomo.mutate()  # mutação do novo cromossomo
-        #        self.cromossomos.append(new_cromossomo)
 
-        #elif (self.procreateMethod == "first_elite"):
-        #    # replica para a nova população somente o melhor cromossomo que atende ao criterio de fitness
-        #    selected = []
-        #    newList = sortPopulation(ancestral.cromossomos)
-        #    if (newList[0].fitness == True):
-        #        selected.append(newList[0])
-        #        self.cromossomos.append(newList[0])
+            cromossomo = Chromosome(self)
+            cromossomo.genes = genes.copy()
+            cromossomo.updateSOList() #update service order list using the new genes
+            cromossomo.calcFitness()
 
-        #    # completa a população fazendo crossover dos cromossomos selecionados
-        #    missingCromossomos = len(
-        #        ancestral.cromossomos) - len(self.cromossomos)
-        #    for i in range(missingCromossomos):
-        #        p1, p2 = self.selectParents(selected if len(
-        #            selected) > 0 else ancestral.cromossomos)
-        #        new_cromossomo = self.crossover(p1, p2)
-        #        new_cromossomo.mutate()  # mutação do novo cromossomo
-        #        self.cromossomos.append(new_cromossomo)
+            self.chromosomes.append(cromossomo)
+
+
+        # fill the list_fitness (must me removed from here)
+        # --------------------------------------------------
+        self.list_fitness = []
+        idx = 0
+        # first identify which chromosomes gave best fitness
+        while idx < len(self.chromosomes):
+            c = self.chromosomes[idx]
+            if c.fitness >= 0:
+                self.list_fitness.append( [ idx, c.fitness ] )
+            idx += 1
+        
+        if ( len(self.list_fitness) > 0 ):
+            # order list by fitness (from better to worst)
+            self.list_fitness.sort(key=lambda x: x[1])
+
+    #    half = int(p1.compositionSize/2)
+    #    new_composition = p1.composition[:half] + p2.composition[half:]
+    #    c = Cromossomo()
+    #    c.composition = new_composition
+    #    c.evaluate_fitness()  # atualiza características do cromossomo
+    #    return c
+
+
+
+
 
     def selectParents(self, ancestor_pop: object) -> tuple: 
     #    '''Seleciona os pais para realizar o cruzamento. Busca os pais a partir de uma lista
