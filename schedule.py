@@ -178,6 +178,7 @@ def getSchedule(list_so, list_ws, start_date, end_date):
         # and finally, detect the unavailable periods (off schedule)
         idx = 0
         limit = len(ds)
+        ds.sort(key=sortingRule)
 
         if limit == 0:
             ds.append({ 'start': "00:00",
