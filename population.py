@@ -55,25 +55,23 @@ class Population:
         
         
 
-        # a média de peso dos indivíduos da população (informativo)
-        #self.weightAverage = 0
-        # método de procriação (geração de nova população)
-        #self.procreateMethod = config.procreateMethod
-        
-        
-
     def initialize(self):
         '''inicializa a população de cromossomos com valores aleatórios'''
         for i in range(self.size):
             cromossomo = Chromosome(self)
             cromossomo.initialize()
             self.chromosomes.append(cromossomo)
+        
+        self.updateFitnessList()
 
 
-        # fill the list_fitness (must me removed from here)
-        # --------------------------------------------------
+
+    def updateFitnessList(self):
+        # fill the list_fitness
+
         self.list_fitness = []
         idx = 0
+
         # first identify which chromosomes gave best fitness
         while idx < len(self.chromosomes):
             c = self.chromosomes[idx]
@@ -94,7 +92,6 @@ class Population:
         for li in self.ga.entry['service_orders']:
             d2 = copy.deepcopy(li)
             self.so_list.append(d2)
-
 
         #-----------------------------------------
         # to calculate the number of days
@@ -126,42 +123,11 @@ class Population:
         # update the number of genes in each chromosome
         self.chromosome_length = len(self.so_list) * len(self.chromosome_limits)
 
-        #employees = []
-        #for so in data['service_orders']:
-        #    if search(employees, so['employee']) < 0:
-        #        employees.append(so['employee'])
-
-        #genes_employees = len("{0:b}".format( len(employees) ))
-        #genes_days = len("{0:b}".format( (dt_end - dt).days )) 
-        #genes_time = len("{0:b}".format(144)) #10min blocks (60/10 = 6 * 24 = 144)
-        #genes_length = genes_days + genes_time # + genes_employees 
-        
-        #self.length = genes_length * len(data['service_orders'])
-        #self.genes = [0 for i in range(self.length)]
 
 
     def gantt(self):
         
-        #for c in self.chromosomes:
         c = self.chromosomes[self.list_fitness[0][0]] # pega o melhor individuo
-        #count = 0
-        #list_so = []
-        #list_dates = []
-        #for so in self.ga.entry['service_orders']:
-            #obj = c.genes[ (count*2) : (count*2)+2 ]
-
-            #so_day = obj[0]
-            #so_time = obj[1]
-
-            #start = self.start_date + timedelta(days=so_day)
-            #start += timedelta(minutes=(so_time * config.block_size))
-            #end = start + timedelta(hours=so['duration'])
-
-            #list_so.append(so['number'])
-            #list_dates.append([ start.strftime("%Y-%m-%d %H:%M"),
-            #                    end.strftime("%Y-%m-%d %H:%M") ])
-            #count += 1
-
 
         # aggregate the scheduled time to show gantt
         data = {}
@@ -216,7 +182,14 @@ class Population:
         #- first_elite: apenas o elemento mais próximo ao critério fitness é copiado para a próxima geração
         #em seguida é realizado o processo de crossover e mutação dos novos cromossomos, em casos específicos.'''
 
-        for i in range(self.size):
+        # seleciona o melhor individuo para levar para a proxima populacao na íntegra
+        pos = ancestral.list_fitness[0][0]
+        cromossomo = copy.deepcopy( ancestral.chromosomes[pos] )
+        self.chromosomes.append(cromossomo)
+        #print(cromossomo.genes, cromossomo.fitness)
+
+        # completa com individuos gerado por crossover
+        for i in range(self.size-1):
 
             # select parents (chromosome position in self.chromosomes)
             c1, c2 = self.selectParents(ancestral)
@@ -230,50 +203,24 @@ class Population:
 
             genes = p1.genes[:(cut*locus_by_SO)] + p2.genes[(cut*locus_by_SO):]
 
-
             cromossomo = Chromosome(self)
             cromossomo.genes = genes.copy()
+            cromossomo.mutate()
+
             cromossomo.updateSOList() #update service order list using the new genes
             cromossomo.calcFitness()
 
             self.chromosomes.append(cromossomo)
 
-
-        # fill the list_fitness (must me removed from here)
-        # --------------------------------------------------
-        self.list_fitness = []
-        idx = 0
-        # first identify which chromosomes gave best fitness
-        while idx < len(self.chromosomes):
-            c = self.chromosomes[idx]
-            if c.fitness >= 0:
-                self.list_fitness.append( [ idx, c.fitness ] )
-            idx += 1
+            #print(cromossomo.genes, cromossomo.fitness, "of ", c1, c2)
         
-        if ( len(self.list_fitness) > 0 ):
-            # order list by fitness (from better to worst)
-            self.list_fitness.sort(key=lambda x: x[1])
-
-    #    half = int(p1.compositionSize/2)
-    #    new_composition = p1.composition[:half] + p2.composition[half:]
-    #    c = Cromossomo()
-    #    c.composition = new_composition
-    #    c.evaluate_fitness()  # atualiza características do cromossomo
-    #    return c
-
-
-
+        self.updateFitnessList()
 
 
     def selectParents(self, ancestor_pop: object) -> tuple: 
     #    '''Seleciona os pais para realizar o cruzamento. Busca os pais a partir de uma lista
     #    restrita de cromossomos de uma população anterior enviada como parâmetro.'''
-    #    limit = len(cromossomoList)
-    #    r = random.randint(0, limit-1)
-    #    p1 = cromossomoList[r]
-    #    s = random.randint(0, limit-1)
-    #    p2 = cromossomoList[s]
-        
+    
         # what if there is no feasible parents or only one?
         limit = len(ancestor_pop.list_fitness)-1
 
@@ -283,14 +230,7 @@ class Population:
         p2 = random.randint(0, limit)
         c2 = ancestor_pop.list_fitness[p2][0] # get the position of the chromosome in self.chromosomes
 
+        #print("number of good solutions = ", limit+1, "selected = ", p1, p2)
+
         return c1, c2
 
-    #def crossover(self, p1: object, p2: object) -> object:
-    #    '''Faz cruzamento (crossover) unindo a primeira metade de genes do primeiro progenitor
-    #    com a segunda meteade de genes do segundo progenitor'''
-    #    half = int(p1.compositionSize/2)
-    #    new_composition = p1.composition[:half] + p2.composition[half:]
-    #    c = Cromossomo()
-    #    c.composition = new_composition
-    #    c.evaluate_fitness()  # atualiza características do cromossomo
-    #    return c
