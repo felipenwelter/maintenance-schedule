@@ -2,9 +2,8 @@
 import config
 #from cromossomo import Cromossomo
 from population import Population
-#import plot
+import plot
 import json
-
 
 
 
@@ -22,12 +21,13 @@ class geneticAlgorithm:
 
     def run(self):
         # armazena o histórico de gerações
-        #chronology = []
+        chronology = []
 
         # inicializa uma população aleatoriamente
         population = Population(self)
         population.initialize()
-        
+        chronology.append( population.list_fitness[0][1] )
+
         best_pop = population
         #population.gantt()
         #a = 0
@@ -50,8 +50,15 @@ class geneticAlgorithm:
 
             if population.list_fitness[0] < best_pop.list_fitness[0]:
                 best_pop = population
+            
+            chronology.append( best_pop.list_fitness[0][1] )
 
         best_pop.gantt()
+
+        plot.plot(chronology)
+
+
+
             #newPop.evaluate()
 
             #print(f"Population {i+1}")
