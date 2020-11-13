@@ -1,10 +1,10 @@
 service_order_dataset = "entry"
 
 #número de cromossomos (indivíduos) que deve existir em cada população gerada
-population_size = 10
+population_size = 20
 
 #número de gerações (rodadas)
-generations = 20
+generations = 500
 
 #define o método para mutação de genes: "random", "fix" ou "none"
 #mutateMethod = "random" 

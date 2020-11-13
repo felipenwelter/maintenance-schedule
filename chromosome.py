@@ -157,11 +157,47 @@ class Chromosome:
             # TODO - identify stopped equipment cost        
 
 
-    #def mutate(self):
+    def mutate(self):
     #    '''Método que realiza a mutação de um cromossomo, que pode ser feito de duas formas:
     #    - fix: define um grupo fixo de genes que sofrem mutação
     #    - random: define aleatoriamente quais genes sofrem mutação
     #    - none: não realiza nenhuma mutação'''
+
+        for i in range(self.length):
+            
+            
+            if divmod(i,2)[1] == 1: # altera a hora
+                #if (random.randint(0,1) == 1): # aleatoriamente
+                direction = random.randint(-1,1) #-1 backward, 0 no change, 1 forward
+                plus = int(random.randint(1, self.limits[1])*0.1) * direction
+                
+                if (plus != 0):
+                    if (direction > 0): #forward
+
+                        if (self.genes[i] + plus) > self.limits[1]: #se passar do limite do dia
+                            self.genes[i] += plus - self.limits[1] # recomeca de 0h
+
+                            if (self.genes[i-1] + 1) > self.limits[0]: # e soma 1 dia
+                                self.genes[i-1] += 1 - self.limits[0]
+                            else:
+                                self.genes[i-1] += 1
+
+                        else: #senao, só soma o tempo
+                            self.genes[i] += plus
+
+                    elif (direction < 0): #backward
+                        
+                        if (self.genes[i] + plus) < 0: #se passar do limite do dia
+                            self.genes[i] += plus + self.limits[1] # recomeca de 0h
+
+                            if (self.genes[i-1] - 1) < 0: # e soma 1 dia
+                                self.genes[i-1] += self.limits[0]
+                            else:
+                                self.genes[i-1] -= 1
+
+                        else: #senao, só soma o tempo
+                            self.genes[i] += plus
+    
     #    if (self.mutateMethod == "fix"):
     #        self.fix_mutate()
     #    elif (self.mutateMethod == "random"):
