@@ -216,21 +216,66 @@ class Population:
         
         self.updateFitnessList()
 
+        # TODO - depois criar uma rotina que força um auto-ajuste, quer dizer,
+        # tenta ver as OS`s que estao pior e andar um pouquinho com elas pra ver se melhora
+
+
 
     def selectParents(self, ancestor_pop: object) -> tuple: 
     #    '''Seleciona os pais para realizar o cruzamento. Busca os pais a partir de uma lista
     #    restrita de cromossomos de uma população anterior enviada como parâmetro.'''
-    
-        # what if there is no feasible parents or only one?
-        limit = len(ancestor_pop.list_fitness)-1
 
-        p1 = random.randint(0, limit)
-        c1 = ancestor_pop.list_fitness[p1][0] # get the position of the chromosome in self.chromosomes
+
+        if False:  # realiza uma selecao de pais aleatoria, dentre todos os individuos feasible
+
+            # what if there is no feasible parents or only one?
+            limit = len(ancestor_pop.list_fitness)-1
+
+            p1 = random.randint(0, limit)
+            c1 = ancestor_pop.list_fitness[p1][0] # get the position of the chromosome in self.chromosomes
+            
+            p2 = random.randint(0, limit)
+            c2 = ancestor_pop.list_fitness[p2][0] # get the position of the chromosome in self.chromosomes
+
+            #print("number of good solutions = ", limit+1, "selected = ", p1, p2)
         
-        p2 = random.randint(0, limit)
-        c2 = ancestor_pop.list_fitness[p2][0] # get the position of the chromosome in self.chromosomes
+        elif True: # metodo da roleta, entre os individuos feasible
 
-        #print("number of good solutions = ", limit+1, "selected = ", p1, p2)
+            sum_fitness = sum(i[1] for i in ancestor_pop.list_fitness)
+            sum1 = random.randint(0, int(sum_fitness) )
+            sum2 = random.randint(0, int(sum_fitness) )
+            p1, p2 = -1, -1, 
+            soma, idx = 0, 0
+            while (idx <= len( ancestor_pop.list_fitness) ):
+                soma += ancestor_pop.list_fitness[idx][1]
+                if (p1 == -1) and (soma >= sum1):
+                    p1 = idx
+                if (p2 == -1) and (soma >= sum2):
+                    p2 = idx
+                if (p1 >= 0 and p2 >= 0):
+                    break
+                idx += 1
+                
+            c1 = ancestor_pop.list_fitness[p1][0] # get the position of the chromosome in self.chromosomes
+            c2 = ancestor_pop.list_fitness[p2][0] # get the position of the chromosome in self.chromosomes
+
+            # what if there is no feasible parents or only one?
+
+
+            # crossover randomico
+
+            #if (len(ancestor_pop.list_fitness)-1 < 10):
+            #    limit = len(ancestor_pop.list_fitness)-1
+            #else:
+            #    limit = 10
+
+            #p1 = random.randint(0, limit)
+            #c1 = ancestor_pop.list_fitness[p1][0] # get the position of the chromosome in self.chromosomes
+            
+            #p2 = random.randint(0, limit)
+            #c2 = ancestor_pop.list_fitness[p2][0] # get the position of the chromosome in self.chromosomes
+
+            #print("number of good solutions = ", limit+1, "selected = ", p1, p2)
 
         return c1, c2
 

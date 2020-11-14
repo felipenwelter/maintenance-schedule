@@ -51,10 +51,37 @@
       },
 
       {
-         "number":"000139",
+         "number":"000883",
+         "date": "2020-11-17",
+         "duration": 3,
+         "employee": "Antonio",
+         "equipment": "A2",
+         "equipment-criticality": 2
+      },
+
+      {
+         "number":"000138",
          "date": "2020-11-16",
          "duration": 4,
          "employee": "Luiza",
+         "equipment": "A2",
+         "equipment-criticality": 2
+      },
+
+      {
+         "number":"000139",
+         "date": "2020-11-16",
+         "duration": 2,
+         "employee": "Luiza",
+         "equipment": "A2",
+         "equipment-criticality": 2
+      },
+
+      {
+         "number":"038202",
+         "date": "2020-11-17",
+         "duration": 1,
+         "employee": "Nelson",
          "equipment": "A2",
          "equipment-criticality": 2
       },
