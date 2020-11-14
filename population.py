@@ -189,6 +189,7 @@ class Population:
         #print(cromossomo.genes, cromossomo.fitness)
 
         # completa com individuos gerado por crossover
+        rate = 0
         for i in range(self.size-1):
 
             # select parents (chromosome position in self.chromosomes)
@@ -205,7 +206,7 @@ class Population:
 
             cromossomo = Chromosome(self)
             cromossomo.genes = genes.copy()
-            cromossomo.mutate()
+            rate += cromossomo.mutate()
 
             cromossomo.updateSOList() #update service order list using the new genes
             cromossomo.calcFitness()
@@ -215,6 +216,8 @@ class Population:
             #print(cromossomo.genes, cromossomo.fitness, "of ", c1, c2)
         
         self.updateFitnessList()
+        rate = int( (rate / ((self.size-1) * (self.chromosome_length/2)) ) * 100)
+        print("mutation rate = ", rate, "%")
 
         # TODO - depois criar uma rotina que força um auto-ajuste, quer dizer,
         # tenta ver as OS`s que estao pior e andar um pouquinho com elas pra ver se melhora

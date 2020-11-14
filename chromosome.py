@@ -167,16 +167,20 @@ class Chromosome:
 # TODO - quando identificar que ficou preso num otimo local, aumenta o multiplicador 0,1 ali
 # TODO - meu crossover ta ruim, porque pega qualquer um e nao só os bons!
   # provei isso quando usei populacoes de 100 elementos e fiquei preso em otimos globais, com 20 individuos zerei o custo (500 generations)
-
+        mutated = 0
         for i in range(self.length):
             
             
             if divmod(i,2)[1] == 1: # altera a hora
                 #if (random.randint(0,1) == 1): # aleatoriamente
                 direction = random.randint(-1,1) #-1 backward, 0 no change, 1 forward
-                plus = int(random.randint(1, self.limits[1])*0.1) * direction
-                
+                #direction = (-1 if direction == 0 else 1)
+                #passs = random.randint(0,10) /10
+                passs = 0.1
+                plus = int(random.randint(1, self.limits[1]) * passs) * direction
+
                 if (plus != 0):
+                    mutated += 1
                     if (direction > 0): #forward
 
                         if (self.genes[i] + plus) > self.limits[1]: #se passar do limite do dia
@@ -202,6 +206,7 @@ class Chromosome:
 
                         else: #senao, só soma o tempo
                             self.genes[i] += plus
+        return mutated
     
     #    if (self.mutateMethod == "fix"):
     #        self.fix_mutate()
