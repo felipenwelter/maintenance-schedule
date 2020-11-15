@@ -182,6 +182,10 @@ class Population:
         #- first_elite: apenas o elemento mais próximo ao critério fitness é copiado para a próxima geração
         #em seguida é realizado o processo de crossover e mutação dos novos cromossomos, em casos específicos.'''
 
+        mutation_rate = 25 #(5%)  ## TODO eh muito sera?
+        rate = int(self.size * (mutation_rate/100))
+        mutate_count = 0
+
         # seleciona o melhor individuo para levar para a proxima populacao na íntegra
         pos = ancestral.list_fitness[0][0]
         cromossomo = copy.deepcopy( ancestral.chromosomes[pos] )
@@ -189,7 +193,6 @@ class Population:
         #print(cromossomo.genes, cromossomo.fitness)
 
         # completa com individuos gerado por crossover
-        rate = 0
         for i in range(self.size-1):
 
             # select parents (chromosome position in self.chromosomes)
@@ -206,7 +209,12 @@ class Population:
 
             cromossomo = Chromosome(self)
             cromossomo.genes = genes.copy()
-            rate += cromossomo.mutate()
+
+            # altera os (mutation_rate %) individuos gerados
+            if mutate_count < rate:
+                #A taxa de mutação se refere à quantidade de indivíduos da população que sofrerão mutação.
+                cromossomo.mutate()
+                mutate_count += 1
 
             cromossomo.updateSOList() #update service order list using the new genes
             cromossomo.calcFitness()
@@ -215,9 +223,8 @@ class Population:
 
             #print(cromossomo.genes, cromossomo.fitness, "of ", c1, c2)
         
+
         self.updateFitnessList()
-        rate = int( (rate / ((self.size-1) * (self.chromosome_length/2)) ) * 100)
-        print("mutation rate = ", rate, "%")
 
         # TODO - depois criar uma rotina que força um auto-ajuste, quer dizer,
         # tenta ver as OS`s que estao pior e andar um pouquinho com elas pra ver se melhora
