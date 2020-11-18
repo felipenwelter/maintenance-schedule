@@ -157,7 +157,7 @@ class Chromosome:
             # TODO - identify stopped equipment cost        
 
 
-    def mutate(self):
+    def mutate(self, noChange):
     #    '''Método que realiza a mutação de um cromossomo, que pode ser feito de duas formas:
     #    - fix: define um grupo fixo de genes que sofrem mutação
     #    - random: define aleatoriamente quais genes sofrem mutação
@@ -176,17 +176,43 @@ class Chromosome:
                 #passs = random.randint(0,10) /10
                 
                 ### PASSO INTEIRO
-                passs = 10 # 1% de self.limits[1]
-                plus = int( (passs / 100) * self.limits[1] )
+                #passs = 10 # 1% de self.limits[1]
+                #plus = int( (passs / 100) * self.limits[1] )
 
     # TODO - o mutation rate deveria ser em relacao a todo o periodo válido,
     # e nao somente ao periodo limite de 1 dia
     # ex: limits[0]+1 = 2  X limits[1] = 144  == 288, ai nao precisaria somar dias
     # so fazer o controle a cada 144
 
+
+    # outra forma seria, ao inves de usar timeblock aleatorio, direcionar para um
+    # dos intervalos validos (idle) do calendario da pessoa, o que certamente seria bem mais complicado
+    # e talvez seja até ruim quando tiver mais OS`s do que tempo # ou ainda alterar so as OS`s que estao ruins
+
                 ### PASSO RANDOMICO, LIMITE % DE 144 (um dia)
-                #passs = 0.1 # 1% de self.limits[1]
-                #plus = int(random.randint(1, self.limits[1]) * passs) * direction
+                #passs = 0.5 # 1% de self.limits[1]
+                #interval = int( self.limits[1] * (self.limits[0]+1) / 2 )
+                #plus = int(random.randint(1, interval) * passs) * direction
+
+                ### PASSO ajustado conforme noChange (preso em ótimos locais)
+                # exploration 0.1 --- 1.0 exploitation
+                
+                if noChange > 35:
+                    noChange = 0 # se ficou muito tempo preso, busca fora
+
+#### TODO - trabalhar com a primeira solucao, ja forcar algo que tenha um custo bom
+
+                noChangeLimit = 35 ## 35 geracoes sem mudanca, foca no exploitation (busca fora)
+                noChange = noChangeLimit if noChange > noChangeLimit else noChange
+                passs = 1 - (noChange / noChangeLimit) # pass%(x100) de self.limits[1]
+                passs = 0.05 if passs == 0 else passs
+                interval = int( ( self.limits[1] * (self.limits[0]+1) / 2 ) * passs)
+
+                if passs >= 0.5: #busca fora
+                    plus = int(random.randint( int(interval/2), interval) ) * direction
+                else: #refinamento
+                    plus = int(random.randint( 1, interval) ) * direction
+
 
                 if (plus != 0):
                     if (direction > 0): #forward

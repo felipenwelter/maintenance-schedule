@@ -160,6 +160,7 @@ class Population:
     def print(self):
         #'''Imprime em tela cada cromossomo da população e suas características principais '''
         # ordena pelo maior valor
+        pct = 0
 
         if ( len(self.list_fitness) > 0 ):
             pct = ( len(self.list_fitness) / config.population_size ) * 100
@@ -173,16 +174,21 @@ class Population:
         #    print(
         #        f"composition {c.composition} weight {c.weight} | value {c.value} | %limit Weight {c.usedWeightPercent} | fitness {c.fitness}")
         #print(f" population weight average is {self.weightAverage} kg")
+        return pct
 
-
-    def crossover(self, ancestral: object):
+    def crossover(self, ancestral: object, noChange):
         #'''Geração de uma nova população a partir de uma população ancestral. Permite três formas diferentes:
         #- random: a seleção dos progenitores é feita de forma aleatória
         #- all_elite: todos os elementos que atendem ao critério fitness são copiados para a próxima geração
         #- first_elite: apenas o elemento mais próximo ao critério fitness é copiado para a próxima geração
         #em seguida é realizado o processo de crossover e mutação dos novos cromossomos, em casos específicos.'''
 
-        mutation_rate = 25 #(5%)  ## TODO eh muito sera?
+        #if noChange > 35:
+        #    mutation_rate = 75
+        #else:
+        #    mutation_rate = 25
+
+        mutation_rate = 25 ### TODO eh muito sera?
         rate = int(self.size * (mutation_rate/100))
         mutate_count = 0
 
@@ -194,6 +200,10 @@ class Population:
 
         # completa com individuos gerado por crossover
         for i in range(self.size-1):
+
+## TODO - crossover de mais pontos, pra aumentar a diversidade da populacao
+## sem precisar aumentar o mutation rate
+
 
             # select parents (chromosome position in self.chromosomes)
             c1, c2 = self.selectParents(ancestral)
@@ -213,16 +223,15 @@ class Population:
             # altera os (mutation_rate %) individuos gerados
             if mutate_count < rate:
                 #A taxa de mutação se refere à quantidade de indivíduos da população que sofrerão mutação.
-                cromossomo.mutate()
+                cromossomo.mutate(noChange)
                 mutate_count += 1
 
             cromossomo.updateSOList() #update service order list using the new genes
             cromossomo.calcFitness()
 
             self.chromosomes.append(cromossomo)
-
-            #print(cromossomo.genes, cromossomo.fitness, "of ", c1, c2)
-        
+            
+            # print(cromossomo.genes, cromossomo.fitness, "of ", c1, c2)
 
         self.updateFitnessList()
 
@@ -270,22 +279,6 @@ class Population:
             c2 = ancestor_pop.list_fitness[p2][0] # get the position of the chromosome in self.chromosomes
 
             # what if there is no feasible parents or only one?
-
-
-            # crossover randomico
-
-            #if (len(ancestor_pop.list_fitness)-1 < 10):
-            #    limit = len(ancestor_pop.list_fitness)-1
-            #else:
-            #    limit = 10
-
-            #p1 = random.randint(0, limit)
-            #c1 = ancestor_pop.list_fitness[p1][0] # get the position of the chromosome in self.chromosomes
-            
-            #p2 = random.randint(0, limit)
-            #c2 = ancestor_pop.list_fitness[p2][0] # get the position of the chromosome in self.chromosomes
-
-            #print("number of good solutions = ", limit+1, "selected = ", p1, p2)
 
         return c1, c2
 

@@ -22,6 +22,8 @@ class geneticAlgorithm:
     def run(self):
         # armazena o histórico de gerações
         chronology = []
+        feasible = []
+        noChange = 0 # controla quantas geracoes o fitness nao melhora
 
         # inicializa uma população aleatoriamente
         population = Population(self)
@@ -29,12 +31,13 @@ class geneticAlgorithm:
         chronology.append( population.list_fitness[0][1] )
 
         best_pop = population
+        fitness = population.list_fitness[0][1]
         #population.gantt()
-        #a = 0
         ### population.evaluate()
 
         #print(f"Initial Population")
-        population.print()
+        pct = population.print()
+        feasible.append(pct)
 
         #chronology.append(population)
 
@@ -43,19 +46,25 @@ class geneticAlgorithm:
 
             # generate a new population based on the ancestor
             newPop = Population(self)
-            newPop.crossover( population )
-            newPop.print()
+            newPop.crossover( population, noChange )
+            pct = newPop.print()
 
             population = newPop
 
-            if population.list_fitness[0] < best_pop.list_fitness[0]:
+            if population.list_fitness[0][1] < best_pop.list_fitness[0][1]:
                 best_pop = population
+                fitness = best_pop.list_fitness[0][1]
+                noChange = 0
+                #best_pop.gantt() pra ver o que muda cada vez que melhora o fitness
+            else:
+                noChange += 1
             
             chronology.append( best_pop.list_fitness[0][1] )
+            feasible.append( pct )
 
         best_pop.gantt()
 
-        plot.plot(chronology)
+        plot.plot(chronology, feasible)
 
 
 
