@@ -47,6 +47,7 @@ class geneticAlgorithm:
             # generate a new population based on the ancestor
             newPop = Population(self)
             newPop.crossover( population, noChange )
+            newPop.autoAdjust()
             pct = newPop.print()
 
             population = newPop
@@ -55,7 +56,7 @@ class geneticAlgorithm:
                 best_pop = population
                 fitness = best_pop.list_fitness[0][1]
                 noChange = 0
-                #best_pop.gantt() pra ver o que muda cada vez que melhora o fitness
+                #best_pop.gantt() #pra ver o que muda cada vez que melhora o fitness
             else:
                 noChange += 1
             

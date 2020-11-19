@@ -302,3 +302,12 @@ class Population:
 
         return c1, c2, c3
 
+
+    def autoAdjust():
+        ''' Função para realizar o refinamento do melhor indivíduo
+        incialmente forcando uma mutation com passo baixo pra cada OS (double locus) individualmente
+        testando hardconstraints (feasible) a cada OS alterada
+        a tendencia é convergir mais rapido, pois o refinamento passa a ser direcionado
+        e nao depender do crossover e mutation'''
+        return 0
+
