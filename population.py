@@ -166,6 +166,8 @@ class Population:
             pct = ( len(self.list_fitness) / config.population_size ) * 100
             print("total of feasible solutions: ", len(self.list_fitness),"(", int(pct) ,"% ) ")
             print("best fitness = ", self.list_fitness[0][1])
+            #for i in self.list_fitness:
+            #    print(i[1], " ", self.chromosomes[i[0]].genes)
         else:
             print("no feasible solutions")
             
@@ -188,7 +190,7 @@ class Population:
         #else:
         #    mutation_rate = 25
 
-        mutation_rate = 25 ### TODO eh muito sera?
+        mutation_rate = 20 ### TODO eh muito sera?
         rate = int(self.size * (mutation_rate/100))
         mutate_count = 0
 
@@ -201,21 +203,22 @@ class Population:
         # completa com individuos gerado por crossover
         for i in range(self.size-1):
 
-## TODO - crossover de mais pontos, pra aumentar a diversidade da populacao
-## sem precisar aumentar o mutation rate
-
-
             # select parents (chromosome position in self.chromosomes)
-            c1, c2 = self.selectParents(ancestral)
+            c1, c2, c3 = self.selectParents(ancestral)
 
             p1 = ancestral.chromosomes[c1]
             p2 = ancestral.chromosomes[c2]
+            p3 = ancestral.chromosomes[c3]
 
             limit = len(ancestral.so_list) #numero de OS
             locus_by_SO = int(self.chromosome_length / limit)
-            cut = random.randint(0, limit-1)
+            cuts = random.sample(range(1,limit-1),k=2)
+            cuts.sort()
 
-            genes = p1.genes[:(cut*locus_by_SO)] + p2.genes[(cut*locus_by_SO):]
+            elements = random.sample([p1,p2,p3], k=3)
+            genes = elements[0].genes[:( cuts[0] *locus_by_SO)]
+            genes += elements[1].genes[( cuts[0] *locus_by_SO):( cuts[1] *locus_by_SO)]
+            genes += elements[2].genes[( cuts[1] *locus_by_SO):]
 
             cromossomo = Chromosome(self)
             cromossomo.genes = genes.copy()
@@ -245,7 +248,17 @@ class Population:
     #    restrita de cromossomos de uma população anterior enviada como parâmetro.'''
 
 
-        if False:  # realiza uma selecao de pais aleatoria, dentre todos os individuos feasible
+        if True:  # realiza uma selecao de pais aleatoria, dentre todos os individuos feasible
+
+            ## O METODO ALEATORIO AJUDA A AUMENTAR A DIVERSIDADE DA POPULACAO
+            ## ENTAO FORMA MAIS COMBINACOES POSSIVEIS (INDIVIDUOS)
+            ## QUE SAO REFINADOS NA MUTACAO DIRECIONADA (PASSO)
+            ## E TENDEM A GERAR MELHORES RESPOSTAS
+            ##   JA PELO METODO DA ROLETA, ACABAVA GERANDO SOLUCOES COM POUCA
+            ##   DIVERSIDADE, O QUE PRENDIA O ALGORITMO EM OTIMOS LOCAIS
+            ##   APENAS A MUTACAO EXPLORATION (OUT) NAO ERA SUFICIENTE PARA COMPOR
+            ##   INDIVIDUOS MELHORES, MESMO QUANDO ERA 100%, O QUE NA VERDADE
+            ##   AUMENTAVA O NUMERO DE SOLUCOES INVALIDAS (FEASIBLE)
 
             # what if there is no feasible parents or only one?
             limit = len(ancestor_pop.list_fitness)-1
@@ -256,29 +269,36 @@ class Population:
             p2 = random.randint(0, limit)
             c2 = ancestor_pop.list_fitness[p2][0] # get the position of the chromosome in self.chromosomes
 
+            p3 = random.randint(0, limit)
+            c3 = ancestor_pop.list_fitness[p3][0] # get the position of the chromosome in self.chromosomes
+
             #print("number of good solutions = ", limit+1, "selected = ", p1, p2)
         
-        elif True: # metodo da roleta, entre os individuos feasible
+        elif False: # metodo da roleta, entre os individuos feasible
 
             sum_fitness = sum(i[1] for i in ancestor_pop.list_fitness)
             sum1 = random.randint(0, int(sum_fitness) )
             sum2 = random.randint(0, int(sum_fitness) )
-            p1, p2 = -1, -1, 
+            sum3 = random.randint(0, int(sum_fitness) )
+            p1, p2, p3 = -1, -1, -1
             soma, idx = 0, 0
-            while (idx <= len( ancestor_pop.list_fitness) ):
+            while (idx < len( ancestor_pop.list_fitness) ):
                 soma += ancestor_pop.list_fitness[idx][1]
                 if (p1 == -1) and (soma >= sum1):
                     p1 = idx
                 if (p2 == -1) and (soma >= sum2):
                     p2 = idx
-                if (p1 >= 0 and p2 >= 0):
+                if (p3 == -1) and (soma >= sum3):
+                    p3 = idx
+                if (p1 >= 0 and p2 >= 0 and p3 >= 0):
                     break
                 idx += 1
                 
             c1 = ancestor_pop.list_fitness[p1][0] # get the position of the chromosome in self.chromosomes
             c2 = ancestor_pop.list_fitness[p2][0] # get the position of the chromosome in self.chromosomes
+            c3 = ancestor_pop.list_fitness[p3][0] # get the position of the chromosome in self.chromosomes
 
             # what if there is no feasible parents or only one?
 
-        return c1, c2
+        return c1, c2, c3
 

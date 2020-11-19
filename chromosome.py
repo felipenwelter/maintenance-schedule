@@ -163,7 +163,6 @@ class Chromosome:
     #    - random: define aleatoriamente quais genes sofrem mutação
     #    - none: não realiza nenhuma mutação'''
 
-
 # TODO - quando identificar que ficou preso num otimo local, aumenta o multiplicador 0,1 ali
 # TODO - meu crossover ta ruim, porque pega qualquer um e nao só os bons!
   # provei isso quando usei populacoes de 100 elementos e fiquei preso em otimos globais, com 20 individuos zerei o custo (500 generations)
@@ -197,19 +196,21 @@ class Chromosome:
                 ### PASSO ajustado conforme noChange (preso em ótimos locais)
                 # exploration 0.1 --- 1.0 exploitation
                 
-                if noChange > 35:
-                    noChange = 0 # se ficou muito tempo preso, busca fora
+                #if noChange > 50:
+                #    a = 0
+                #    noChange = 0 # se ficou muito tempo preso, busca fora
 
 #### TODO - trabalhar com a primeira solucao, ja forcar algo que tenha um custo bom
 
-                noChangeLimit = 35 ## 35 geracoes sem mudanca, foca no exploitation (busca fora)
+                noChangeLimit = 50 ## 35 geracoes sem mudanca, foca no exploitation (busca fora)
                 noChange = noChangeLimit if noChange > noChangeLimit else noChange
                 passs = 1 - (noChange / noChangeLimit) # pass%(x100) de self.limits[1]
-                passs = 0.05 if passs == 0 else passs
+                passs = 0.1 if passs == 0 else passs
                 interval = int( ( self.limits[1] * (self.limits[0]+1) / 2 ) * passs)
 
                 if passs >= 0.5: #busca fora
-                    plus = int(random.randint( int(interval/2), interval) ) * direction
+                    #plus = int(random.randint( int(interval/2), interval) ) * direction
+                    plus = int(random.randint( 1, interval) ) * direction
                 else: #refinamento
                     plus = int(random.randint( 1, interval) ) * direction
 
