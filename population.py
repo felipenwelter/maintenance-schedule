@@ -119,7 +119,7 @@ class Population:
         #-----------------------------------------
 
         # update the limits for the genes
-        self.chromosome_limits = [tot_days,tot_blocks]
+        self.chromosome_limits = [tot_days,tot_blocks-1]
         # update the number of genes in each chromosome
         self.chromosome_length = len(self.so_list) * len(self.chromosome_limits)
 
@@ -303,11 +303,17 @@ class Population:
         return c1, c2, c3
 
 
-    def autoAdjust():
+    def autoAdjust(self):
         ''' Função para realizar o refinamento do melhor indivíduo
         incialmente forcando uma mutation com passo baixo pra cada OS (double locus) individualmente
         testando hardconstraints (feasible) a cada OS alterada
         a tendencia é convergir mais rapido, pois o refinamento passa a ser direcionado
         e nao depender do crossover e mutation'''
-        return 0
 
+        
+
+        #if len(self.list_fitness) > 0:
+        #    c = self.chromosomes[ self.list_fitness[0][0] ]
+        #    g = addTimeBlocks(c, 1, 2)
+        #    a = 0
+        return 0

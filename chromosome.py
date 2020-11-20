@@ -214,33 +214,8 @@ class Chromosome:
                 else: #refinamento
                     plus = int(random.randint( 1, interval) ) * direction
 
+                self.addTimeBlocks(i,plus)
 
-                if (plus != 0):
-                    if (direction > 0): #forward
-
-                        if (self.genes[i] + plus) > self.limits[1]: #se passar do limite do dia
-                            self.genes[i] += plus - self.limits[1] # recomeca de 0h
-
-                            if (self.genes[i-1] + 1) > self.limits[0]: # e soma 1 dia
-                                self.genes[i-1] += 1 - self.limits[0]
-                            else:
-                                self.genes[i-1] += 1
-
-                        else: #senao, só soma o tempo
-                            self.genes[i] += plus
-
-                    elif (direction < 0): #backward
-                        
-                        if (self.genes[i] + plus) < 0: #se passar do limite do dia
-                            self.genes[i] += plus + self.limits[1] # recomeca de 0h
-
-                            if (self.genes[i-1] - 1) < 0: # e soma 1 dia
-                                self.genes[i-1] += self.limits[0]
-                            else:
-                                self.genes[i-1] -= 1
-
-                        else: #senao, só soma o tempo
-                            self.genes[i] += plus
         return
     
     #    if (self.mutateMethod == "fix"):
@@ -362,3 +337,33 @@ class Chromosome:
         
         self.length = genes_length * len(data['service_orders'])
         self.genes = [0 for i in range(self.length)]
+
+
+
+    # amount never can be greater than the amount of time blocs
+    # multiplied by the amount of days (self.limits[0] * self.limits[1])
+    # self - the chromosome object
+    # position - the locus (only the one that controls time)
+    # amount - the value to add or decrease
+    def addTimeBlocks(self, position, amount):
+
+        # define constants (positions of array 'genes')
+        pos_day = position-1
+        pos_time = position
+
+        if (amount != 0): # if sums zero, does nothing
+            
+            # get new day and time considering the limit of time blocks
+            new_time = (self.genes[pos_time]+amount) % (self.limits[1]+1)
+            sum_day = (self.genes[pos_time]+amount) // (self.limits[1]+1)
+            
+            self.genes[pos_time] = new_time
+            self.genes[pos_day] += sum_day
+            
+            if self.genes[pos_day] > self.limits[0]: # if greather than limit
+                self.genes[pos_day] -= (self.limits[0] + 1)
+
+            elif self.genes[pos_day] < 0: # if lower than start
+                self.genes[pos_day] = self.limits[0]
+
+        return
