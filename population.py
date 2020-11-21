@@ -250,16 +250,6 @@ class Population:
 
         if True:  # realiza uma selecao de pais aleatoria, dentre todos os individuos feasible
 
-            ## O METODO ALEATORIO AJUDA A AUMENTAR A DIVERSIDADE DA POPULACAO
-            ## ENTAO FORMA MAIS COMBINACOES POSSIVEIS (INDIVIDUOS)
-            ## QUE SAO REFINADOS NA MUTACAO DIRECIONADA (PASSO)
-            ## E TENDEM A GERAR MELHORES RESPOSTAS
-            ##   JA PELO METODO DA ROLETA, ACABAVA GERANDO SOLUCOES COM POUCA
-            ##   DIVERSIDADE, O QUE PRENDIA O ALGORITMO EM OTIMOS LOCAIS
-            ##   APENAS A MUTACAO EXPLORATION (OUT) NAO ERA SUFICIENTE PARA COMPOR
-            ##   INDIVIDUOS MELHORES, MESMO QUANDO ERA 100%, O QUE NA VERDADE
-            ##   AUMENTAVA O NUMERO DE SOLUCOES INVALIDAS (FEASIBLE)
-
             # what if there is no feasible parents or only one?
             limit = len(ancestor_pop.list_fitness)-1
 
@@ -306,14 +296,56 @@ class Population:
     def autoAdjust(self):
         ''' Função para realizar o refinamento do melhor indivíduo
         incialmente forcando uma mutation com passo baixo pra cada OS (double locus) individualmente
-        testando hardconstraints (feasible) a cada OS alterada
+        testando hard constraints (feasible) a cada OS alterada
         a tendencia é convergir mais rapido, pois o refinamento passa a ser direcionado
         e nao depender do crossover e mutation'''
+        passs = 1
 
-        
+        if len(self.list_fitness) > 0:
+            
+            c = self.chromosomes[ self.list_fitness[0][0] ]
+            fitness = c.fitness
+            
+            for i in range(1,c.length,2): # apenas campos hora
 
-        #if len(self.list_fitness) > 0:
-        #    c = self.chromosomes[ self.list_fitness[0][0] ]
-        #    g = addTimeBlocks(c, 1, 2)
-        #    a = 0
-        return 0
+                c.addTimeBlocks(i,passs)
+                c.updateSOList()
+                c.calcFitness()
+                
+                if c.fitness >= fitness: # piorou ou nao mudou
+                    c.addTimeBlocks(i,-passs) # restaura
+                    c.addTimeBlocks(i,-passs) # anda no sentido contrário
+                    c.updateSOList()
+                    c.calcFitness()
+
+                    while c.fitness < fitness:
+                        print( "ajusting - ")
+                        fitness = c.fitness
+                        c.addTimeBlocks(i,-passs)
+                        c.updateSOList()
+                        c.calcFitness()                    
+
+                    c.addTimeBlocks(i,passs)
+                    c.updateSOList()
+                    c.calcFitness()
+                    fitness = c.fitness
+
+                elif c.fitness < fitness: # melhorou
+
+                    while c.fitness < fitness:
+                        print( "ajusting + ")
+                        fitness = c.fitness
+                        c.addTimeBlocks(i,passs)
+                        c.updateSOList()
+                        c.calcFitness()
+                    
+                    c.addTimeBlocks(i,-passs)
+                    c.updateSOList()
+                    c.calcFitness()
+                    fitness = c.fitness
+            
+            c.updateSOList()
+            c.calcFitness()
+            self.updateFitnessList()
+            
+        return

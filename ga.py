@@ -40,9 +40,10 @@ class geneticAlgorithm:
         feasible.append(pct)
 
         #chronology.append(population)
-
+        nRound = 0
         # executa as rodadas de sucessias gerações
         for i in range(config.generations-1):
+            nRound += 1
 
             # generate a new population based on the ancestor
             newPop = Population(self)
@@ -60,6 +61,10 @@ class geneticAlgorithm:
             else:
                 noChange += 1
             
+            if fitness == 0:
+                print("converged - round", nRound)
+                break
+
             chronology.append( best_pop.list_fitness[0][1] )
             feasible.append( pct )
 
