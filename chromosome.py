@@ -64,8 +64,12 @@ class Chromosome:
             else:
                 self.genes[i] = random.randint(0, self.limits[1])
 
-        self.updateSOList() #update service order list using the new genes
-        self.calcFitness()
+        self.update() # update service order list and calc fitness
+
+
+    def update(self):
+        self.updateSOList() # update the service order list using genes information
+        self.calcFitness() # calculate fitness of each individual
 
 
     def updateSOList(self):
@@ -149,7 +153,7 @@ class Chromosome:
 
             emp += 1
 
-        self.fitness = overtime_cost
+        self.fitness = round(overtime_cost,2)
 
 
 
@@ -157,7 +161,7 @@ class Chromosome:
             # TODO - identify stopped equipment cost        
 
 
-    def mutate(self, noChange):
+    def mutate(self):
     #    '''Método que realiza a mutação de um cromossomo, que pode ser feito de duas formas:
     #    - fix: define um grupo fixo de genes que sofrem mutação
     #    - random: define aleatoriamente quais genes sofrem mutação
@@ -195,7 +199,9 @@ class Chromosome:
 
                 ### PASSO ajustado conforme noChange (preso em ótimos locais)
                 # exploration 0.1 --- 1.0 exploitation
-                
+
+                noChange = self.pop.no_change_generations
+
                 if noChange > 50:
                 #    a = 0
                     noChange = 0 # se ficou muito tempo preso, busca fora

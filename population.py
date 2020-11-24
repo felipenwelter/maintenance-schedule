@@ -35,6 +35,7 @@ class Population:
         self.total_days = 0
 
         self.list_fitness = [] # [chromosome position, fitness value]
+        self.no_change_generations = 0
 
         self.config() # set some configurations for the population
         
@@ -80,15 +81,15 @@ class Population:
 
         #-----------------------------------------
         # to calculate the number of days
-        start_date = ''
-        end_date = ''
+        start_date = self.ga.entry['period']['start'] + " " + "00:00" # ''
+        end_date = self.ga.entry['period']['end'] + " " + "23:59" # ''
 
         # order the list of service_orders by start date
         self.so_list.sort(key=sortingRule)
 
         # identifies the first and last dates at all
-        start_date = self.so_list[0]['date'] + " " + "00:00"
-        end_date = self.so_list[-1]['date'] + " " + "23:59"
+         #start_date = self.so_list[0]['date'] + " " + "00:00"
+         #end_date = self.so_list[-1]['date'] + " " + "23:59"
         dt = datetime.strptime(start_date, '%Y-%m-%d %H:%M')
         dt_end = datetime.strptime(end_date, '%Y-%m-%d %H:%M')
         self.start_date = dt
@@ -163,14 +164,14 @@ class Population:
         #print(f" population weight average is {self.weightAverage} kg")
         return pct
 
-    def crossover(self, ancestral: object, noChange):
+    def crossover(self, ancestral: object):
         #'''Geração de uma nova população a partir de uma população ancestral. Permite três formas diferentes:
         #- random: a seleção dos progenitores é feita de forma aleatória
         #- all_elite: todos os elementos que atendem ao critério fitness são copiados para a próxima geração
         #- first_elite: apenas o elemento mais próximo ao critério fitness é copiado para a próxima geração
         #em seguida é realizado o processo de crossover e mutação dos novos cromossomos, em casos específicos.'''
 
-        #if noChange > 35:
+        #if self.no_change_generations > 35:
         #    mutation_rate = 75
         #else:
         #    mutation_rate = 25
@@ -211,11 +212,10 @@ class Population:
             # altera os (mutation_rate %) individuos gerados
             if mutate_count < rate:
                 #A taxa de mutação se refere à quantidade de indivíduos da população que sofrerão mutação.
-                cromossomo.mutate(noChange)
+                cromossomo.mutate()
                 mutate_count += 1
 
-            cromossomo.updateSOList() #update service order list using the new genes
-            cromossomo.calcFitness()
+            cromossomo.update() 
 
             self.chromosomes.append(cromossomo)
             
@@ -292,29 +292,24 @@ class Population:
             fitness = c.fitness
             
             for i in range(1,c.length,2): # apenas campos hora
-## TODO - tem alguma situacao que ta aceitando um fitness pior
 ## TODO - autoadjustment so deveria rodar se a nova populacao tem fitness melhor
 ## TODO - ter o custo na OS, ai eu ajusto so as que tiverem algum custo mesmo
                 c.addTimeBlocks(i,passs)
-                c.updateSOList()
-                c.calcFitness()
+                c.update() # update service order list and calc fitness
                 
                 if c.fitness >= fitness: # piorou ou nao mudou
                     c.addTimeBlocks(i,-passs) # restaura
                     c.addTimeBlocks(i,-passs) # anda no sentido contrário
-                    c.updateSOList()
-                    c.calcFitness()
+                    c.update() # update service order list and calc fitness
 
                     while c.fitness < fitness:
                         print( "ajusting - ")
                         fitness = c.fitness
                         c.addTimeBlocks(i,-passs)
-                        c.updateSOList()
-                        c.calcFitness()                    
+                        c.update() # update service order list and calc fitness                  
 
                     c.addTimeBlocks(i,passs)
-                    c.updateSOList()
-                    c.calcFitness()
+                    c.update() # update service order list and calc fitness
                     fitness = c.fitness
 
                 elif c.fitness < fitness: # melhorou
@@ -323,16 +318,13 @@ class Population:
                         print( "ajusting + ")
                         fitness = c.fitness
                         c.addTimeBlocks(i,passs)
-                        c.updateSOList()
-                        c.calcFitness()
+                        c.update() # update service order list and calc fitness
                     
                     c.addTimeBlocks(i,-passs)
-                    c.updateSOList()
-                    c.calcFitness()
+                    c.update() # update service order list and calc fitness
                     fitness = c.fitness
             
-            c.updateSOList()
-            c.calcFitness()
+            c.update() # update service order list and calc fitness
             self.updateFitnessList()
             
         return

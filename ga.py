@@ -25,14 +25,14 @@ class geneticAlgorithm:
         '''Run G.A.'''
 
         # armazena o histórico de gerações
-        chronology = []
-        feasible = []
-        noChange = 0 # controla quantas geracoes o fitness nao melhora
+        chronology_fitness = [] # store the best fitness of each generation
+        chronology_feasible = [] # store the number of feasible individuals of each generation
+        noChange = 0 # control the number of rounds with no improvements
 
-        # inicializa uma população aleatoriamente
+        # initialize a random population
         population = Population(self)
         population.initialize()
-        chronology.append( population.list_fitness[0][1] )
+        chronology_fitness.append( population.list_fitness[0][1] )
 
         best_pop = population
         fitness = population.list_fitness[0][1]
@@ -40,9 +40,8 @@ class geneticAlgorithm:
 
         #print(f"Initial Population")
         pct = population.print()
-        feasible.append(pct)
+        chronology_feasible.append(pct)
 
-        #chronology.append(population)
         nRound = 0
         # executa as rodadas de sucessias gerações
         for i in range(config.generations-1):
@@ -50,9 +49,9 @@ class geneticAlgorithm:
 
             # generate a new population based on the ancestor
             newPop = Population(self)
-            newPop.crossover( population, noChange )
+            newPop.no_change_generations = noChange
+            newPop.crossover( population )
             #newPop.autoAdjust()
-            pct = newPop.print()
 
             population = newPop
 
@@ -69,10 +68,12 @@ class geneticAlgorithm:
                 print("converged - round", nRound)
                 break
 
-            chronology.append( best_pop.list_fitness[0][1] )
-            feasible.append( pct )
+            pct = population.print()
+
+            chronology_fitness.append( best_pop.list_fitness[0][1] )
+            chronology_feasible.append( pct )
 
         best_pop.gantt()
 
-        plot.plot(chronology, feasible)
+        plot.plot(chronology_fitness, chronology_feasible)
         

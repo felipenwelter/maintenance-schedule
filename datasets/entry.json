@@ -29,13 +29,67 @@
          "hourly-wage": "9.19"
       }
    ],
+   
+   "period": 
+      {
+         "start":"2020-11-16",
+         "end":"2020-11-20"
+      },
 
    "service_orders": [
 
       {
          "number":"000881", 
          "date": "2020-11-16",
-         "duration": 2,
+         "duration": 0.1,
+         "employee": "Antonio",
+         "equipment": "A1",
+         "equipment-criticality": 1
+      },
+      {
+         "number":"100881", 
+         "date": "2020-11-16",
+         "duration": 0.5,
+         "employee": "Antonio",
+         "equipment": "A1",
+         "equipment-criticality": 1
+      },
+      {
+         "number":"200881", 
+         "date": "2020-11-16",
+         "duration": 0.2,
+         "employee": "Antonio",
+         "equipment": "A1",
+         "equipment-criticality": 1
+      },
+      {
+         "number":"300881", 
+         "date": "2020-11-16",
+         "duration": 0.2,
+         "employee": "Antonio",
+         "equipment": "A1",
+         "equipment-criticality": 1
+      },
+      {
+         "number":"400881", 
+         "date": "2020-11-16",
+         "duration": 0.4,
+         "employee": "Antonio",
+         "equipment": "A1",
+         "equipment-criticality": 1
+      },
+      {
+         "number":"500881", 
+         "date": "2020-11-16",
+         "duration": 0.3,
+         "employee": "Antonio",
+         "equipment": "A1",
+         "equipment-criticality": 1
+      },
+      {
+         "number":"600881", 
+         "date": "2020-11-17",
+         "duration": 0.2,
          "employee": "Antonio",
          "equipment": "A1",
          "equipment-criticality": 1
