@@ -307,7 +307,9 @@ class Population:
             fitness = c.fitness
             
             for i in range(1,c.length,2): # apenas campos hora
-
+## TODO - tem alguma situacao que ta aceitando um fitness pior
+## TODO - autoadjustment so deveria rodar se a nova populacao tem fitness melhor
+## TODO - ter o custo na OS, ai eu ajusto so as que tiverem algum custo mesmo
                 c.addTimeBlocks(i,passs)
                 c.updateSOList()
                 c.calcFitness()
