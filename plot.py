@@ -1,5 +1,11 @@
 import matplotlib.pyplot as plt
 
+#---------------------------------------------------------------
+# Function plot:
+#  Plot cost x generation graphic
+# itens - cost of each generation
+# itens2 - number of feasible solutions at each generation
+#---------------------------------------------------------------
 def plot(itens, itens2):
 
     plt.plot(itens)

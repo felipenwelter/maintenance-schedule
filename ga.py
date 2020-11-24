@@ -1,15 +1,17 @@
-#import random
+#---------------------------------------------------------------
+# Class geneticAlgorithm: execute genetic algorithm (G.A.) to
+#   solve maintenance tasks scheduling (service orders)
+#---------------------------------------------------------------
+
 import config
-#from cromossomo import Cromossomo
 from population import Population
 import plot
 import json
 
-
-
 class geneticAlgorithm:
 
     def __init__(self):
+        '''Initialize class opening configuration file'''
 
         self.entry = {}
         self.file_so = config.service_order_dataset
@@ -20,6 +22,8 @@ class geneticAlgorithm:
 
 
     def run(self):
+        '''Run G.A.'''
+
         # armazena o histórico de gerações
         chronology = []
         feasible = []
@@ -71,28 +75,4 @@ class geneticAlgorithm:
         best_pop.gantt()
 
         plot.plot(chronology, feasible)
-
-
-
-            #newPop.evaluate()
-
-            #print(f"Population {i+1}")
-            #newPop.print()
-
-            #chronology.append(newPop)
-
-        # imprime o gráfico para até 50 populações
-        #if len(chronology) <= 50:
-            # plot.plot(chronology)
-
-        #best = chronology[-1].cromossomos[0]
-
-        #print("Knapsack Problem - Genetic Algorithm")
-        #print("A melhor resposta encontrada foi:")
-        #print(f"composition: {best.composition}")
-        #print(f"value: {best.value}")
-        #print(f"weight: {best.weight}")
-
-        #return best
-        return True
         

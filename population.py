@@ -1,6 +1,3 @@
-#import time
-#import numpy as np
-#import operator
 import random
 import config
 from datetime import datetime, timedelta
@@ -18,18 +15,6 @@ def search(list,value):
         return list.index(value)
     except ValueError:
         return -1
-
-
-#def sortPopulation(newList: list):
-    #'''ordena primeiro os valores fitness = true, depois value, depois weight, por exemplo:
-    #true/19/29 - true/19/28 - true/18/30 - true 18/25 - true/18/25 - false/26/50'''
-    #sortedList = sorted(
-    #    newList, key=operator.attrgetter('weight'), reverse=True)
-    #sortedList = sorted(
-    #    sortedList, key=operator.attrgetter('value'), reverse=True)
-    #sortedList = sorted(
-    #    sortedList, key=operator.attrgetter("fitness"), reverse=True)
-    #return sortedList
 
 
 class Population:
