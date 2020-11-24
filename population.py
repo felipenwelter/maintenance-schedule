@@ -7,6 +7,10 @@ import jsonManipulate as jm
 import json
 import copy
 
+
+#### TODO - trabalhar com a primeira solucao, ja forcar algo que tenha um custo bom
+
+
 def sortingRule(e):
   return e['date']
 
@@ -79,17 +83,15 @@ class Population:
             d2 = copy.deepcopy(li)
             self.so_list.append(d2)
 
+        # order the list of service_orders by start date
+        self.so_list.sort(key=sortingRule)
+
         #-----------------------------------------
         # to calculate the number of days
         start_date = self.ga.entry['period']['start'] + " " + "00:00" # ''
         end_date = self.ga.entry['period']['end'] + " " + "23:59" # ''
 
-        # order the list of service_orders by start date
-        self.so_list.sort(key=sortingRule)
-
         # identifies the first and last dates at all
-         #start_date = self.so_list[0]['date'] + " " + "00:00"
-         #end_date = self.so_list[-1]['date'] + " " + "23:59"
         dt = datetime.strptime(start_date, '%Y-%m-%d %H:%M')
         dt_end = datetime.strptime(end_date, '%Y-%m-%d %H:%M')
         self.start_date = dt
@@ -102,7 +104,7 @@ class Population:
         #-------------------------------------------------
         # to calculate the number of time blocks in a day
         tot_blocks = int( (60 / config.block_size) * 24 )
-        #-----------------------------------------
+        #-------------------------------------------------
 
         # update the limits for the genes
         self.chromosome_limits = [tot_days,tot_blocks-1]
@@ -131,26 +133,15 @@ class Population:
 
         showGantt(data,work_shift)
         
-    #def evaluate(self):
-        #'''Avalia cada cromossomo individualmente e recalcula seus atributos. Também realiza 
-        ##cálculos relativos a própria população, como por exemplo a média de peso.'''
-        #self.weightAverage = 0
-
-        #for c in self.chromosomes:
-
-        #    c.checkHardConstraints()
-        #    c.calcFitness()
-
 
 
     def print(self):
         #'''Imprime em tela cada cromossomo da população e suas características principais '''
         # ordena pelo maior valor
-        pct = 0
 
         if ( len(self.list_fitness) > 0 ):
             pct = ( len(self.list_fitness) / config.population_size ) * 100
-            print("total of feasible solutions: ", len(self.list_fitness),"(", int(pct) ,"% ) ")
+            print("total of feasible solutions: ", len(self.list_fitness),"(", int(pct) ,"% ) and ",self.ga.no_change_generations,"no change" )
             print("best fitness = ", self.list_fitness[0][1])
             #for i in self.list_fitness:
             #    print(i[1], " ", self.chromosomes[i[0]].genes)
@@ -162,7 +153,7 @@ class Population:
         #    print(
         #        f"composition {c.composition} weight {c.weight} | value {c.value} | %limit Weight {c.usedWeightPercent} | fitness {c.fitness}")
         #print(f" population weight average is {self.weightAverage} kg")
-        return pct
+        return
 
     def crossover(self, ancestral: object):
         #'''Geração de uma nova população a partir de uma população ancestral. Permite três formas diferentes:
@@ -171,7 +162,7 @@ class Population:
         #- first_elite: apenas o elemento mais próximo ao critério fitness é copiado para a próxima geração
         #em seguida é realizado o processo de crossover e mutação dos novos cromossomos, em casos específicos.'''
 
-        #if self.no_change_generations > 35:
+        #if self.ga.no_change_generations > 35:
         #    mutation_rate = 75
         #else:
         #    mutation_rate = 25

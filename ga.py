@@ -8,6 +8,16 @@ from population import Population
 import plot
 import json
 
+
+def getFeasibleQt(pop):
+    if ( len(pop.list_fitness) > 0 ):
+        pct = ( len(pop.list_fitness) / config.population_size ) * 100
+    else:
+        pct = 0
+    return pct
+
+
+
 class geneticAlgorithm:
 
     def __init__(self):
@@ -15,6 +25,8 @@ class geneticAlgorithm:
 
         self.entry = {}
         self.file_so = config.service_order_dataset
+
+        self.no_change_generations = 0
 
         # Read json file and set some attributes for the population
         with open(f'datasets/{self.file_so}.json') as json_file:
@@ -39,17 +51,14 @@ class geneticAlgorithm:
         #population.gantt()
 
         #print(f"Initial Population")
-        pct = population.print()
-        chronology_feasible.append(pct)
+        population.print()
+        chronology_feasible.append( getFeasibleQt(population) )
 
-        nRound = 0
-        # executa as rodadas de sucessias gerações
+        # run generations (previously set) or until cost = 0
         for i in range(config.generations-1):
-            nRound += 1
 
             # generate a new population based on the ancestor
             newPop = Population(self)
-            newPop.no_change_generations = noChange
             newPop.crossover( population )
             #newPop.autoAdjust()
 
@@ -65,13 +74,14 @@ class geneticAlgorithm:
                 noChange += 1
             
             if fitness == 0:
-                print("converged - round", nRound)
+                print("converged - round", i+1)
                 break
 
-            pct = population.print()
+            self.no_change_generations = noChange
+            population.print()
 
             chronology_fitness.append( best_pop.list_fitness[0][1] )
-            chronology_feasible.append( pct )
+            chronology_feasible.append( getFeasibleQt(population) )
 
         best_pop.gantt()
 

@@ -200,13 +200,11 @@ class Chromosome:
                 ### PASSO ajustado conforme noChange (preso em ótimos locais)
                 # exploration 0.1 --- 1.0 exploitation
 
-                noChange = self.pop.no_change_generations
+                noChange = self.pop.ga.no_change_generations
 
                 if noChange > 50:
                 #    a = 0
                     noChange = 0 # se ficou muito tempo preso, busca fora
-
-#### TODO - trabalhar com a primeira solucao, ja forcar algo que tenha um custo bom
 
                 noChangeLimit = 50 ## 35 geracoes sem mudanca, foca no exploitation (busca fora)
                 noChange = noChangeLimit if noChange > noChangeLimit else noChange
