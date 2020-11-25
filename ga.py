@@ -75,9 +75,12 @@ class geneticAlgorithm:
             fitness = best_pop.getBestFitness()
 
             if oldfit < fitness:
-                population.autoAdjust()
+                population.autoAdjust() 
+                
+                ##### TODO - as vezes ta fazendo o ajuste mas nao melhora
+                
                 best_pop = population
-                fitness = fitness
+                fitness = population.getBestFitness() # after auto adjustment
                 noChange = 0
                 #best_pop.gantt() #pra ver o que muda cada vez que melhora o fitness
             else:

@@ -1,7 +1,7 @@
 service_order_dataset = "entry"
 
 # number of individuals for each population
-population_size = 1
+population_size = 20
 
 # number of generations (rounds)
 generations = 50000
