@@ -5,15 +5,40 @@ from datetime import datetime, timedelta
 import schedule
 import copy
 
+# TODO - identify stopped equipment cost        
+# TODO - quando identificar que ficou preso num otimo local, aumenta o multiplicador 0,1 ali
+# TODO - meu crossover ta ruim, porque pega qualquer um e nao só os bons!
+  # provei isso quando usei populacoes de 100 elementos e fiquei preso em otimos globais, com 20 individuos zerei o custo (500 generations)
+
+#---------------------------------------------------------------
+# Function search:
+#    Search a value in a list and return the index
+# Parameters:
+#    list - list of single itens
+#    value - value to compare
+#---------------------------------------------------------------
 def search(list,value):
     try:
         return list.index(value)
     except ValueError:
         return -1
 
+#---------------------------------------------------------------
+# Function sortingRule:
+#    Function with a key to sort a list, by start date
+# Parameters:
+#    e - item of the list (sent by .sort())
+#---------------------------------------------------------------
 def sortingRule(e):
   return e['start']
 
+#---------------------------------------------------------------
+# Function getHourlyWage:
+#    Return the hourly wage of a employee
+# Parameters:
+#    cr - chromosome
+#    e - name of employee
+#---------------------------------------------------------------
 def getHourlyWage(cr,e):
     hourly_wage = 999
     for emp in cr.pop.ga.entry['employees']:
@@ -21,19 +46,21 @@ def getHourlyWage(cr,e):
             hourly_wage = float(emp['hourly-wage'])
     return hourly_wage
 
+
+#---------------------------------------------------------------
+# Class Chromosome: definitions of a chromosome, and individual
+#   that represents a solution of the problem
+#---------------------------------------------------------------
 class Chromosome:
-    '''Classe que representa um indíviduo (cromossomo), sua composição de genes e suas características'''
+    '''Represents the invididuals and their characteristics'''
 
     def __init__(self,pop):
 
-        self.pop = pop
-        #self.weight = 0  # peso do cromossomo (pela soma dos genes)
-        #self.value = 0  # valor do cromossomo (pela soma dos genes)
+        self.pop = pop # class population of the chromosome (to access parameters)
         self.length = pop.chromosome_length # the chromosome lenght is calculated once in the population
         self.genes = [0 for i in range(self.length)] # initialize all genes as 0
         self.limits = pop.chromosome_limits  # defined by number ofdays and number of time blocks
-        # atributo que define se cromosso atende critério de aceitação (fitness)
-        self.fitness = 0
+        self.fitness = 0 # acceptance criteria
 
         # deep copy of the service order list
         self.so_list = []
@@ -41,21 +68,7 @@ class Chromosome:
             d2 = copy.deepcopy(li)
             self.so_list.append(d2)
 
-        # atributo informativo para saber o percentual de ocupação em relação ao limite de peso
-        #self.usedWeightPercent = 0
-        #self.mutateMethod = config.mutateMethod  # método de mutação de genes
-
-        # dados dos itens a serem avaliados para a mochila
-        #self.file = config.dataset
-        # valor dos itens da mochila (respectivo ao peso)
-        #self.available_itens_value = []
-        # peso dos itens da mochila (respectivo ao valor)
-        #self.available_itens_weight = []
-        # capacidade máxima de peso para a mochila, em kg
-        #self.knapsackCapacity = 0
-        # realiza a leitura do arquivo de dataset
-        #self.readJson()
-
+        
     def initialize(self):
         '''Define 0s and 1s randomly to compose the chromosome'''
         for i in range(self.length):
@@ -68,21 +81,22 @@ class Chromosome:
 
 
     def update(self):
+        '''Update the chromosome info using the genes definitions'''
         self.updateSOList() # update the service order list using genes information
         self.calcFitness() # calculate fitness of each individual
 
 
     def updateSOList(self):
-        # convert the genes into readable day-time info
-        # and save it in arrays list_so and list_dates
+        '''Convert the genes into readable day-time info
+           and save the updated service orders list into the chromosome'''
         count = 0
         list_so = []
         list_dates = []
-        for so in self.pop.ga.entry['service_orders']:
+        for so in self.pop.ga.entry['service_orders']: # map genes to original service orders
             obj = self.genes[ (count*2) : (count*2)+2 ]
 
-            so_day = obj[0]
-            so_time = obj[1]
+            so_day = obj[0] # get the day gene
+            so_time = obj[1] # get the time block gene
 
             start = self.pop.start_date + timedelta(days=so_day)
             start += timedelta(minutes=(so_time * config.block_size))
@@ -101,13 +115,14 @@ class Chromosome:
 
 
     def calcFitness(self):
-        self.checkHardConstraints()
+        '''Check constraints and update the fitness value'''
+        self.checkHardConstraints() # check hard constraints, the ones that invalidate the chromosome
 
-        # continue checking the soft constraints only if
-        # passed through hard constraints
+        # continue checking the soft constraints only if passed through hard constraints
         if (self.fitness < 0):
             return
 
+        # the soft constraints below are used to calculate the fitness of the solution
         employees = []
         jobs = []
         
@@ -157,19 +172,12 @@ class Chromosome:
 
 
 
-
-            # TODO - identify stopped equipment cost        
-
-
     def mutate(self):
     #    '''Método que realiza a mutação de um cromossomo, que pode ser feito de duas formas:
     #    - fix: define um grupo fixo de genes que sofrem mutação
     #    - random: define aleatoriamente quais genes sofrem mutação
     #    - none: não realiza nenhuma mutação'''
 
-# TODO - quando identificar que ficou preso num otimo local, aumenta o multiplicador 0,1 ali
-# TODO - meu crossover ta ruim, porque pega qualquer um e nao só os bons!
-  # provei isso quando usei populacoes de 100 elementos e fiquei preso em otimos globais, com 20 individuos zerei o custo (500 generations)
         for i in range(self.length):
             
             if divmod(i,2)[1] == 1: # altera a hora
@@ -252,8 +260,8 @@ class Chromosome:
 
 
     def checkHardConstraints(self):
-
-        # 01 - check if there is overlap of jobs for a single employee
+        '''Check hard constraints that can invalidate the solution'''
+        # Rule 01 - check if there is overlap of jobs for a single employee
         employees = []
         jobs = []
         
@@ -291,7 +299,7 @@ class Chromosome:
             self.fitness = -1
             return
 
-        # 02 - check if any period overflow the limit (end date)
+        # Rule 02 - check if any period overflow the limit (end date)
         emp = 0
         while emp < (len(employees)):
             jobs[emp].sort(key=sortingRule)
@@ -301,7 +309,6 @@ class Chromosome:
                 self.fitness = -1
                 return
             emp += 1
-
 
         return
 

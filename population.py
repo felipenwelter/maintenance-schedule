@@ -7,6 +7,16 @@ import jsonManipulate as jm
 import json
 import copy
 
+# limpar fontes
+# comentar e organizar funcoes
+# setar metodo para mutate e crossover
+# criar metodo externo para controlar pass size (e até mutation rate)
+# implementar data fixa e % de variacao
+# implementar custo de maquina parada
+# montar readme
+
+
+
 
 #### TODO - trabalhar com a primeira solucao, ja forcar algo que tenha um custo bom
 
@@ -26,27 +36,27 @@ class Population:
 
     def __init__(self,ga):
 
-        self.ga = ga
+        self.ga = ga # class GA of the population (to access parameters)
 
         self.chromosomes = []  # keep each chromosome (individuals)
         self.chromosome_length = 0 # composed by [days,time block] * number of service orders
         self.chromosome_limits = [0,0] # defined by number of days and number of time blocks
         self.size = config.population_size  # define the number of chromosomes (individuals) for the population
         
-        self.so_list = {}
-        self.start_date = ''
-        self.end_date = ''
-        self.total_days = 0
+        self.so_list = {} # list of service orders
+        self.start_date = '' # first day of the period to be alocated
+        self.end_date = '' # last day of the period
+        self.total_days = 0 # number of days (difference between end and start days)
 
         self.list_fitness = [] # [chromosome position, fitness value]
-        self.no_change_generations = 0
+        self.no_change_generations = 0 # number of generations with no improvements
 
         self.config() # set some configurations for the population
         
         
 
     def initialize(self):
-        '''inicializa a população de cromossomos com valores aleatórios'''
+        '''Initialize the individuals with random values'''
         for i in range(self.size):
             cromossomo = Chromosome(self)
             cromossomo.initialize()
@@ -57,20 +67,20 @@ class Population:
 
 
     def updateFitnessList(self):
-        # fill the list_fitness
+        '''Update list_fitness with the feasible solutions'''
 
-        self.list_fitness = []
+        self.list_fitness = [] # clear any current information
         idx = 0
 
-        # first identify which chromosomes gave best fitness
+        # identify which chromosomes have feasible fitness
         while idx < len(self.chromosomes):
             c = self.chromosomes[idx]
             if c.fitness >= 0:
                 self.list_fitness.append( [ idx, c.fitness ] )
             idx += 1
         
+        # order list by fitness (from better to worst)
         if ( len(self.list_fitness) > 0 ):
-            # order list by fitness (from better to worst)
             self.list_fitness.sort(key=lambda x: x[1])
             
 
@@ -84,7 +94,7 @@ class Population:
             self.so_list.append(d2)
 
         # order the list of service_orders by start date
-        self.so_list.sort(key=sortingRule)
+        #self.so_list.sort(key=sortingRule)
 
         #-----------------------------------------
         # to calculate the number of days
@@ -99,7 +109,7 @@ class Population:
 
         # calculate the total of days (period)
         tot_days = (dt_end.date() - dt.date()).days
-        self.total_days = tot_days + 1
+        self.total_days = tot_days + 1 # include last day
 
         #-------------------------------------------------
         # to calculate the number of time blocks in a day
@@ -115,6 +125,11 @@ class Population:
 
     def gantt(self):
         
+        # check if there is at least one feasible solution
+        if (self.getBestFitness() < 0):
+            print("no feasible solutions to generate gantt")
+            return
+
         c = self.chromosomes[self.list_fitness[0][0]] # pega o melhor individuo
 
         # aggregate the scheduled time to show gantt
@@ -155,12 +170,9 @@ class Population:
         #print(f" population weight average is {self.weightAverage} kg")
         return
 
-    def crossover(self, ancestral: object):
-        #'''Geração de uma nova população a partir de uma população ancestral. Permite três formas diferentes:
-        #- random: a seleção dos progenitores é feita de forma aleatória
-        #- all_elite: todos os elementos que atendem ao critério fitness são copiados para a próxima geração
-        #- first_elite: apenas o elemento mais próximo ao critério fitness é copiado para a próxima geração
-        #em seguida é realizado o processo de crossover e mutação dos novos cromossomos, em casos específicos.'''
+
+    def generate(self, ancestor_pop: object):
+        '''Generate a new population using the ancestor population, using crossover and mutation procedures'''
 
         #if self.ga.no_change_generations > 35:
         #    mutation_rate = 75
@@ -171,42 +183,29 @@ class Population:
         rate = int(self.size * (mutation_rate/100))
         mutate_count = 0
 
-        # seleciona o melhor individuo para levar para a proxima populacao na íntegra
-        pos = ancestral.list_fitness[0][0]
-        cromossomo = copy.deepcopy( ancestral.chromosomes[pos] )
-        self.chromosomes.append(cromossomo)
-        #print(cromossomo.genes, cromossomo.fitness)
+        # select the best individual to copy to the new generation
+        if (ancestor_pop.getBestFitness() >= 0):
+            pos = ancestor_pop.list_fitness[0][0]
+            cromossomo = copy.deepcopy( ancestor_pop.chromosomes[pos] )
+            self.chromosomes.append(cromossomo)
+            #print(cromossomo.genes, cromossomo.fitness)
 
-        # completa com individuos gerado por crossover
-        for i in range(self.size-1):
+        # complete the population with new individuals using crossover
+        for i in range(self.size - len(self.chromosomes) ):
+            
+            if (ancestor_pop.getBestFitness() >= 0):
+                cromossomo = self.crossover(ancestor_pop)
+                # altera os (mutation_rate %) individuos gerados
+                if mutate_count < rate:
+                    #A taxa de mutação se refere à quantidade de indivíduos da população que sofrerão mutação.
+                    cromossomo.mutate()
+                    mutate_count += 1
+                
+                cromossomo.update() 
 
-            # select parents (chromosome position in self.chromosomes)
-            c1, c2, c3 = self.selectParents(ancestral)
-
-            p1 = ancestral.chromosomes[c1]
-            p2 = ancestral.chromosomes[c2]
-            p3 = ancestral.chromosomes[c3]
-
-            limit = len(ancestral.so_list) #numero de OS
-            locus_by_SO = int(self.chromosome_length / limit)
-            cuts = random.sample(range(1,limit-1),k=2)
-            cuts.sort()
-
-            elements = random.sample([p1,p2,p3], k=3)
-            genes = elements[0].genes[:( cuts[0] *locus_by_SO)]
-            genes += elements[1].genes[( cuts[0] *locus_by_SO):( cuts[1] *locus_by_SO)]
-            genes += elements[2].genes[( cuts[1] *locus_by_SO):]
-
-            cromossomo = Chromosome(self)
-            cromossomo.genes = genes.copy()
-
-            # altera os (mutation_rate %) individuos gerados
-            if mutate_count < rate:
-                #A taxa de mutação se refere à quantidade de indivíduos da população que sofrerão mutação.
-                cromossomo.mutate()
-                mutate_count += 1
-
-            cromossomo.update() 
+            else: # if there is still no feasible solution, generate randomly
+                cromossomo = Chromosome(self)
+                cromossomo.initialize()
 
             self.chromosomes.append(cromossomo)
             
@@ -217,6 +216,32 @@ class Population:
         # TODO - depois criar uma rotina que força um auto-ajuste, quer dizer,
         # tenta ver as OS`s que estao pior e andar um pouquinho com elas pra ver se melhora
 
+
+
+    def crossover(self, ancestor_pop: object):
+        '''Crossover ancestral information to generate new individuals'''
+
+        # select parents (chromosome position in self.chromosomes)
+        c1, c2, c3 = self.selectParents(ancestor_pop)
+
+        p1 = ancestor_pop.chromosomes[c1]
+        p2 = ancestor_pop.chromosomes[c2]
+        p3 = ancestor_pop.chromosomes[c3]
+
+        limit = len(ancestor_pop.so_list) #numero de OS
+        locus_by_SO = int(self.chromosome_length / limit)
+        cuts = random.sample(range(1,limit-1),k=2)
+        cuts.sort()
+
+        elements = random.sample([p1,p2,p3], k=3)
+        genes = elements[0].genes[:( cuts[0] *locus_by_SO)]
+        genes += elements[1].genes[( cuts[0] *locus_by_SO):( cuts[1] *locus_by_SO)]
+        genes += elements[2].genes[( cuts[1] *locus_by_SO):]
+
+        cromossomo = Chromosome(self)
+        cromossomo.genes = genes.copy()
+
+        return cromossomo
 
 
     def selectParents(self, ancestor_pop: object) -> tuple: 
@@ -269,6 +294,7 @@ class Population:
         return c1, c2, c3
 
 
+
     def autoAdjust(self):
         ''' Função para realizar o refinamento do melhor indivíduo
         incialmente forcando uma mutation com passo baixo pra cada OS (double locus) individualmente
@@ -319,3 +345,10 @@ class Population:
             self.updateFitnessList()
             
         return
+
+    def getBestFitness(self):
+        '''Return the best fitness of the population'''
+        fitness = -1
+        if (self.list_fitness):
+            fitness = self.list_fitness[0][1]
+        return fitness

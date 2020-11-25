@@ -2,7 +2,7 @@ import json
 
 #---------------------------------------------------------------
 # Function loadJSON_SO: 
-#  Load json file with service order information
+#    Load json file with service order information
 #---------------------------------------------------------------
 def loadJSON_SO():
 
@@ -22,8 +22,8 @@ def loadJSON_SO():
 
 #---------------------------------------------------------------
 # Function loadJSON_WS: 
-#  Load json file with workshift information (daily periods of 
-#  availability for each employee)
+#    Load json file with workshift information (daily periods of 
+#    availability for each employee)
 #---------------------------------------------------------------
 def loadJSON_WS():
 

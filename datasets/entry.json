@@ -1,10 +1,22 @@
 {
-   "_comment": { "number": "must be the primary key of the service order",
-                 "date": "date suggested to execution, format YYYY-MM-DD",
-                 "duration": "duration time, in hours",
-                 "employee": "name of the employee who execute the service",
-                 "equipment": "identification of the equipment",
-                 "equipment-criticality": "1 (more), 2 or 3 (less) indicates the criticality"
+
+   "employees_comment": {
+                  "name": "name of employee (primary key)",
+                  "hourly-wage": "hourly wage, decimal"
+               },
+
+   "period_comment": { 
+                  "start": "first day to allocate service orders, format YYYY-MM-DD",
+                  "end": "last day to allocate service orders, format YYYY-MM-DD"
+               },
+               
+   "serivce_orders_comment": { 
+                  "number": "must be the primary key of the service order",
+                  "date": "date suggested to execution, format YYYY-MM-DD",
+                  "duration": "duration time, in hours",
+                  "employee": "name of the employee who execute the service",
+                  "equipment": "identification of the equipment",
+                  "equipment-criticality": "1 (more), 2 or 3 (less) indicates the criticality"
                },
 
    "employees": [

@@ -13,10 +13,11 @@ end_date = ''
 
 #---------------------------------------------------------------
 # Function ShowGantt: 
-#  Show a gantt chart with the periods  of each service order 
-#  scheduled for each employee
-# wl - work list, optional (load default)
-# ws - work shift, optional (load default)
+#     Show a gantt chart with the periods  of each service order 
+#     scheduled for each employee
+# Parameters
+#    wl - work list, optional (load default)
+#    ws - work shift, optional (load default)
 #---------------------------------------------------------------
 def showGantt(wl=[], ws=[]):
     

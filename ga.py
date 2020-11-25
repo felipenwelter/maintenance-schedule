@@ -1,15 +1,16 @@
-#---------------------------------------------------------------
-# Class geneticAlgorithm: execute genetic algorithm (G.A.) to
-#   solve maintenance tasks scheduling (service orders)
-#---------------------------------------------------------------
-
 import config
 from population import Population
 import plot
 import json
 
 
-def getFeasibleQt(pop):
+#---------------------------------------------------------------
+# Function getFeasiblePct:
+#    Calculate and return the percentage of feasible solutions
+# Parameters:
+#    pop - population
+#---------------------------------------------------------------
+def getFeasiblePct(pop):
     if ( len(pop.list_fitness) > 0 ):
         pct = ( len(pop.list_fitness) / config.population_size ) * 100
     else:
@@ -17,7 +18,10 @@ def getFeasibleQt(pop):
     return pct
 
 
-
+#---------------------------------------------------------------
+# Class geneticAlgorithm: execute genetic algorithm (G.A.) to
+#   solve maintenance tasks scheduling (service orders)
+#---------------------------------------------------------------
 class geneticAlgorithm:
 
     def __init__(self):
@@ -36,7 +40,7 @@ class geneticAlgorithm:
     def run(self):
         '''Run G.A.'''
 
-        # armazena o histórico de gerações
+        # store the generations historic
         chronology_fitness = [] # store the best fitness of each generation
         chronology_feasible = [] # store the number of feasible individuals of each generation
         noChange = 0 # control the number of rounds with no improvements
@@ -44,44 +48,54 @@ class geneticAlgorithm:
         # initialize a random population
         population = Population(self)
         population.initialize()
-        chronology_fitness.append( population.list_fitness[0][1] )
-
+        
+        # store the best fitness of the population
         best_pop = population
-        fitness = population.list_fitness[0][1]
+        chronology_feasible.append( getFeasiblePct(population) )
+        fitness = population.getBestFitness()
+        chronology_fitness.append( fitness )
+
+        # print information
+        population.print()
         #population.gantt()
 
-        #print(f"Initial Population")
-        population.print()
-        chronology_feasible.append( getFeasibleQt(population) )
 
         # run generations (previously set) or until cost = 0
         for i in range(config.generations-1):
 
-            # generate a new population based on the ancestor
+            # generate a new population based on the ancestor population
             newPop = Population(self)
-            newPop.crossover( population )
+            newPop.generate( population )
             #newPop.autoAdjust()
 
             population = newPop
+            
+            # identify if there is any improvement
+            oldfit = population.getBestFitness()
+            fitness = best_pop.getBestFitness()
 
-            if population.list_fitness[0][1] < best_pop.list_fitness[0][1]:
+            if oldfit < fitness:
                 population.autoAdjust()
                 best_pop = population
-                fitness = best_pop.list_fitness[0][1]
+                fitness = fitness
                 noChange = 0
                 #best_pop.gantt() #pra ver o que muda cada vez que melhora o fitness
             else:
                 noChange += 1
             
+            # identify if the solution converged to global miminum
             if fitness == 0:
                 print("converged - round", i+1)
                 break
 
             self.no_change_generations = noChange
             population.print()
-
-            chronology_fitness.append( best_pop.list_fitness[0][1] )
-            chronology_feasible.append( getFeasibleQt(population) )
+            
+            # store the best fitness of the population
+            chronology_feasible.append( getFeasiblePct(population) )
+            chronology_fitness.append( fitness )
+            
+            
 
         best_pop.gantt()
 

@@ -33,7 +33,7 @@ def checkPeriods(ds):
         
 
 #---------------------------------------------------------------
-# Função: getWorkShift
+# Function: getWorkShift
 # Parâmetros: employee - name of the employee
 # Retorno: using the imported work_shift json file, find the one
 # #        corresponding to the name of the employee
