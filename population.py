@@ -20,7 +20,6 @@ import copy
 
 #### TODO - trabalhar com a primeira solucao, ja forcar algo que tenha um custo bom
 
-
 def sortingRule(e):
   return e['date']
 
@@ -186,30 +185,30 @@ class Population:
         # select the best individual to copy to the new generation
         if (ancestor_pop.getBestFitness() >= 0):
             pos = ancestor_pop.list_fitness[0][0]
-            cromossomo = copy.deepcopy( ancestor_pop.chromosomes[pos] )
-            self.chromosomes.append(cromossomo)
-            #print(cromossomo.genes, cromossomo.fitness)
+            chrom = copy.deepcopy( ancestor_pop.chromosomes[pos] )
+            self.chromosomes.append(chrom)
+            #print(chrom.genes, chrom.fitness)
 
         # complete the population with new individuals using crossover
         for i in range(self.size - len(self.chromosomes) ):
             
             if (ancestor_pop.getBestFitness() >= 0):
-                cromossomo = self.crossover(ancestor_pop)
-                # altera os (mutation_rate %) individuos gerados
-                if mutate_count < rate:
-                    #A taxa de mutação se refere à quantidade de indivíduos da população que sofrerão mutação.
-                    cromossomo.mutate()
+                chrom = self.crossover(ancestor_pop)
+
+                # mutate the new individuals (only the corresponding %)
+                if mutate_count < rate: # the mutation rate refers to the amount of individuals that suffers mutation
+                    chrom.mutate() 
                     mutate_count += 1
                 
-                cromossomo.update() 
+                chrom.update() 
 
             else: # if there is still no feasible solution, generate randomly
-                cromossomo = Chromosome(self)
-                cromossomo.initialize()
+                chrom = Chromosome(self)
+                chrom.initialize()
 
-            self.chromosomes.append(cromossomo)
+            self.chromosomes.append(chrom)
             
-            # print(cromossomo.genes, cromossomo.fitness, "of ", c1, c2)
+            # print(chrom.genes, chrom.fitness, "of ", c1, c2)
 
         self.updateFitnessList()
 
@@ -244,52 +243,57 @@ class Population:
         return cromossomo
 
 
-    def selectParents(self, ancestor_pop: object) -> tuple: 
-    #    '''Seleciona os pais para realizar o cruzamento. Busca os pais a partir de uma lista
-    #    restrita de cromossomos de uma população anterior enviada como parâmetro.'''
+    def selectParents(self, ancestor_pop: object) -> tuple:
+        '''Select parents for crossover using the ancestor population'''
+
+        # in this case uses a random selection method among feasible individuals
+        if True: 
+
+            limit = len(ancestor_pop.list_fitness)
+
+            if (limit >= 3):
+                parents = random.sample(range(0,limit),k=3) # return unique elements
+            else:
+                parents = random.choices(range(0,limit),k=3) # can repeat an element
 
 
-        if True:  # realiza uma selecao de pais aleatoria, dentre todos os individuos feasible
+            # randomly gets the chromosome position
+            p1 = parents[0] #random.randint(0, limit)
+            p2 = parents[1] #random.randint(0, limit)
+            p3 = parents[2] #random.randint(0, limit)
 
-            # what if there is no feasible parents or only one?
-            limit = len(ancestor_pop.list_fitness)-1
+            # uses the position to find the chromosome in self.chromosomes
+            c1 = ancestor_pop.list_fitness[p1][0]
+            c2 = ancestor_pop.list_fitness[p2][0]
+            c3 = ancestor_pop.list_fitness[p3][0]
 
-            p1 = random.randint(0, limit)
-            c1 = ancestor_pop.list_fitness[p1][0] # get the position of the chromosome in self.chromosomes
-            
-            p2 = random.randint(0, limit)
-            c2 = ancestor_pop.list_fitness[p2][0] # get the position of the chromosome in self.chromosomes
-
-            p3 = random.randint(0, limit)
-            c3 = ancestor_pop.list_fitness[p3][0] # get the position of the chromosome in self.chromosomes
-
-            #print("number of good solutions = ", limit+1, "selected = ", p1, p2)
+            #print("number of good solutions = ", limit+1, "selected = ", p1, p2, p3)
         
-        elif False: # metodo da roleta, entre os individuos feasible
+        # in this case uses the roulette wheel method to select feasible parents
+        elif False:
 
             sum_fitness = sum(i[1] for i in ancestor_pop.list_fitness)
             sum1 = random.randint(0, int(sum_fitness) )
             sum2 = random.randint(0, int(sum_fitness) )
             sum3 = random.randint(0, int(sum_fitness) )
             p1, p2, p3 = -1, -1, -1
-            soma, idx = 0, 0
+            value, idx = 0, 0
             while (idx < len( ancestor_pop.list_fitness) ):
-                soma += ancestor_pop.list_fitness[idx][1]
-                if (p1 == -1) and (soma >= sum1):
+                value += ancestor_pop.list_fitness[idx][1]
+                if (p1 == -1) and (value >= sum1):
                     p1 = idx
-                if (p2 == -1) and (soma >= sum2):
+                if (p2 == -1) and (value >= sum2):
                     p2 = idx
-                if (p3 == -1) and (soma >= sum3):
+                if (p3 == -1) and (value >= sum3):
                     p3 = idx
                 if (p1 >= 0 and p2 >= 0 and p3 >= 0):
                     break
                 idx += 1
-                
-            c1 = ancestor_pop.list_fitness[p1][0] # get the position of the chromosome in self.chromosomes
-            c2 = ancestor_pop.list_fitness[p2][0] # get the position of the chromosome in self.chromosomes
-            c3 = ancestor_pop.list_fitness[p3][0] # get the position of the chromosome in self.chromosomes
 
-            # what if there is no feasible parents or only one?
+            # uses the position to find the chromosome in self.chromosomes
+            c1 = ancestor_pop.list_fitness[p1][0]
+            c2 = ancestor_pop.list_fitness[p2][0]
+            c3 = ancestor_pop.list_fitness[p3][0]
 
         return c1, c2, c3
 
