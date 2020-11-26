@@ -6,5 +6,8 @@ population_size = 20
 # number of generations (rounds)
 generations = 50000
 
-#for controlling the time scheduling, in minutes
+# for controlling the time scheduling, in minutes
 block_size = 10 # in minutes (less than or equal 1 hour)
+
+# define the parents selection method for crossover 
+selectParentsMethod = 'random' # random or roulette

@@ -247,7 +247,7 @@ class Population:
         '''Select parents for crossover using the ancestor population'''
 
         # in this case uses a random selection method among feasible individuals
-        if True: 
+        if (config.selectParentsMethod == 'random'): 
 
             limit = len(ancestor_pop.list_fitness)
 
@@ -270,7 +270,7 @@ class Population:
             #print("number of good solutions = ", limit+1, "selected = ", p1, p2, p3)
         
         # in this case uses the roulette wheel method to select feasible parents
-        elif False:
+        else: #(config.selectParentsMethod == 'roulette'): 
 
             sum_fitness = sum(i[1] for i in ancestor_pop.list_fitness)
             sum1 = random.randint(0, int(sum_fitness) )
