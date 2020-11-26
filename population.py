@@ -15,13 +15,16 @@ import copy
 # implementar custo de maquina parada
 # montar readme
 
-
+### TODO - crossover (order=weight) com mais pais, se tiver mais OS's, será que melhora?
 
 
 #### TODO - trabalhar com a primeira solucao, ja forcar algo que tenha um custo bom
 
 def sortingRule(e):
   return e['date']
+
+def sortbyFitness(e):
+  return e.fitness
 
 def search(list,value):
     try:
@@ -212,9 +215,6 @@ class Population:
 
         self.updateFitnessList()
 
-        # TODO - depois criar uma rotina que força um auto-ajuste, quer dizer,
-        # tenta ver as OS`s que estao pior e andar um pouquinho com elas pra ver se melhora
-
 
 
     def crossover(self, ancestor_pop: object):
@@ -227,20 +227,38 @@ class Population:
         p2 = ancestor_pop.chromosomes[c2]
         p3 = ancestor_pop.chromosomes[c3]
 
-        limit = len(ancestor_pop.so_list) #numero de OS
-        locus_by_SO = int(self.chromosome_length / limit)
-        cuts = random.sample(range(1,limit-1),k=2)
+        limit = len(ancestor_pop.so_list) # quantity of service orders
+        locus_by_SO = int(self.chromosome_length / limit) # quantity of genes for each service order
+        cuts = random.sample(range(1,limit-1),k=2) # cut position
         cuts.sort()
 
-        elements = random.sample([p1,p2,p3], k=3)
+        if (config.orderParentsMethod == 'random'):
+            elements = random.sample([p1,p2,p3], k=3) # shuffle parents
+
+        else: #if (config.orderParentsMethod == 'weight'):
+            # organize the parents to use more genes of the parents with best fitness
+            weight = [cuts[0], cuts[1]-cuts[0], limit-cuts[1]] # calculate number of genes between cuts
+            parents = [p1,p2,p3]
+            parents.sort(key=sortbyFitness) # sort parents: first the best fitness
+            elements = [0,0,0] # final elements
+
+            for a in range(0,3): # order the parents considering their fitness x genes used
+                best = 0
+                for b in range(1,3):
+                    if (weight[b] > weight[best]):
+                        best = b # identify the position with greater number of genes
+                elements[best] = parents[a] # and define it to the parent with best fitness
+                weight[best] = -1
+        
+        
         genes = elements[0].genes[:( cuts[0] *locus_by_SO)]
         genes += elements[1].genes[( cuts[0] *locus_by_SO):( cuts[1] *locus_by_SO)]
         genes += elements[2].genes[( cuts[1] *locus_by_SO):]
 
-        cromossomo = Chromosome(self)
-        cromossomo.genes = genes.copy()
+        chrom = Chromosome(self)
+        chrom.genes = genes.copy()
 
-        return cromossomo
+        return chrom
 
 
     def selectParents(self, ancestor_pop: object) -> tuple:
@@ -251,7 +269,7 @@ class Population:
 
             limit = len(ancestor_pop.list_fitness)
 
-            if (limit >= 3):
+            if (limit >= 3): #TODO - NEM SEMPRE SE MOSTRA EFETIVO USAR PAIS DIFERENTES
                 parents = random.sample(range(0,limit),k=3) # return unique elements
             else:
                 parents = random.choices(range(0,limit),k=3) # can repeat an element

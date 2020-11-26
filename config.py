@@ -11,3 +11,4 @@ block_size = 10 # in minutes (less than or equal 1 hour)
 
 # define the parents selection method for crossover 
 selectParentsMethod = 'random' # random or roulette
+orderParentsMethod = 'random' # random or weight
