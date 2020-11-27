@@ -16,6 +16,7 @@ def sortingRule(e):
 # Retorno: null
 #--------------------------------------------------------------------
 def checkPeriods(ds):
+
     if len(ds) == 0:
         print("ERRO - NENHUM PERIODO PARA O DIA")
 
@@ -103,6 +104,19 @@ def getSchedule(list_so, list_ws, start_date, end_date):
             # and if it is the last day, check if there is overflow
             #if (dt == dt_end) and (datetime.datetime.strptime(so['end'], '%Y-%m-%d %H:%M').date() > dt_end):
             #    overFlow = True
+
+        # when there is any service order that finishes at 00:00
+        # then it will be included a period with same start and end
+        # so, the next step removes this invalid periods
+        # ex: {'end': '2020-11-17 00:00', 'start': '2020-11-16 21:00'}
+        # would generate 2020-11-17 00:00 to 2020-11-17 00:00
+        # obs: not expecting that the service orders must be adjusted before
+        i = 0
+        while i < len(ds):
+            if ds[i]['start'] == ds[i]['end']:
+                ds.pop(i)
+                i = i-1
+            i += 1
 
         # identify the overtime periods and split them from the s.o.
         for so in ds:
@@ -208,6 +222,7 @@ def getSchedule(list_so, list_ws, start_date, end_date):
 
         ds.sort(key=sortingRule)
         checkPeriods(ds)  # only development
+
         full_periods.append({ 'day': dt, 'list': ds })
 
         dt = dt + datetime.timedelta(days=1)    
