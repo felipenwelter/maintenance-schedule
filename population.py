@@ -184,7 +184,7 @@ class Population:
         #else:
         #    mutation_rate = 25
 
-        mutation_rate = 20 ### TODO eh muito sera?
+        mutation_rate = config.mutationRate
         rate = int(self.size * (mutation_rate/100))
         mutate_count = 0
 
@@ -335,8 +335,7 @@ class Population:
             fitness = c.fitness
             
             for i in range(1,c.length,2): # apenas campos hora
-## TODO - autoadjustment so deveria rodar se a nova populacao tem fitness melhor
-## TODO - ter o custo na OS, ai eu ajusto so as que tiverem algum custo mesmo
+
                 c.addTimeBlocks(i,passs)
                 c.update() # update service order list and calc fitness
                 
@@ -345,8 +344,8 @@ class Population:
                     c.addTimeBlocks(i,-passs) # anda no sentido contrário
                     c.update() # update service order list and calc fitness
 
-                    while c.fitness < fitness:
-                        print( "ajusting - ")
+                    while (c.fitness != -1) and (c.fitness < fitness):
+                        print( "adjusting - ")
                         fitness = c.fitness
                         c.addTimeBlocks(i,-passs)
                         c.update() # update service order list and calc fitness                  
@@ -357,8 +356,8 @@ class Population:
 
                 elif c.fitness < fitness: # melhorou
 
-                    while c.fitness < fitness:
-                        print( "ajusting + ")
+                    while (c.fitness != -1) and (c.fitness < fitness):
+                        print( "adjusting + ")
                         fitness = c.fitness
                         c.addTimeBlocks(i,passs)
                         c.update() # update service order list and calc fitness

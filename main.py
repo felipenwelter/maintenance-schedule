@@ -9,4 +9,6 @@ print("Felipe Nathan Welter")
 print("UDESC 2020 - Computação Natural")
 
 ga = geneticAlgorithm()
+ga.plot = False
 ga.run()
+a = ga.generation_count

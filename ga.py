@@ -18,6 +18,7 @@ class geneticAlgorithm:
 
         self.no_change_generations = 0
         self.generation_count = 0
+        self.plot = True
 
         # Read json file and set some attributes for the population
         with open(f'datasets/{self.file_so}.json') as json_file:
@@ -69,25 +70,27 @@ class geneticAlgorithm:
             else:
                 noChange += 1
             
-            # identify if the solution converged to global miminum
-            if best_fitness == 0:
-                print("converged - round", i+1)
-                break
-
             self.no_change_generations = noChange
             newPop.print()
-            
+
             # store the best fitness of the population
             chronology_feasible.append( newPop.getFeasiblePct() )
             chronology_fitness.append( best_fitness )
+
+            # identify if the solution converged to global miminum
+            if best_fitness == 0:
+                print("converged - round", self.generation_count)
+                break
             
             # set the population for the next generation
             population = newPop
             
 
-        # show the last solution generated
-        best_pop.gantt()
+        
+        if (self.plot == True):
+            # show the last solution generated
+            best_pop.gantt()
 
-        # plot the evolution graph
-        plot.plot(chronology_fitness, chronology_feasible)
+            # plot the evolution graph
+            plot.plot(chronology_fitness, chronology_feasible)
         

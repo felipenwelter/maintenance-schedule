@@ -116,7 +116,12 @@ class Chromosome:
 
     def calcFitness(self):
         '''Check constraints and update the fitness value'''
-        self.checkHardConstraints() # check hard constraints, the ones that invalidate the chromosome
+        
+        # reset fitness value
+        self.fitness = 0
+
+        # check hard constraints, the ones that invalidate the chromosome
+        self.checkHardConstraints()
 
         # continue checking the soft constraints only if passed through hard constraints
         if (self.fitness < 0):

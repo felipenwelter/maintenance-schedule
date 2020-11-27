@@ -28,7 +28,7 @@ def checkPeriods(ds):
     idx = 0
     while (idx < len(ds)):
         if (idx < (len(ds)-1) and ds[idx]['end'] != ds[idx+1]['start']):
-            print("ERRO - PERIODO NAO COMECA NO TERMINO DO ANTERIOR")
+            print("ERRO - PERIODO NAO COMECA NO TERMINO DO ANTERIOR -",ds[idx]['end'],ds[idx+1]['start'])
         idx += 1
         
 
