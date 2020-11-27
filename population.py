@@ -65,6 +65,7 @@ class Population:
             self.chromosomes.append(cromossomo)
         
         self.updateFitnessList()
+        self.ga.generation_count += 1
 
 
 
@@ -153,29 +154,31 @@ class Population:
 
 
     def print(self):
-        #'''Imprime em tela cada cromossomo da população e suas características principais '''
-        # ordena pelo maior valor
+        '''Print population info, only the best solution or all of them'''
 
         if ( len(self.list_fitness) > 0 ):
-            pct = ( len(self.list_fitness) / config.population_size ) * 100
-            print("total of feasible solutions: ", len(self.list_fitness),"(", int(pct) ,"% ) and ",self.ga.no_change_generations,"no change" )
+            pct = self.getFeasiblePct()
+            print("total of feasible solutions: ", len(self.list_fitness),"(", int(pct) ,"% ) and",self.ga.no_change_generations,"no change - round",self.ga.generation_count )
             print("best fitness = ", self.list_fitness[0][1])
             #for i in self.list_fitness:
             #    print(i[1], " ", self.chromosomes[i[0]].genes)
         else:
             print("no feasible solutions")
-            
-        #sortedList = sortPopulation(self.cromossomos)
-        #for c in sortedList:
-        #    print(
-        #        f"composition {c.composition} weight {c.weight} | value {c.value} | %limit Weight {c.usedWeightPercent} | fitness {c.fitness}")
-        #print(f" population weight average is {self.weightAverage} kg")
-        return
+
+
+        
+
+    def getFeasiblePct(self):
+        if ( len(self.list_fitness) > 0 ):
+            pct = ( len(self.list_fitness) / config.population_size ) * 100
+        else:
+            pct = 0
+        return pct
 
 
     def generate(self, ancestor_pop: object):
         '''Generate a new population using the ancestor population, using crossover and mutation procedures'''
-
+        
         #if self.ga.no_change_generations > 35:
         #    mutation_rate = 75
         #else:
@@ -214,6 +217,7 @@ class Population:
             # print(chrom.genes, chrom.fitness, "of ", c1, c2)
 
         self.updateFitnessList()
+        self.ga.generation_count += 1
 
 
 
@@ -367,6 +371,7 @@ class Population:
             self.updateFitnessList()
             
         return
+
 
     def getBestFitness(self):
         '''Return the best fitness of the population'''

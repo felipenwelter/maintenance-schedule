@@ -5,20 +5,6 @@ import json
 
 
 #---------------------------------------------------------------
-# Function getFeasiblePct:
-#    Calculate and return the percentage of feasible solutions
-# Parameters:
-#    pop - population
-#---------------------------------------------------------------
-def getFeasiblePct(pop):
-    if ( len(pop.list_fitness) > 0 ):
-        pct = ( len(pop.list_fitness) / config.population_size ) * 100
-    else:
-        pct = 0
-    return pct
-
-
-#---------------------------------------------------------------
 # Class geneticAlgorithm: execute genetic algorithm (G.A.) to
 #   solve maintenance tasks scheduling (service orders)
 #---------------------------------------------------------------
@@ -31,6 +17,7 @@ class geneticAlgorithm:
         self.file_so = config.service_order_dataset
 
         self.no_change_generations = 0
+        self.generation_count = 0
 
         # Read json file and set some attributes for the population
         with open(f'datasets/{self.file_so}.json') as json_file:
@@ -51,9 +38,9 @@ class geneticAlgorithm:
         
         # store the best fitness of the population
         best_pop = population
-        chronology_feasible.append( getFeasiblePct(population) )
-        fitness = population.getBestFitness()
-        chronology_fitness.append( fitness )
+        chronology_feasible.append( population.getFeasiblePct() )
+        best_fitness = population.getBestFitness()
+        chronology_fitness.append( best_fitness )
 
         # print information
         population.print()
@@ -67,40 +54,40 @@ class geneticAlgorithm:
             newPop = Population(self)
             newPop.generate( population )
             #newPop.autoAdjust()
-
-            population = newPop
             
             # identify if there is any improvement
-            oldfit = population.getBestFitness()
-            fitness = best_pop.getBestFitness()
+            new_fitness = newPop.getBestFitness()
+            best_fitness = best_pop.getBestFitness()
 
-            if oldfit < fitness:
-                population.autoAdjust() 
-                
+            if new_fitness < best_fitness:
                 ##### TODO - as vezes ta fazendo o ajuste mas nao melhora
-                
-                best_pop = population
-                fitness = population.getBestFitness() # after auto adjustment
+                newPop.autoAdjust()
+                best_pop = newPop
+                best_fitness = newPop.getBestFitness() # after auto adjustment
                 noChange = 0
                 #best_pop.gantt() #pra ver o que muda cada vez que melhora o fitness
             else:
                 noChange += 1
             
             # identify if the solution converged to global miminum
-            if fitness == 0:
+            if best_fitness == 0:
                 print("converged - round", i+1)
                 break
 
             self.no_change_generations = noChange
-            population.print()
+            newPop.print()
             
             # store the best fitness of the population
-            chronology_feasible.append( getFeasiblePct(population) )
-            chronology_fitness.append( fitness )
+            chronology_feasible.append( newPop.getFeasiblePct() )
+            chronology_fitness.append( best_fitness )
             
+            # set the population for the next generation
+            population = newPop
             
 
+        # show the last solution generated
         best_pop.gantt()
 
+        # plot the evolution graph
         plot.plot(chronology_fitness, chronology_feasible)
         
