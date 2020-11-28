@@ -41,7 +41,7 @@ def checkPeriods(ds):
 #---------------------------------------------------------------
 def getWorkShift(employee):
 
-    work_shift = jm.loadJSON_WS() #load list of work shifts from JSON
+    work_shift = jm.loadJSON_ws() #load list of work shifts from JSON
 
     ret = []
     for ws in work_shift['workshift']:
@@ -74,35 +74,35 @@ def getSchedule(list_tasks, list_ws, start_date, end_date):
         ds = [] #day_schedule
         weekday = dt.weekday()
 
-        for so in list_tasks:
+        for task in list_tasks:
 
             # first of all, aggregate only the same day infos
-            if datetime.datetime.strptime(so['start'], '%Y-%m-%d %H:%M').date() == dt:
+            if datetime.datetime.strptime(task['start'], '%Y-%m-%d %H:%M').date() == dt:
 
                 # check if starts and ends in the same day, if not, get only this day info
-                if (so['end'][:10] == so['start'][:10]):
-                    ds.append({ 'start': so['start'][-5:],
-                                'end': so['end'][-5:],
-                                'type': 'so' })
+                if (task['end'][:10] == task['start'][:10]):
+                    ds.append({ 'start': task['start'][-5:],
+                                'end': task['end'][-5:],
+                                'type': 'busy' })
                 else:
-                    ds.append({ 'start': so['start'][-5:],
+                    ds.append({ 'start': task['start'][-5:],
                                 'end': "23:59",
-                                'type': 'so' })
+                                'type': 'busy' })
 
-            elif datetime.datetime.strptime(so['end'], '%Y-%m-%d %H:%M').date() == dt:
+            elif datetime.datetime.strptime(task['end'], '%Y-%m-%d %H:%M').date() == dt:
 
                 # check if starts and ends in the same day, if not, get only this day info
-                if (so['start'][:10] == so['end'][:10]):
-                    ds.append({ 'start': so['start'][-5:],
-                                'end': so['end'][-5:],
-                                'type': 'so' })
+                if (task['start'][:10] == task['end'][:10]):
+                    ds.append({ 'start': task['start'][-5:],
+                                'end': task['end'][-5:],
+                                'type': 'busy' })
                 else:
                     ds.append({ 'start': "00:00",
-                                'end': so['end'][-5:],
-                                'type': 'so' })
+                                'end': task['end'][-5:],
+                                'type': 'busy' })
 
             # and if it is the last day, check if there is overflow
-            #if (dt == dt_end) and (datetime.datetime.strptime(so['end'], '%Y-%m-%d %H:%M').date() > dt_end):
+            #if (dt == dt_end) and (datetime.datetime.strptime(task['end'], '%Y-%m-%d %H:%M').date() > dt_end):
             #    overFlow = True
 
         # when there is any task that finishes at 00:00
@@ -119,33 +119,33 @@ def getSchedule(list_tasks, list_ws, start_date, end_date):
             i += 1
 
         # identify the overtime periods and split them from the s.o.
-        for so in ds:
+        for task in ds:
 
             # so, first split all the s.o's that cross any shift start or end
             for sc in list_ws[weekday]:
                 
-                if sc[0] > so['start'] and sc[0] < so['end']:
+                if sc[0] > task['start'] and sc[0] < task['end']:
                     ds.append({ 'start': sc[0],
-                                'end': so['end'],
-                                'type': 'so' })
-                    so['end'] = sc[0]
+                                'end': task['end'],
+                                'type': 'busy' })
+                    task['end'] = sc[0]
 
-                if sc[1] > so['start'] and sc[1] < so['end']:
+                if sc[1] > task['start'] and sc[1] < task['end']:
                     ds.append({ 'start': sc[1],
-                                'end': so['end'],
-                                'type': 'so' })
-                    so['end'] = sc[1]
+                                'end': task['end'],
+                                'type': 'busy' })
+                    task['end'] = sc[1]
 
         # second, label correctly each period
-        for so in ds:
+        for task in ds:
             
             inshift = 0
             for sc in list_ws[weekday]:
-                if (so['start'] >= sc[0] and so['end'] <= sc[1]):
+                if (task['start'] >= sc[0] and task['end'] <= sc[1]):
                     inshift += 1
             
             if (inshift == 0):
-                so['type'] = 'overtime'
+                task['type'] = 'overtime'
 
 
         # now join with the schedule info

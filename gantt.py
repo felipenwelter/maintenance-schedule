@@ -25,10 +25,10 @@ def showGantt(wl=[], ws=[]):
 
     # if do not receive a list of tasks, load example from json
     if len(wl) == 0:
-        wl = jm.loadJSON_SO() #load list of tasks from JSON
+        wl = jm.loadJSON_tasks() #load list of tasks from JSON
 
     if len(ws) == 0:
-        work_shift = jm.loadJSON_WS() #load list of work shifts from JSON
+        work_shift = jm.loadJSON_ws() #load list of work shifts from JSON
 
     #initialize global variables
     start_date = ''
@@ -38,20 +38,20 @@ def showGantt(wl=[], ws=[]):
     full_schedule = []
 
     # aggregate tasks by employee
-    for so in wl['workload']:
+    for task in wl['workload']:
         idx = -1
         i = 0
         
         while i < len(list_tasks):
-            if (list_tasks[i]['employee'] == so['employee']):
+            if (list_tasks[i]['employee'] == task['employee']):
                 idx = i
             i += 1
         
         if (idx < 0):
-            list_tasks.append( { 'employee': so['employee'], 'schedule': [] } )
-            list_tasks[-1]['schedule'].append( {'start': so['start'], 'end': so['end']} )
+            list_tasks.append( { 'employee': task['employee'], 'schedule': [] } )
+            list_tasks[-1]['schedule'].append( {'start': task['start'], 'end': task['end']} )
         else:
-            list_tasks[idx]['schedule'].append( {'start': so['start'], 'end': so['end']} )
+            list_tasks[idx]['schedule'].append( {'start': task['start'], 'end': task['end']} )
 
 
     # order each list of tasks by start date
@@ -83,7 +83,7 @@ def showGantt(wl=[], ws=[]):
                         Finish=(day+appt['end']), Resource=appt['type'])
                 gantt.append(new)
 
-    colors = {'so': 'rgb(30,144,255)',
+    colors = {'busy': 'rgb(30,144,255)',
             'overtime': 'rgb(24,96,255)',
             'idle': 'rgb(230,90,90)',
             'unavailable': 'rgb(205,205,205)'}

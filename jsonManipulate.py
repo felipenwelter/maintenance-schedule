@@ -1,10 +1,10 @@
 import json
 
 #---------------------------------------------------------------
-# Function loadJSON_SO: 
+# Function loadJSON_tasks: 
 #    Load json file with tasks/service order information
 #---------------------------------------------------------------
-def loadJSON_SO():
+def loadJSON_tasks():
 
     data = {}
     data['workload'] = []
@@ -21,11 +21,11 @@ def loadJSON_SO():
     return data
 
 #---------------------------------------------------------------
-# Function loadJSON_WS: 
+# Function loadJSON_ws: 
 #    Load json file with workshift information (daily periods of 
 #    availability for each employee)
 #---------------------------------------------------------------
-def loadJSON_WS():
+def loadJSON_ws():
 
     data = {}
     data['workshift'] = []

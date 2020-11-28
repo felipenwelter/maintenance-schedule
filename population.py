@@ -146,7 +146,7 @@ class Population:
                     })
 
 
-        work_shift = jm.loadJSON_WS() #load list of work shifts from JSON
+        work_shift = jm.loadJSON_ws() #load list of work shifts from JSON
 
         showGantt(data,work_shift)
         

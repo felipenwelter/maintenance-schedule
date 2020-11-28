@@ -95,11 +95,11 @@ class Chromosome:
         for so in self.pop.ga.entry['tasks']: # map genes to original tasks
             obj = self.genes[ (count*2) : (count*2)+2 ]
 
-            so_day = obj[0] # get the day gene
-            so_time = obj[1] # get the time block gene
+            task_day = obj[0] # get the day gene
+            task_time = obj[1] # get the time block gene
 
-            start = self.pop.start_date + timedelta(days=so_day)
-            start += timedelta(minutes=(so_time * config.block_size))
+            start = self.pop.start_date + timedelta(days=task_day)
+            start += timedelta(minutes=(task_time * config.block_size))
             end = start + timedelta(hours=so['duration'])
 
             list_tasks.append(so['number'])
@@ -133,16 +133,16 @@ class Chromosome:
         
         # aggregate them by employee
         count = 0
-        for so in self.task_list:
+        for task in self.task_list:
 
-            idx = search(employees, so['employee'])
+            idx = search(employees, task['employee'])
             if idx < 0:
-                employees.append( so['employee'] )
-                jobs.append( [ {'start': so['start'],
-                                'end': so['end'] } ] )
+                employees.append( task['employee'] )
+                jobs.append( [ {'start': task['start'],
+                                'end': task['end'] } ] )
             else:
-                jobs[idx].append( {'start': so['start'],
-                                   'end': so['end'] } )
+                jobs[idx].append( {'start': task['start'],
+                                   'end': task['end'] } )
 
             count += 1
 
@@ -272,16 +272,16 @@ class Chromosome:
         
         # aggregate them by employee
         count = 0
-        for so in self.task_list:
+        for task in self.task_list:
 
-            idx = search(employees, so['employee'])
+            idx = search(employees, task['employee'])
             if idx < 0:
-                employees.append( so['employee'] )
-                jobs.append( [ {'start': so['start'],
-                                'end': so['end'] } ] )
+                employees.append( task['employee'] )
+                jobs.append( [ {'start': task['start'],
+                                'end': task['end'] } ] )
             else:
-                jobs[idx].append( {'start': so['start'],
-                                   'end': so['end'] } )
+                jobs[idx].append( {'start': task['start'],
+                                   'end': task['end'] } )
 
             count += 1
 
@@ -340,9 +340,9 @@ class Chromosome:
         dt_end = datetime.datetime.strptime(end_date, '%Y-%m-%d %H:%M').date()
 
         #employees = []
-        #for so in data['tasks']:
-        #    if search(employees, so['employee']) < 0:
-        #        employees.append(so['employee'])
+        #for task in data['tasks']:
+        #    if search(employees, task['employee']) < 0:
+        #        employees.append(task['employee'])
 
         
 

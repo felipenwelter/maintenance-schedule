@@ -34,6 +34,10 @@ After setting up the configurations and entry files with tasks and workshifts, j
 python3 main.py
 ```
 
+## Results
+![image](./images/example.png)
+
+
 
 ## Authors
 

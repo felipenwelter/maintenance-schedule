@@ -12,7 +12,7 @@ print("UDESC 2020 - Computação Natural")
 
 #for i in range(1,10):
 ga = geneticAlgorithm()
-ga.plot = False
+#ga.plot = False
 ga.run()
 
 #    r = ga.generation_count
