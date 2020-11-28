@@ -178,88 +178,46 @@ class Chromosome:
 
 
     def mutate(self):
-    #    '''Método que realiza a mutação de um cromossomo, que pode ser feito de duas formas:
-    #    - fix: define um grupo fixo de genes que sofrem mutação
-    #    - random: define aleatoriamente quais genes sofrem mutação
-    #    - none: não realiza nenhuma mutação'''
+        '''Mutate a chromosome changing its genes'''
+        # The mutation movement consists of moving the task forward or backward
+        # a number of time blocks, controlled by a 'pace' parameter, that defines
+        # the radius of the movement, example:
+        # -------oooo----------------------------- task position (timeline)
+        # <<<<<<<oooo>>>>>>>>>>>>>>>>>><<<<<<<<<<< pace 1 = EXPLORATION
+        # <<<<<<<oooo>>>>>>>>>------------------<< pace 0.5
+        # ---<<<<oooo>>>>------------------------- pace 0.2 = EXPLOITATION
 
-        for i in range(self.length):
+        #direction = (-1 if direction == 0 else 1)
+        noChange = self.pop.ga.no_change_generations
+
+        if (noChange <= 100):
+            #pace = (noChange * noChange) / 2500 - (0.04 * noChange) + 1
+            pace = ((9/25000) * (noChange * noChange)) - ((9/250) * noChange) + 1
+        else:
+            pace = 1.0
+
+        # to avoid being locked in a local optimum, this function
+        # navigate from exploration to exploitation  (0-50 generations)
+        # and then from exploitation to exploration (51-100 generations)
+        #   ^
+        #   |(pass)
+        # 1 |\     /-----
+        #   | \   /
+        # 0 |--\-/----> (noChange)
+        #   0  50 100
+        
+        interval = int( ( self.limits[1] * (self.limits[0]+1) / 2 ) * pace)
+
+        for i in range(1,self.length,2): # to get only the 'hour gene'
             
-            if divmod(i,2)[1] == 1: # altera a hora
-                #if (random.randint(0,1) == 1): # aleatoriamente
-                direction = random.randint(-1,1) #-1 backward, 0 no change, 1 forward
-                #direction = (-1 if direction == 0 else 1)
-                #passs = random.randint(0,10) /10
-                
-                ### PASSO INTEIRO
-                #passs = 10 # 1% de self.limits[1]
-                #plus = int( (passs / 100) * self.limits[1] )
-
-    # TODO - o mutation rate deveria ser em relacao a todo o periodo válido,
-    # e nao somente ao periodo limite de 1 dia
-    # ex: limits[0]+1 = 2  X limits[1] = 144  == 288, ai nao precisaria somar dias
-    # so fazer o controle a cada 144
-
-
-    # outra forma seria, ao inves de usar timeblock aleatorio, direcionar para um
-    # dos intervalos validos (idle) do calendario da pessoa, o que certamente seria bem mais complicado
-    # e talvez seja até ruim quando tiver mais OS`s do que tempo # ou ainda alterar so as OS`s que estao ruins
-
-                ### PASSO RANDOMICO, LIMITE % DE 144 (um dia)
-                #passs = 0.5 # 1% de self.limits[1]
-                #interval = int( self.limits[1] * (self.limits[0]+1) / 2 )
-                #plus = int(random.randint(1, interval) * passs) * direction
-
-                ### PASSO ajustado conforme noChange (preso em ótimos locais)
-                # exploration 0.1 --- 1.0 exploitation
-
-                noChange = self.pop.ga.no_change_generations
-
-                if noChange > 50:
-                #    a = 0
-                    noChange = 0 # se ficou muito tempo preso, busca fora
-
-                noChangeLimit = 50 ## 35 geracoes sem mudanca, foca no exploitation (busca fora)
-                noChange = noChangeLimit if noChange > noChangeLimit else noChange
-                passs = 1 - (noChange / noChangeLimit) # pass%(x100) de self.limits[1]
-                passs = 0.1 if passs == 0 else passs
-                interval = int( ( self.limits[1] * (self.limits[0]+1) / 2 ) * passs)
-
-                if passs >= 0.5: #busca fora
-                    #plus = int(random.randint( int(interval/2), interval) ) * direction
-                    plus = int(random.randint( 1, interval) ) * direction
-                else: #refinamento
-                    plus = int(random.randint( 1, interval) ) * direction
-
-                self.addTimeBlocks(i,plus)
+            # define if mutate, and the direction of the movemnt
+            direction = random.randint(-1,1) #-1 backward, 0 no change, 1 forward
+            
+            # add the mutation value
+            plus = int(random.randint( 1, interval) ) * direction
+            self.addTimeBlocks(i,plus)
 
         return
-    
-    #    if (self.mutateMethod == "fix"):
-    #        self.fix_mutate()
-    #    elif (self.mutateMethod == "random"):
-    #        self.rand_mutate()
-    #    self.evaluate_fitness()  # atualiza características do cromossomo
-
-    #def fix_mutate(self):
-    #    '''Faz a mutação dos genes centrais do cromossomo, assumindo valores aleatórios'''
-    #    l = self.compositionSize//2
-    #    i = l - (l//2)
-    #    f = i + l
-    #    for m in range(i, f):
-    #        self.locus_change(m)
-
-    #def rand_mutate(self):
-    #    '''Faz a mutação de um número aleatório de genes, com valores aleatórios'''
-    #    r = random.randint(0, self.compositionSize)
-    #    for i in range(0, r):
-    #        m = random.randint(0, self.compositionSize-1)
-    #        self.locus_change(m)
-
-    #def locus_change(self, m):
-    #    '''Faz a mutação de um gene em específico para um valor aleatório'''
-    #    self.composition[m] = random.randint(0, 1)
-
 
 
 

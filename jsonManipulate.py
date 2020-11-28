@@ -9,7 +9,7 @@ def loadJSON_tasks():
     data = {}
     data['workload'] = []
 
-    with open('entry-gantt.json') as json_file:
+    with open('datasets/entry-gantt.json') as json_file:
         source = json.load(json_file)
         for p in source['workload']:
             data['workload'].append({
@@ -31,7 +31,7 @@ def loadJSON_ws():
     data['workshift'] = []
     days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
 
-    with open('entry-work-shift.json') as json_file:
+    with open('datasets/entry-work-shift.json') as json_file:
         
         source = json.load(json_file)
         

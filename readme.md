@@ -55,5 +55,8 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 
 - Algorithm could also define the employee for each task, beyond only day and time;
 - Tasks must respect tollerance interval, not to be allocated far from expected maintenance date;
-- Auto adjustment of parameters, like population size and number of generations.
+- Auto adjustment of parameters, like population size and number of generations;
+- Consider employee specialties to auto allocate tasks;
+- Multiobjective, adding employee ociosity;
+- Tasks dependency, reducing makespan.
 
