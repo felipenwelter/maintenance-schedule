@@ -8,6 +8,7 @@ import json
 import copy
 
 # limpar fontes
+# trocar termo service order por task
 # comentar e organizar funcoes
 # setar metodo para mutate e crossover
 # criar metodo externo para controlar pass size (e até mutation rate)

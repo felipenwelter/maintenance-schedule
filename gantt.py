@@ -23,7 +23,7 @@ def showGantt(wl=[], ws=[]):
     
     global start_date, end_date
 
-    # if do not receive a list of service_orders, load from json
+    # if do not receive a list of service_orders, load example from json
     if len(wl) == 0:
         wl = jm.loadJSON_SO() #load list of service orders from JSON
 
