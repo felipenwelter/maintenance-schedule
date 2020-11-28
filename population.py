@@ -7,8 +7,6 @@ import jsonManipulate as jm
 import json
 import copy
 
-# limpar fontes
-# trocar termo service order por task
 # comentar e organizar funcoes
 # setar metodo para mutate e crossover
 # criar metodo externo para controlar pass size (e até mutation rate)
@@ -42,11 +40,11 @@ class Population:
         self.ga = ga # class GA of the population (to access parameters)
 
         self.chromosomes = []  # keep each chromosome (individuals)
-        self.chromosome_length = 0 # composed by [days,time block] * number of service orders
+        self.chromosome_length = 0 # composed by [days,time block] * number of tasks
         self.chromosome_limits = [0,0] # defined by number of days and number of time blocks
         self.size = config.population_size  # define the number of chromosomes (individuals) for the population
         
-        self.so_list = {} # list of service orders
+        self.task_list = {} # list of tasks
         self.start_date = '' # first day of the period to be alocated
         self.end_date = '' # last day of the period
         self.total_days = 0 # number of days (difference between end and start days)
@@ -91,14 +89,14 @@ class Population:
 
     def config(self):
 
-        # deep copy of the service order list
-        self.so_list = []
-        for li in self.ga.entry['service_orders']:
+        # deep copy of the tasks list
+        self.task_list = []
+        for li in self.ga.entry['tasks']:
             d2 = copy.deepcopy(li)
-            self.so_list.append(d2)
+            self.task_list.append(d2)
 
-        # order the list of service_orders by start date
-        #self.so_list.sort(key=sortingRule)
+        # order the list of tasks by start date
+        #self.task_list.sort(key=sortingRule)
 
         #-----------------------------------------
         # to calculate the number of days
@@ -123,7 +121,7 @@ class Population:
         # update the limits for the genes
         self.chromosome_limits = [tot_days,tot_blocks-1]
         # update the number of genes in each chromosome
-        self.chromosome_length = len(self.so_list) * len(self.chromosome_limits)
+        self.chromosome_length = len(self.task_list) * len(self.chromosome_limits)
 
 
 
@@ -139,7 +137,7 @@ class Population:
         # aggregate the scheduled time to show gantt
         data = {}
         data['workload'] = []
-        for so in c.so_list:
+        for so in c.task_list:
             data['workload'].append({
                         'number': so['number'],
                         'start': so['start'],
@@ -232,8 +230,8 @@ class Population:
         p2 = ancestor_pop.chromosomes[c2]
         p3 = ancestor_pop.chromosomes[c3]
 
-        limit = len(ancestor_pop.so_list) # quantity of service orders
-        locus_by_SO = int(self.chromosome_length / limit) # quantity of genes for each service order
+        limit = len(ancestor_pop.task_list) # quantity of tasks
+        locus_by_SO = int(self.chromosome_length / limit) # quantity of genes for each task
         cuts = random.sample(range(1,limit-1),k=2) # cut position
         cuts.sort()
 
@@ -338,21 +336,21 @@ class Population:
             for i in range(1,c.length,2): # apenas campos hora
 
                 c.addTimeBlocks(i,passs)
-                c.update() # update service order list and calc fitness
+                c.update() # update task list and calc fitness
                 
                 if c.fitness >= fitness: # piorou ou nao mudou
                     c.addTimeBlocks(i,-passs) # restaura
                     c.addTimeBlocks(i,-passs) # anda no sentido contrário
-                    c.update() # update service order list and calc fitness
+                    c.update() # update task list and calc fitness
 
                     while (c.fitness != -1) and (c.fitness < fitness):
                         print( "adjusting - ")
                         fitness = c.fitness
                         c.addTimeBlocks(i,-passs)
-                        c.update() # update service order list and calc fitness                  
+                        c.update() # update task list and calc fitness                  
 
                     c.addTimeBlocks(i,passs)
-                    c.update() # update service order list and calc fitness
+                    c.update() # update task list and calc fitness
                     fitness = c.fitness
 
                 elif c.fitness < fitness: # melhorou
@@ -361,13 +359,13 @@ class Population:
                         print( "adjusting + ")
                         fitness = c.fitness
                         c.addTimeBlocks(i,passs)
-                        c.update() # update service order list and calc fitness
+                        c.update() # update task list and calc fitness
                     
                     c.addTimeBlocks(i,-passs)
-                    c.update() # update service order list and calc fitness
+                    c.update() # update task list and calc fitness
                     fitness = c.fitness
             
-            c.update() # update service order list and calc fitness
+            c.update() # update task list and calc fitness
             self.updateFitnessList()
             
         return

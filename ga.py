@@ -6,7 +6,7 @@ import json
 
 #---------------------------------------------------------------
 # Class geneticAlgorithm: execute genetic algorithm (G.A.) to
-#   solve maintenance tasks scheduling (service orders)
+#   solve maintenance tasks scheduling (tasks/service orders)
 #---------------------------------------------------------------
 class geneticAlgorithm:
 
@@ -14,14 +14,14 @@ class geneticAlgorithm:
         '''Initialize class opening configuration file'''
 
         self.entry = {}
-        self.file_so = config.service_order_dataset
+        self.file_tasks = config.task_dataset
 
         self.no_change_generations = 0
         self.generation_count = 0
         self.plot = True
 
         # Read json file and set some attributes for the population
-        with open(f'datasets/{self.file_so}.json') as json_file:
+        with open(f'datasets/{self.file_tasks}.json') as json_file:
             self.entry = json.load(json_file)
 
 

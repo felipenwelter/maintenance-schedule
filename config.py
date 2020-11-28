@@ -1,4 +1,4 @@
-service_order_dataset = "entry"
+task_dataset = "entry"
 
 # number of individuals for each population
 population_size = 20

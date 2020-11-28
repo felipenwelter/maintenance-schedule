@@ -6,15 +6,15 @@
                },
 
    "period_comment": { 
-                  "start": "first day to allocate service orders, format YYYY-MM-DD",
-                  "end": "last day to allocate service orders, format YYYY-MM-DD"
+                  "start": "first day to allocate task, format YYYY-MM-DD",
+                  "end": "last day to allocate task, format YYYY-MM-DD"
                },
                
-   "serivce_orders_comment": { 
-                  "number": "must be the primary key of the service order",
+   "task_comment": { 
+                  "number": "must be the primary key of the task",
                   "date": "date suggested to execution, format YYYY-MM-DD",
                   "duration": "duration time, in hours",
-                  "employee": "name of the employee who execute the service",
+                  "employee": "name of the employee who execute the task",
                   "equipment": "identification of the equipment",
                   "equipment-criticality": "1 (more), 2 or 3 (less) indicates the criticality"
                },
@@ -48,7 +48,7 @@
          "end":"2020-11-20"
       },
 
-   "service_orders": [
+   "tasks": [
 
       {
          "number":"000881", 

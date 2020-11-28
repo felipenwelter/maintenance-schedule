@@ -2,7 +2,7 @@ import json
 
 #---------------------------------------------------------------
 # Function loadJSON_SO: 
-#    Load json file with service order information
+#    Load json file with tasks/service order information
 #---------------------------------------------------------------
 def loadJSON_SO():
 

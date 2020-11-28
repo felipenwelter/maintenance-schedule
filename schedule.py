@@ -54,7 +54,7 @@ def getWorkShift(employee):
 
 #---------------------------------------------------------------
 # Função: getSchedule
-# Parâmetros: list_so - list of service_orders
+# Parâmetros: list_tasks - list of tasks
 #             list_ws - list of the work_shift
 #             start_date - global start date (for all S.O. of all employees)
 #             end_date - global end date (for all S.O. of all employees)
@@ -62,7 +62,7 @@ def getWorkShift(employee):
 #          with what is called idle schedules and also with 
 #          the unavailable periods (off schedule)
 #---------------------------------------------------------------
-def getSchedule(list_so, list_ws, start_date, end_date):
+def getSchedule(list_tasks, list_ws, start_date, end_date):
     
     #overflow = False
     full_periods = []
@@ -74,7 +74,7 @@ def getSchedule(list_so, list_ws, start_date, end_date):
         ds = [] #day_schedule
         weekday = dt.weekday()
 
-        for so in list_so:
+        for so in list_tasks:
 
             # first of all, aggregate only the same day infos
             if datetime.datetime.strptime(so['start'], '%Y-%m-%d %H:%M').date() == dt:
@@ -105,12 +105,12 @@ def getSchedule(list_so, list_ws, start_date, end_date):
             #if (dt == dt_end) and (datetime.datetime.strptime(so['end'], '%Y-%m-%d %H:%M').date() > dt_end):
             #    overFlow = True
 
-        # when there is any service order that finishes at 00:00
+        # when there is any task that finishes at 00:00
         # then it will be included a period with same start and end
         # so, the next step removes this invalid periods
         # ex: {'end': '2020-11-17 00:00', 'start': '2020-11-16 21:00'}
         # would generate 2020-11-17 00:00 to 2020-11-17 00:00
-        # obs: not expecting that the service orders must be adjusted before
+        # obs: not expecting that the task must be adjusted before
         i = 0
         while i < len(ds):
             if ds[i]['start'] == ds[i]['end']:

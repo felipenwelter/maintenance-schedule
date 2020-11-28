@@ -13,7 +13,7 @@ end_date = ''
 
 #---------------------------------------------------------------
 # Function ShowGantt: 
-#     Show a gantt chart with the periods  of each service order 
+#     Show a gantt chart with the periods of each task
 #     scheduled for each employee
 # Parameters
 #    wl - work list, optional (load default)
@@ -23,9 +23,9 @@ def showGantt(wl=[], ws=[]):
     
     global start_date, end_date
 
-    # if do not receive a list of service_orders, load example from json
+    # if do not receive a list of tasks, load example from json
     if len(wl) == 0:
-        wl = jm.loadJSON_SO() #load list of service orders from JSON
+        wl = jm.loadJSON_SO() #load list of tasks from JSON
 
     if len(ws) == 0:
         work_shift = jm.loadJSON_WS() #load list of work shifts from JSON
@@ -34,32 +34,32 @@ def showGantt(wl=[], ws=[]):
     start_date = ''
     end_date = ''
     gantt = []
-    list_so = []
+    list_tasks = []
     full_schedule = []
 
-    # aggregate service orders by employee
+    # aggregate tasks by employee
     for so in wl['workload']:
         idx = -1
         i = 0
         
-        while i < len(list_so):
-            if (list_so[i]['employee'] == so['employee']):
+        while i < len(list_tasks):
+            if (list_tasks[i]['employee'] == so['employee']):
                 idx = i
             i += 1
         
         if (idx < 0):
-            list_so.append( { 'employee': so['employee'], 'schedule': [] } )
-            list_so[-1]['schedule'].append( {'start': so['start'], 'end': so['end']} )
+            list_tasks.append( { 'employee': so['employee'], 'schedule': [] } )
+            list_tasks[-1]['schedule'].append( {'start': so['start'], 'end': so['end']} )
         else:
-            list_so[idx]['schedule'].append( {'start': so['start'], 'end': so['end']} )
+            list_tasks[idx]['schedule'].append( {'start': so['start'], 'end': so['end']} )
 
 
-    # order each list of service_orders by start date
-    for i in list_so:
+    # order each list of tasks by start date
+    for i in list_tasks:
         i['schedule'].sort(key=schedule.sortingRule)
 
     # identifies the first and last date at all
-    for i in list_so:
+    for i in list_tasks:
         if ( start_date == '' or i['schedule'][0]['start'] < start_date):
             start_date = i['schedule'][0]['start']
         if ( end_date == '' or i['schedule'][-1]['end'] > end_date):
@@ -69,7 +69,7 @@ def showGantt(wl=[], ws=[]):
     end_date = end_date[:11]+"23:59"
 
     # get full schedule (with busy, idle and unavailable time)
-    for i in list_so:
+    for i in list_tasks:
         full_schedule.append( { 'employee': i['employee'],
                                 'schedule': schedule.getSchedule(i['schedule'], schedule.getWorkShift(i['employee']),
                                 start_date, end_date ) } ) 

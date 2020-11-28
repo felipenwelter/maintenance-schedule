@@ -62,11 +62,11 @@ class Chromosome:
         self.limits = pop.chromosome_limits  # defined by number ofdays and number of time blocks
         self.fitness = 0 # acceptance criteria
 
-        # deep copy of the service order list
-        self.so_list = []
-        for li in self.pop.so_list:
+        # deep copy of the task list
+        self.task_list = []
+        for li in self.pop.task_list:
             d2 = copy.deepcopy(li)
-            self.so_list.append(d2)
+            self.task_list.append(d2)
 
         
     def initialize(self):
@@ -77,22 +77,22 @@ class Chromosome:
             else:
                 self.genes[i] = random.randint(0, self.limits[1])
 
-        self.update() # update service order list and calc fitness
+        self.update() # update task list and calc fitness
 
 
     def update(self):
         '''Update the chromosome info using the genes definitions'''
-        self.updateSOList() # update the service order list using genes information
+        self.updateTaskList() # update the task list using genes information
         self.calcFitness() # calculate fitness of each individual
 
 
-    def updateSOList(self):
+    def updateTaskList(self):
         '''Convert the genes into readable day-time info
-           and save the updated service orders list into the chromosome'''
+           and save the updated task list into the chromosome'''
         count = 0
-        list_so = []
+        list_tasks = []
         list_dates = []
-        for so in self.pop.ga.entry['service_orders']: # map genes to original service orders
+        for so in self.pop.ga.entry['tasks']: # map genes to original tasks
             obj = self.genes[ (count*2) : (count*2)+2 ]
 
             so_day = obj[0] # get the day gene
@@ -102,14 +102,14 @@ class Chromosome:
             start += timedelta(minutes=(so_time * config.block_size))
             end = start + timedelta(hours=so['duration'])
 
-            list_so.append(so['number'])
+            list_tasks.append(so['number'])
             list_dates.append([ start.strftime("%Y-%m-%d %H:%M"),
                                 end.strftime("%Y-%m-%d %H:%M") ])
             count += 1
 
         # then use the saved arrays to append the start/end infos
-        for so in self.so_list:
-            idx = search(list_so, so['number'])
+        for so in self.task_list:
+            idx = search(list_tasks, so['number'])
             so['start'] = list_dates[idx][0]
             so['end'] = list_dates[idx][1]
 
@@ -133,7 +133,7 @@ class Chromosome:
         
         # aggregate them by employee
         count = 0
-        for so in self.so_list:
+        for so in self.task_list:
 
             idx = search(employees, so['employee'])
             if idx < 0:
@@ -152,12 +152,12 @@ class Chromosome:
         while emp < (len(employees)):
             sum_overtime = 0
 
-            list_so = jobs[emp]
+            list_tasks = jobs[emp]
             list_ws = schedule.getWorkShift(employees[emp])
             start_date = self.pop.start_date.strftime("%Y-%m-%d %H:%M")
             end_date = self.pop.end_date.strftime("%Y-%m-%d %H:%M")
 
-            emp_schedule = schedule.getSchedule( list_so, list_ws, start_date, end_date)
+            emp_schedule = schedule.getSchedule( list_tasks, list_ws, start_date, end_date)
 
             for day in emp_schedule:
                 for period in day['list']:
@@ -272,7 +272,7 @@ class Chromosome:
         
         # aggregate them by employee
         count = 0
-        for so in self.so_list:
+        for so in self.task_list:
 
             idx = search(employees, so['employee'])
             if idx < 0:
@@ -329,18 +329,18 @@ class Chromosome:
         start_date = ''
         end_date = ''
 
-        # order the list of service_orders by start date
-        data['service_orders'].sort(key=sortingRule)
+        # order the list of tasks by start date
+        data['tasks'].sort(key=sortingRule)
 
         # identifies the first and last date at all
-        start_date = data['service_orders'][0]['start'] + " " + "00:00"
-        end_date = data['service_orders'][-1]['start'] + " " + "23:59"
+        start_date = data['tasks'][0]['start'] + " " + "00:00"
+        end_date = data['tasks'][-1]['start'] + " " + "23:59"
 
         dt = datetime.datetime.strptime(start_date, '%Y-%m-%d %H:%M').date()
         dt_end = datetime.datetime.strptime(end_date, '%Y-%m-%d %H:%M').date()
 
         #employees = []
-        #for so in data['service_orders']:
+        #for so in data['tasks']:
         #    if search(employees, so['employee']) < 0:
         #        employees.append(so['employee'])
 
@@ -351,7 +351,7 @@ class Chromosome:
         genes_time = len("{0:b}".format(144)) #10min blocks (60/10 = 6 * 24 = 144)
         genes_length = genes_days + genes_time # + genes_employees 
         
-        self.length = genes_length * len(data['service_orders'])
+        self.length = genes_length * len(data['tasks'])
         self.genes = [0 for i in range(self.length)]
 
 
