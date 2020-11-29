@@ -7,17 +7,12 @@ import jsonManipulate as jm
 import json
 import copy
 
-# comentar e organizar funcoes
-# setar metodo para mutate e crossover
-# criar metodo externo para controlar pass size (e até mutation rate)
-# implementar data fixa e % de variacao
 # implementar custo de maquina parada
-# montar readme
+# implementar data fixa e % de variacao
+# crossover de mais pontos!
+# first solution - algo que tenha custo bom
 
-### TODO - crossover (order=weight) com mais pais, se tiver mais OS's, será que melhora?
-
-
-#### TODO - trabalhar com a primeira solucao, ja forcar algo que tenha um custo bom
+# jogar autoAdjust pra dentro da classe de cromossomos mesmo?
 
 def sortingRule(e):
   return e['date']
@@ -160,7 +155,7 @@ class Population:
             print("total of feasible solutions: ", len(self.list_fitness),"(", int(pct) ,"% ) and",self.ga.no_change_generations,"no change - round",self.ga.generation_count )
             print("best fitness = ", self.list_fitness[0][1])
             #for i in self.list_fitness:
-            #    print(i[1], " ", self.chromosomes[i[0]].genes)
+                #print(i[1], " ", self.chromosomes[i[0]].genes)
         else:
             print("no feasible solutions")
 
@@ -224,39 +219,39 @@ class Population:
         '''Crossover ancestral information to generate new individuals'''
 
         # select parents (chromosome position in self.chromosomes)
-        c1, c2, c3 = self.selectParents(ancestor_pop)
+        c1, c2 = self.selectParents(ancestor_pop)
 
         p1 = ancestor_pop.chromosomes[c1]
         p2 = ancestor_pop.chromosomes[c2]
-        p3 = ancestor_pop.chromosomes[c3]
 
         limit = len(ancestor_pop.task_list) # quantity of tasks
         locus_by_SO = int(self.chromosome_length / limit) # quantity of genes for each task
         cuts = random.sample(range(1,limit-1),k=2) # cut position
         cuts.sort()
 
-        if (config.orderParentsMethod == 'random'):
-            elements = random.sample([p1,p2,p3], k=3) # shuffle parents
+        #if (config.orderParentsMethod == 'random'):
+        elements = random.sample([p1,p2], k=2) # shuffle parents
 
-        else: #if (config.orderParentsMethod == 'weight'):
-            # organize the parents to use more genes of the parents with best fitness
-            weight = [cuts[0], cuts[1]-cuts[0], limit-cuts[1]] # calculate number of genes between cuts
-            parents = [p1,p2,p3]
-            parents.sort(key=sortbyFitness) # sort parents: first the best fitness
-            elements = [0,0,0] # final elements
+        #else: #if (config.orderParentsMethod == 'weight'): #servia para pais > 2
+        #    # organize the parents to use more genes of the parents with best fitness
+        #    weight = [cuts[0], limit-cuts[0]] # calculate number of genes between cuts
+        #    parents = [p1,p2]
+        #    parents.sort(key=sortbyFitness) # sort parents: first the best fitness
+        #    elements = [0,0] # final elements
+        #
+        #    for a in range(0,2): # order the parents considering their fitness x genes used
+        #        best = 0
+        #        for b in range(1,2):
+        #            if (weight[b] > weight[best]):
+        #                best = b # identify the position with greater number of genes
+        #        elements[best] = parents[a] # and define it to the parent with best fitness
+        #        weight[best] = -1
 
-            for a in range(0,3): # order the parents considering their fitness x genes used
-                best = 0
-                for b in range(1,3):
-                    if (weight[b] > weight[best]):
-                        best = b # identify the position with greater number of genes
-                elements[best] = parents[a] # and define it to the parent with best fitness
-                weight[best] = -1
-        
-        
-        genes = elements[0].genes[:( cuts[0] *locus_by_SO)]
-        genes += elements[1].genes[( cuts[0] *locus_by_SO):( cuts[1] *locus_by_SO)]
-        genes += elements[2].genes[( cuts[1] *locus_by_SO):]
+        pOrd = random.sample([0]*2+[1]*2, k=3)
+
+        genes =  elements[ pOrd[0] ].genes[:( cuts[0] *locus_by_SO)]
+        genes += elements[ pOrd[1] ].genes[( cuts[0] *locus_by_SO):( cuts[1] *locus_by_SO)]
+        genes += elements[ pOrd[2]].genes[( cuts[1] *locus_by_SO):]
 
         chrom = Chromosome(self)
         chrom.genes = genes.copy()
@@ -272,51 +267,53 @@ class Population:
 
             limit = len(ancestor_pop.list_fitness)
 
-            if (limit >= 3): #TODO - NEM SEMPRE SE MOSTRA EFETIVO USAR PAIS DIFERENTES
-                parents = random.sample(range(0,limit),k=3) # return unique elements
+            if (limit >= 2): #TODO - NEM SEMPRE SE MOSTRA EFETIVO USAR PAIS DIFERENTES
+                parents = random.sample(range(0,limit),k=2) # return unique elements
             else:
-                parents = random.choices(range(0,limit),k=3) # can repeat an element
+                parents = random.choices(range(0,limit),k=2) # can repeat an element
 
 
             # randomly gets the chromosome position
             p1 = parents[0] #random.randint(0, limit)
             p2 = parents[1] #random.randint(0, limit)
-            p3 = parents[2] #random.randint(0, limit)
 
             # uses the position to find the chromosome in self.chromosomes
             c1 = ancestor_pop.list_fitness[p1][0]
             c2 = ancestor_pop.list_fitness[p2][0]
-            c3 = ancestor_pop.list_fitness[p3][0]
 
             #print("number of good solutions = ", limit+1, "selected = ", p1, p2, p3)
         
         # in this case uses the roulette wheel method to select feasible parents
         else: #(config.selectParentsMethod == 'roulette'): 
+            
+            list_weight = [0] * len(ancestor_pop.list_fitness)
+            limit = ancestor_pop.list_fitness[-1][1] * 1.5
 
-            sum_fitness = sum(i[1] for i in ancestor_pop.list_fitness)
+            for i in range(0, len(list_weight) ):
+                list_weight[i] = limit - ancestor_pop.list_fitness[i][1]
+            
+            sum_fitness = sum(i for i in list_weight)
+            
+            #roleta ta ao contrario, caramba!
             sum1 = random.randint(0, int(sum_fitness) )
             sum2 = random.randint(0, int(sum_fitness) )
-            sum3 = random.randint(0, int(sum_fitness) )
-            p1, p2, p3 = -1, -1, -1
+            p1, p2 = -1, -1
             value, idx = 0, 0
-            while (idx < len( ancestor_pop.list_fitness) ):
-                value += ancestor_pop.list_fitness[idx][1]
+            while (idx < len( list_weight ) ):
+                value += list_weight[idx]
                 if (p1 == -1) and (value >= sum1):
                     p1 = idx
                 if (p2 == -1) and (value >= sum2):
                     p2 = idx
-                if (p3 == -1) and (value >= sum3):
-                    p3 = idx
-                if (p1 >= 0 and p2 >= 0 and p3 >= 0):
+                if (p1 >= 0 and p2 >= 0):
                     break
                 idx += 1
 
             # uses the position to find the chromosome in self.chromosomes
             c1 = ancestor_pop.list_fitness[p1][0]
             c2 = ancestor_pop.list_fitness[p2][0]
-            c3 = ancestor_pop.list_fitness[p3][0]
 
-        return c1, c2, c3
+        return c1, c2
 
 
 

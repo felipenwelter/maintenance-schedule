@@ -8,7 +8,7 @@ print("Agenda de Manutenção usando Algoritmo Genético")
 print("Felipe Nathan Welter")
 print("UDESC 2020 - Computação Natural")
 
-#results = []
+results = []
 
 #for i in range(1,10):
 ga = geneticAlgorithm()

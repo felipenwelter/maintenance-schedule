@@ -188,13 +188,15 @@ class Chromosome:
         # ---<<<<oooo>>>>------------------------- pace 0.2 = EXPLOITATION
 
         #direction = (-1 if direction == 0 else 1)
-        noChange = self.pop.ga.no_change_generations
+        #noChange = self.pop.ga.no_change_generations
 
-        if (noChange <= 100):
+        #if (noChange <= 100):
             #pace = (noChange * noChange) / 2500 - (0.04 * noChange) + 1
-            pace = ((9/25000) * (noChange * noChange)) - ((9/250) * noChange) + 1
-        else:
-            pace = 1.0
+        #    pace = ((9/25000) * (noChange * noChange)) - ((9/250) * noChange) + 1
+        #else:
+        #    pace = 1.0
+        
+        pace = 1.0
 
         # to avoid being locked in a local optimum, this function
         # navigate from exploration to exploitation  (0-50 generations)
