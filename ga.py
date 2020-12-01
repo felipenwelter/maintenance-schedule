@@ -61,7 +61,6 @@ class geneticAlgorithm:
             best_fitness = best_pop.getBestFitness()
 
             if new_fitness < best_fitness:
-                ##### TODO - as vezes ta fazendo o ajuste mas nao melhora
                 newPop.autoAdjust()
                 best_pop = newPop
                 best_fitness = newPop.getBestFitness() # after auto adjustment

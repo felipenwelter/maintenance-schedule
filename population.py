@@ -285,7 +285,7 @@ class Population:
 
             limit = len(ancestor_pop.list_fitness)
 
-            if (limit >= 2): #TODO - NEM SEMPRE SE MOSTRA EFETIVO USAR PAIS DIFERENTES
+            if (limit >= 2):
                 parents = random.sample(range(0,limit),k=2) # return unique elements
             else:
                 parents = random.choices(range(0,limit),k=2) # can repeat an element

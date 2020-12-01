@@ -5,11 +5,6 @@ from datetime import datetime, timedelta
 import schedule
 import copy
 
-# TODO - identify stopped equipment cost            
-# TODO - quando identificar que ficou preso num otimo local, aumenta o multiplicador 0,1 ali
-# TODO - meu crossover ta ruim, porque pega qualquer um e nao só os bons!
-  # provei isso quando usei populacoes de 100 elementos e fiquei preso em otimos globais, com 20 individuos zerei o custo (500 generations)
-
 #---------------------------------------------------------------
 # Function search:
 #    Search a value in a list and return the index

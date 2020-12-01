@@ -1,5 +1,3 @@
-# TODO - calcular qual a ociosidade geral e por funcionario no comeco e depois no final, pra ver se aumenta ou diminui
-
 # Ref:
 # https://plotly.com/python/gantt/
 
