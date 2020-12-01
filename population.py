@@ -2,7 +2,7 @@ import random
 import config
 from datetime import datetime, timedelta
 from chromosome import Chromosome
-from gantt import showGantt
+from gantt import showEmployeeGantt, showEquipmentGantt
 import jsonManipulate as jm
 import json
 import copy
@@ -129,22 +129,40 @@ class Population:
 
         c = self.chromosomes[self.list_fitness[0][0]] # pega o melhor individuo
 
-        # aggregate the scheduled time to show gantt
-        data = {}
-        data['workload'] = []
-        for so in c.task_list:
-            data['workload'].append({
-                        'number': so['number'],
-                        'start': so['start'],
-                        'end': so['end'],
-                        'employee': so['employee']
-                    })
+        if (config.useEmployeeWage == True):
+            # aggregate the scheduled time to show gantt
+            data_emp = {}
+            data_emp['workload'] = []
+            for so in c.task_list:
+                data_emp['workload'].append({
+                            'number': so['number'],
+                            'start': so['start'],
+                            'end': so['end'],
+                            'employee': so['employee']
+                        })
 
+            #load list of work shifts from JSON
+            ws_emp = jm.loadJSON_employee_ws()
 
-        work_shift = jm.loadJSON_ws() #load list of work shifts from JSON
+            showEmployeeGantt(data_emp,ws_emp)
 
-        showGantt(data,work_shift)
         
+        if (config.useEquipmentCost == True):
+            # aggregate the scheduled time to show gantt
+            data_eqp = {}
+            data_eqp['workload'] = []
+            for so in c.task_list:
+                data_eqp['workload'].append({
+                            'number': so['number'],
+                            'start': so['start'],
+                            'end': so['end'],
+                            'equipment': so['equipment']
+                        })
+
+            #load list of work shifts from JSON
+            ws_eqp = jm.loadJSON_equipment_ws()
+
+            showEquipmentGantt(data_eqp,ws_eqp)
 
 
     def print(self):

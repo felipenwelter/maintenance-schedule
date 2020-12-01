@@ -1,0 +1,103 @@
+{
+   "workshift": [
+
+      {
+         "equipment": "A1",
+         "shift": [
+            {
+               "day": "monday",
+               "start": "08:00",
+               "end": "18:00"
+            },
+            {
+               "day": "tuesday",
+               "start": "08:00",
+               "end": "18:00"
+            },
+            {
+               "day": "wednesday",
+               "start": "08:00",
+               "end": "18:00"
+            },
+            {
+               "day": "thursday",
+               "start": "08:00",
+               "end": "18:00"
+            },
+            {
+               "day": "friday",
+               "start": "08:00",
+               "end": "18:00"
+            }
+         ]
+      },
+
+      {
+         "equipment": "A2",
+         "shift": [
+            {
+               "day": "monday",
+               "start": "16:00",
+               "end": "22:00"
+            },
+            {
+               "day": "tuesday",
+               "start": "16:00",
+               "end": "22:00"
+            },
+            {
+               "day": "wednesday",
+               "start": "16:00",
+               "end": "22:00"
+            },
+            {
+               "day": "thursday",
+               "start": "16:00",
+               "end": "22:00"
+            },
+            {
+               "day": "friday",
+               "start": "16:00",
+               "end": "22:00"
+            }
+         ]
+      },
+
+      {
+         "equipment": "A3",
+         "shift": [
+            {
+               "day": "monday",
+               "start": "06:00",
+               "end": "12:00"
+            },
+            {
+               "day": "tuesday",
+               "start": "06:00",
+               "end": "12:00"
+            },
+            {
+               "day": "wednesday",
+               "start": "06:00",
+               "end": "12:00"
+            },
+            {
+               "day": "thursday",
+               "start": "06:00",
+               "end": "12:00"
+            },
+            {
+               "day": "friday",
+               "start": "06:00",
+               "end": "12:00"
+            },
+            {
+               "day": "saturday",
+               "start": "06:00",
+               "end": "12:00"
+            }
+         ]
+      }
+
+   ]
+}

@@ -34,21 +34,40 @@ def checkPeriods(ds):
         
 
 #---------------------------------------------------------------
-# Function: getWorkShift
+# Function: getEmployeeWorkShift
 # Parâmetros: employee - name of the employee
 # Retorno: using the imported work_shift json file, find the one
 # #        corresponding to the name of the employee
 #---------------------------------------------------------------
-def getWorkShift(employee):
-
-    work_shift = jm.loadJSON_ws() #load list of work shifts from JSON
+def getEmployeeWorkShift(employee):
 
     ret = []
+    work_shift = jm.loadJSON_employee_ws() #load list of work shifts from JSON
+
     for ws in work_shift['workshift']:
         if (ws['employee'] == employee):
             ret = ws['shift']
             break
-    
+
+    return ret
+
+
+#---------------------------------------------------------------
+# Function: getEquipmentWorkShift
+# Parâmetros: equipment - name of the equipment
+# Retorno: using the imported work_shift json file, find the one
+# #        corresponding to the name of the equipment
+#---------------------------------------------------------------
+def getEquipmentWorkShift(equipment):
+
+    ret = []
+    work_shift = jm.loadJSON_equipment_ws() #load list of work shifts from JSON
+
+    for ws in work_shift['workshift']:
+        if (ws['equipment'] == equipment):
+            ret = ws['shift']
+            break
+
     return ret
 
 
@@ -56,9 +75,9 @@ def getWorkShift(employee):
 # Função: getSchedule
 # Parâmetros: list_tasks - list of tasks
 #             list_ws - list of the work_shift
-#             start_date - global start date (for all S.O. of all employees)
-#             end_date - global end date (for all S.O. of all employees)
-# Retorno: using list_os, fill all the blanks between tasks
+#             start_date - global start date (for all tasks of all employees)
+#             end_date - global end date (for all tasks of all employees)
+# Retorno: using list_tasks, fill all the blanks between tasks
 #          with what is called idle schedules and also with 
 #          the unavailable periods (off schedule)
 #---------------------------------------------------------------

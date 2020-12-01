@@ -4,7 +4,7 @@ task_dataset = "entry"
 population_size = 100
 
 # number of generations (rounds)
-generations = 1000
+generations = 30
 
 # for controlling the time scheduling, in minutes
 block_size = 10 # in minutes (less than or equal 1 hour)
@@ -15,3 +15,7 @@ selectParentsMethod = 'roulette' # random or roulette
 
 # define mutation (2~5)
 mutationRate = 5
+
+# define fitness calc, one must be True
+useEmployeeWage = True
+useEquipmentCost = True
