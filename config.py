@@ -4,7 +4,8 @@ task_dataset = "entry"
 population_size = 100
 
 # number of generations (rounds)
-generations = 30
+generations = 300
+exitAfter = 100
 
 # for controlling the time scheduling, in minutes
 block_size = 10 # in minutes (less than or equal 1 hour)

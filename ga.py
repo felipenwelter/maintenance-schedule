@@ -77,8 +77,11 @@ class geneticAlgorithm:
             chronology_fitness.append( best_fitness )
 
             # identify if the solution converged to global miminum
-            if best_fitness == 0:
+            if (best_fitness == 0):
                 print("converged - round", self.generation_count)
+                break
+            elif (noChange > config.exitAfter):
+                print("exit after", config.exitAfter, "generations without improvements - round", self.generation_count)
                 break
             
             # set the population for the next generation
