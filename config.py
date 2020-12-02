@@ -16,6 +16,9 @@ selectParentsMethod = 'roulette' # random or roulette
 
 # define mutation (2~5)
 mutationRate = 5
+usePace = True
+usePaceWidth = True
+paceMethod = 1  # 0 = exploitation -> exploration OR 1 = exploration -> exploitation;
 
 # define fitness calc, one must be True
 useEmployeeWage = True

@@ -258,27 +258,34 @@ class Chromosome:
         # ---<<<<oooo>>>>------------------------- pace 0.2 = EXPLOITATION
 
         #direction = (-1 if direction == 0 else 1)
-        #noChange = self.pop.ga.no_change_generations
+        noChange = self.pop.ga.no_change_generations
 
-        #if (noChange <= 100):
-            #pace = (noChange * noChange) / 2500 - (0.04 * noChange) + 1
-        #    pace = ((9/25000) * (noChange * noChange)) - ((9/250) * noChange) + 1
-        #else:
-        #    pace = 1.0
-        
-        pace = 1.0
+        # define if use pace to get a directed mutation
+        if (config.usePace == False):
+            pace = 1.0
+        else:
+            if config.paceMethod == 1: # exploration -> exploitation
+                if (noChange <= 15):
+                    pace = 1 - noChange/17
+                else:
+                    pace = 1.0 if (noChange > 30) else ((noChange+3)/17 -1 )
 
-        # to avoid being locked in a local optimum, this function
-        # navigate from exploration to exploitation  (0-50 generations)
-        # and then from exploitation to exploration (51-100 generations)
-        #   ^
-        #   |(pass)
-        # 1 |\     /-----
-        #   | \   /
-        # 0 |--\-/----> (noChange)
-        #   0  50 100
+            elif config.paceMethod == 0: # exploitation -> exploration
+                if (noChange <= 15):
+                    pace = (noChange+2)/17
+                else:
+                    pace = 0.1 if (noChange > 30) else (2 - (noChange+3)/17 )
         
-        interval = int( ( self.limits[1] * (self.limits[0]+1) / 2 ) * pace)
+        interval_max = int( ( self.limits[1] * (self.limits[0]+1) / 2 ) * pace)
+
+        # defines if should use the whole range or just a width
+        if config.usePaceWidth == True:
+            interval = int( self.limits[1] * (self.limits[0]+1) / 2 )
+            interval = int( interval * 0.2)
+            interval_min = interval_max - interval
+            interval_min = 1 if interval_min < 0 else interval_min
+        else:
+            interval_min = 1
 
         for i in range(1,self.length,2): # to get only the 'hour gene'
             
@@ -286,7 +293,7 @@ class Chromosome:
             direction = random.randint(-1,1) #-1 backward, 0 no change, 1 forward
             
             # add the mutation value
-            plus = int(random.randint( 1, interval) ) * direction
+            plus = int(random.randint( interval_min, interval_max) ) * direction
             self.addTimeBlocks(i,plus)
 
         return
