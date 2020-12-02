@@ -248,59 +248,33 @@ class Population:
 
         p1 = ancestor_pop.chromosomes[c1]
         p2 = ancestor_pop.chromosomes[c2]
+    
+        limit = len(ancestor_pop.task_list) # quantity of tasks
+        locus_by_SO = int(self.chromosome_length / limit) # quantity of genes for each task
+        cuts = random.sample(range(1,limit-1),k=2) # cut position
+        cuts.sort()
 
-        if (config.crossoverMethod == 'two-points'):
-            limit = len(ancestor_pop.task_list) # quantity of tasks
-            locus_by_SO = int(self.chromosome_length / limit) # quantity of genes for each task
-            cuts = random.sample(range(1,limit-1),k=2) # cut position
-            cuts.sort()
+        elements = random.sample([p1,p2], k=2) # shuffle parents
 
-            elements = random.sample([p1,p2], k=2) # shuffle parents
+        pOrd1 = random.sample([0]*2+[1]*2, k=3)
+        pOrd2 = [0 if (i == 1) else 1 for i in pOrd1]
 
-            pOrd1 = random.sample([0]*2+[1]*2, k=3)
-            pOrd2 = [0 if (i == 1) else 1 for i in pOrd1]
+        # generate 1st new chromosome
+        genes =  elements[ pOrd1[0] ].genes[:( cuts[0] *locus_by_SO)]
+        genes += elements[ pOrd1[1] ].genes[( cuts[0] *locus_by_SO):( cuts[1] *locus_by_SO)]
+        genes += elements[ pOrd1[2] ].genes[( cuts[1] *locus_by_SO):]
 
-            # generate 1st new chromosome
-            genes =  elements[ pOrd1[0] ].genes[:( cuts[0] *locus_by_SO)]
-            genes += elements[ pOrd1[1] ].genes[( cuts[0] *locus_by_SO):( cuts[1] *locus_by_SO)]
-            genes += elements[ pOrd1[2] ].genes[( cuts[1] *locus_by_SO):]
+        chrom1 = Chromosome(self)
+        chrom1.genes = genes.copy()
 
-            chrom1 = Chromosome(self)
-            chrom1.genes = genes.copy()
+        # generate 2nd new chromosome
+        genes =  elements[ pOrd2[0] ].genes[:( cuts[0] *locus_by_SO)]
+        genes += elements[ pOrd2[1] ].genes[( cuts[0] *locus_by_SO):( cuts[1] *locus_by_SO)]
+        genes += elements[ pOrd2[2] ].genes[( cuts[1] *locus_by_SO):]
 
-            # generate 2nd new chromosome
-            genes =  elements[ pOrd2[0] ].genes[:( cuts[0] *locus_by_SO)]
-            genes += elements[ pOrd2[1] ].genes[( cuts[0] *locus_by_SO):( cuts[1] *locus_by_SO)]
-            genes += elements[ pOrd2[2] ].genes[( cuts[1] *locus_by_SO):]
-
-            chrom2 = Chromosome(self)
-            chrom2.genes = genes.copy()
-        
-        elif (config.crossoverMethod == 'uniform'):
-
-            genes1 = []
-            genes2 = []
-            for i in range(0, p1.length, 2):
-                gene1_day = p1.genes[i]
-                gene1_time = p1.genes[i+1]
-                gene2_day = p2.genes[i]
-                gene2_time = p2.genes[i+1]
-
-                if not (gene1_day == gene2_day and gene1_time == gene2_time):
-                    if bool(random.getrandbits(1)):
-                        gene1_day, gene2_day = gene2_day, gene1_day
-                        gene1_time, gene2_time = gene2_time, gene1_time
-
-                genes1.append(gene1_day)
-                genes1.append(gene1_time)
-                genes2.append(gene2_day)
-                genes2.append(gene2_time)
-
-            chrom1 = Chromosome(self)
-            chrom1.genes = genes1.copy()
-            chrom2 = Chromosome(self)
-            chrom2.genes = genes2.copy()
-
+        chrom2 = Chromosome(self)
+        chrom2.genes = genes.copy()
+    
         return (chrom1, chrom2)
 
 

@@ -12,7 +12,6 @@ block_size = 10 # in minutes (less than or equal 1 hour)
 
 # define the parents selection method for crossover 
 selectParentsMethod = 'roulette' # random or roulette
-crossoverMethod = 'uniform' #two-points or uniform
 
 # define mutation (2~5)
 mutationRate = 5

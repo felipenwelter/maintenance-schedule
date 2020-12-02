@@ -10,13 +10,13 @@ print("UDESC 2020 - Computação Natural")
 
 results = []
 
-for i in range(1,20):
-    ga = geneticAlgorithm()
-    ga.plot = False
-    ga.run()
+#for i in range(1,20):
+ga = geneticAlgorithm()
+#ga.plot = False
+ga.run()
 
-    r = ga.generation_count
-    results.append(r)
+#    r = ga.generation_count
+#    results.append(r)
 
-print(results)
-print( round( sum(i for i in results) / len(results), 2) )
+#print(results)
+#print( round( sum(i for i in results) / len(results), 2) )
