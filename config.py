@@ -12,14 +12,14 @@ block_size = 10 # in minutes (less than or equal 1 hour)
 
 # define the parents selection method for crossover 
 selectParentsMethod = 'roulette' # random or roulette
-#orderParentsMethod = 'random' # random or weight
+crossoverMethod = 'uniform' #two-points or uniform
 
 # define mutation (2~5)
 mutationRate = 5
-usePace = True
-usePaceWidth = True
+usePace = False
+usePaceWidth = False
 paceMethod = 1  # 0 = exploitation -> exploration OR 1 = exploration -> exploitation;
 
 # define fitness calc, one must be True
 useEmployeeWage = True
-useEquipmentCost = True
+useEquipmentCost = False

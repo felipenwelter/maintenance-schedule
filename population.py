@@ -172,8 +172,8 @@ class Population:
             pct = self.getFeasiblePct()
             print("total of feasible solutions: ", len(self.list_fitness),"(", int(pct) ,"% ) and",self.ga.no_change_generations,"no change - round",self.ga.generation_count )
             print("best fitness = ", self.list_fitness[0][1])
-            #for i in self.list_fitness:
-                #print(i[1], " ", self.chromosomes[i[0]].genes)
+            for i in self.list_fitness:
+                print(i[1], " ", self.chromosomes[i[0]].genes)
         else:
             print("no feasible solutions")
 
@@ -208,23 +208,30 @@ class Population:
             #print(chrom.genes, chrom.fitness)
 
         # complete the population with new individuals using crossover
-        for i in range(self.size - len(self.chromosomes) ):
+        while len(self.chromosomes) < self.size:
             
             if (ancestor_pop.getBestFitness() >= 0):
-                chrom = self.crossover(ancestor_pop)
+                chroms = self.crossover(ancestor_pop)
 
-                # mutate the new individuals (only the corresponding %)
-                if mutate_count < rate: # the mutation rate refers to the amount of individuals that suffers mutation
-                    chrom.mutate() 
-                    mutate_count += 1
-                
-                chrom.update() 
+                for chrom in chroms:
+
+                    # mutate the new individuals (only the corresponding %)
+                    if mutate_count < rate: # the mutation rate refers to the amount of individuals that suffers mutation
+                        chrom.mutate() 
+                        mutate_count += 1
+                    
+                    chrom.update()
+                    
+                    if len(self.chromosomes) >= 99:
+                        a = 0
+
+                    if len(self.chromosomes) < self.size:
+                        self.chromosomes.append(chrom)
 
             else: # if there is still no feasible solution, generate randomly
                 chrom = Chromosome(self)
                 chrom.initialize()
-
-            self.chromosomes.append(chrom)
+                self.chromosomes.append(chrom)
             
             # print(chrom.genes, chrom.fitness, "of ", c1, c2)
 
@@ -242,39 +249,59 @@ class Population:
         p1 = ancestor_pop.chromosomes[c1]
         p2 = ancestor_pop.chromosomes[c2]
 
-        limit = len(ancestor_pop.task_list) # quantity of tasks
-        locus_by_SO = int(self.chromosome_length / limit) # quantity of genes for each task
-        cuts = random.sample(range(1,limit-1),k=2) # cut position
-        cuts.sort()
+        if (config.crossoverMethod == 'two-points'):
+            limit = len(ancestor_pop.task_list) # quantity of tasks
+            locus_by_SO = int(self.chromosome_length / limit) # quantity of genes for each task
+            cuts = random.sample(range(1,limit-1),k=2) # cut position
+            cuts.sort()
 
-        #if (config.orderParentsMethod == 'random'):
-        elements = random.sample([p1,p2], k=2) # shuffle parents
+            elements = random.sample([p1,p2], k=2) # shuffle parents
 
-        #else: #if (config.orderParentsMethod == 'weight'): #servia para pais > 2
-        #    # organize the parents to use more genes of the parents with best fitness
-        #    weight = [cuts[0], limit-cuts[0]] # calculate number of genes between cuts
-        #    parents = [p1,p2]
-        #    parents.sort(key=sortbyFitness) # sort parents: first the best fitness
-        #    elements = [0,0] # final elements
-        #
-        #    for a in range(0,2): # order the parents considering their fitness x genes used
-        #        best = 0
-        #        for b in range(1,2):
-        #            if (weight[b] > weight[best]):
-        #                best = b # identify the position with greater number of genes
-        #        elements[best] = parents[a] # and define it to the parent with best fitness
-        #        weight[best] = -1
+            pOrd1 = random.sample([0]*2+[1]*2, k=3)
+            pOrd2 = [0 if (i == 1) else 1 for i in pOrd1]
 
-        pOrd = random.sample([0]*2+[1]*2, k=3)
+            # generate 1st new chromosome
+            genes =  elements[ pOrd1[0] ].genes[:( cuts[0] *locus_by_SO)]
+            genes += elements[ pOrd1[1] ].genes[( cuts[0] *locus_by_SO):( cuts[1] *locus_by_SO)]
+            genes += elements[ pOrd1[2] ].genes[( cuts[1] *locus_by_SO):]
 
-        genes =  elements[ pOrd[0] ].genes[:( cuts[0] *locus_by_SO)]
-        genes += elements[ pOrd[1] ].genes[( cuts[0] *locus_by_SO):( cuts[1] *locus_by_SO)]
-        genes += elements[ pOrd[2]].genes[( cuts[1] *locus_by_SO):]
+            chrom1 = Chromosome(self)
+            chrom1.genes = genes.copy()
 
-        chrom = Chromosome(self)
-        chrom.genes = genes.copy()
+            # generate 2nd new chromosome
+            genes =  elements[ pOrd2[0] ].genes[:( cuts[0] *locus_by_SO)]
+            genes += elements[ pOrd2[1] ].genes[( cuts[0] *locus_by_SO):( cuts[1] *locus_by_SO)]
+            genes += elements[ pOrd2[2] ].genes[( cuts[1] *locus_by_SO):]
 
-        return chrom
+            chrom2 = Chromosome(self)
+            chrom2.genes = genes.copy()
+        
+        elif (config.crossoverMethod == 'uniform'):
+
+            genes1 = []
+            genes2 = []
+            for i in range(0, p1.length, 2):
+                gene1_day = p1.genes[i]
+                gene1_time = p1.genes[i+1]
+                gene2_day = p2.genes[i]
+                gene2_time = p2.genes[i+1]
+
+                if not (gene1_day == gene2_day and gene1_time == gene2_time):
+                    if bool(random.getrandbits(1)):
+                        gene1_day, gene2_day = gene2_day, gene1_day
+                        gene1_time, gene2_time = gene2_time, gene1_time
+
+                genes1.append(gene1_day)
+                genes1.append(gene1_time)
+                genes2.append(gene2_day)
+                genes2.append(gene2_time)
+
+            chrom1 = Chromosome(self)
+            chrom1.genes = genes1.copy()
+            chrom2 = Chromosome(self)
+            chrom2.genes = genes2.copy()
+
+        return (chrom1, chrom2)
 
 
     def selectParents(self, ancestor_pop: object) -> tuple:
@@ -312,7 +339,6 @@ class Population:
             
             sum_fitness = sum(i for i in list_weight)
             
-            #roleta ta ao contrario, caramba!
             sum1 = random.randint(0, int(sum_fitness) )
             sum2 = random.randint(0, int(sum_fitness) )
             p1, p2 = -1, -1

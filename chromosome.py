@@ -407,49 +407,7 @@ class Chromosome:
                 return
             idx += 1
 
-
         return
-
-
-
-
-
-
-    def readJson(self):
-        with open(f'datasets/{self.file}.json') as json_file:
-            data = json.load(json_file)
-    #    self.knapsackCapacity = data["capacity"]
-    #    self.available_itens_value = data["values"]
-    #    self.available_itens_weight = data["weights"]
-
-        start_date = ''
-        end_date = ''
-
-        # order the list of tasks by start date
-        data['tasks'].sort(key=sortingRule)
-
-        # identifies the first and last date at all
-        start_date = data['tasks'][0]['start'] + " " + "00:00"
-        end_date = data['tasks'][-1]['start'] + " " + "23:59"
-
-        dt = datetime.datetime.strptime(start_date, '%Y-%m-%d %H:%M').date()
-        dt_end = datetime.datetime.strptime(end_date, '%Y-%m-%d %H:%M').date()
-
-        #employees = []
-        #for task in data['tasks']:
-        #    if search(employees, task['employee']) < 0:
-        #        employees.append(task['employee'])
-
-        
-
-        #genes_employees = len("{0:b}".format( len(employees) ))
-        genes_days = len("{0:b}".format( (dt_end - dt).days )) 
-        genes_time = len("{0:b}".format(144)) #10min blocks (60/10 = 6 * 24 = 144)
-        genes_length = genes_days + genes_time # + genes_employees 
-        
-        self.length = genes_length * len(data['tasks'])
-        self.genes = [0 for i in range(self.length)]
-
 
 
     # amount never can be greater than the amount of time blocs
