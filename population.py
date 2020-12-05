@@ -172,8 +172,8 @@ class Population:
             pct = self.getFeasiblePct()
             print("total of feasible solutions: ", len(self.list_fitness),"(", int(pct) ,"% ) and",self.ga.no_change_generations,"no change - round",self.ga.generation_count )
             print("best fitness = ", self.list_fitness[0][1])
-            for i in self.list_fitness:
-                print(i[1], " ", self.chromosomes[i[0]].genes)
+            #for i in self.list_fitness:
+            #    print(i[1], " ", self.chromosomes[i[0]].genes)
         else:
             print("no feasible solutions")
 

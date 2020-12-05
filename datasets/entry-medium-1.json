@@ -1,0 +1,437 @@
+{
+
+   "employees_comment": {
+                  "name": "name of employee (primary key)",
+                  "hourly-wage": "hourly wage, decimal"
+               },
+
+   "period_comment": { 
+                  "start": "first day to allocate task, format YYYY-MM-DD",
+                  "end": "last day to allocate task, format YYYY-MM-DD"
+               },
+               
+   "task_comment": { 
+                  "number": "must be the primary key of the task",
+                  "date": "date suggested to execution, format YYYY-MM-DD",
+                  "duration": "duration time, in hours",
+                  "employee": "name of the employee who execute the task",
+                  "equipment": "identification of the equipment",
+                  "equipment-criticality": "1 (more), 2 or 3 (less) indicates the criticality"
+               },
+
+   "employees": [
+
+        {
+           "name": "Abraão",
+           "hourly-wage": "4.00"
+        },
+
+        {
+           "name": "Arthur",
+           "hourly-wage": "8.30"
+        },
+
+        {
+           "name": "Cristina",
+           "hourly-wage": "9.00"
+        },
+
+        {
+           "name": "Flávio",
+           "hourly-wage": "14.00"
+        },
+
+        {
+           "name": "Regina",
+           "hourly-wage": "23.10"
+        }
+   ],
+
+   "equipments": [
+
+        {
+           "name": "A01",
+           "hourly-cost": "4.20"
+        },
+
+        {
+           "name": "A02",
+           "hourly-cost": "5.10"
+        },
+
+        {
+           "name": "A03",
+           "hourly-cost": "7.45"
+        },
+
+        {
+           "name": "A04",
+           "hourly-cost": "11.40"
+        },
+
+        {
+           "name": "A05",
+           "hourly-cost": "12.50"
+        }
+   ],
+   
+   "period": 
+      {
+         "start":"2020-12-01",
+         "end":"2020-12-15"
+      },
+
+   "tasks": [
+
+      {
+        "number":"000001", 
+        "duration": 1.0,
+        "employee": "Abraão",
+        "equipment": "A01"
+      },
+
+     {
+        "number":"000003", 
+        "duration": 2.0,
+        "employee": "Arthur",
+        "equipment": "A02"
+     },
+
+     {
+        "number":"000005", 
+        "duration": 3.0,
+        "employee": "Cristina",
+        "equipment": "A03"
+     },
+
+     {
+        "number":"000007", 
+        "duration": 4.0,
+        "employee": "Flávio",
+        "equipment": "A04"
+     },
+
+     {
+        "number":"000009", 
+        "duration": 5.0,
+        "employee": "Regina",
+        "equipment": "A05"
+     },
+
+     {
+        "number":"000011", 
+        "duration": 2.0,
+        "employee": "Abraão",
+        "equipment": "A02"
+     },
+
+     {
+        "number":"000013", 
+        "duration": 3.0,
+        "employee": "Arthur",
+        "equipment": "A03"
+     },
+
+     {
+        "number":"000015", 
+        "duration": 4.0,
+        "employee": "Cristina",
+        "equipment": "A04"
+     },
+
+     {
+        "number":"000017", 
+        "duration": 5.0,
+        "employee": "Flávio",
+        "equipment": "A05"
+     },
+
+     {
+        "number":"000019", 
+        "duration": 1.0,
+        "employee": "Regina",
+        "equipment": "A01"
+     },
+
+     {
+        "number":"000021", 
+        "duration": 3.0,
+        "employee": "Abraão",
+        "equipment": "A03"
+     },
+
+    {
+        "number":"000023", 
+        "duration": 4.0,
+        "employee": "Arthur",
+        "equipment": "A04"
+    },
+
+    {
+        "number":"000025", 
+        "duration": 5.0,
+        "employee": "Cristina",
+        "equipment": "A05"
+    },
+
+    {
+        "number":"000027", 
+        "duration": 1.0,
+        "employee": "Flávio",
+        "equipment": "A01"
+    },
+
+    {
+        "number":"000029", 
+        "duration": 2.0,
+        "employee": "Regina",
+        "equipment": "A02"
+    },
+
+    {
+        "number":"000031", 
+        "duration": 4.0,
+        "employee": "Abraão",
+        "equipment": "A04"
+    },
+
+    {
+        "number":"000033", 
+        "duration": 5.0,
+        "employee": "Arthur",
+        "equipment": "A05"
+    },
+
+    {
+        "number":"000035", 
+        "duration": 1.0,
+        "employee": "Cristina",
+        "equipment": "A01"
+    },
+
+    {
+        "number":"000037", 
+        "duration": 2.0,
+        "employee": "Flávio",
+        "equipment": "A02"
+    },
+
+    {
+        "number":"000039", 
+        "duration": 3.0,
+        "employee": "Regina",
+        "equipment": "A03"
+    },
+
+    {
+        "number":"000041", 
+        "duration": 5.0,
+        "employee": "Abraão",
+        "equipment": "A05"
+     },
+
+     {
+        "number":"000043", 
+        "duration": 1.0,
+        "employee": "Arthur",
+        "equipment": "A01"
+     },
+
+     {
+        "number":"000045", 
+        "duration": 2.0,
+        "employee": "Cristina",
+        "equipment": "A02"
+     },
+
+     {
+        "number":"000047", 
+        "duration": 3.0,
+        "employee": "Flávio",
+        "equipment": "A03"
+     },
+
+     {
+        "number":"000049", 
+        "duration": 4.0,
+        "employee": "Regina",
+        "equipment": "A04"
+     },
+
+     {
+        "number":"000051", 
+        "duration": 1.0,
+        "employee": "Abraão",
+        "equipment": "A01"
+     },
+
+     {
+        "number":"000053", 
+        "duration": 2.0,
+        "employee": "Arthur",
+        "equipment": "A02"
+     },
+
+     {
+        "number":"000055", 
+        "duration": 3.0,
+        "employee": "Cristina",
+        "equipment": "A03"
+     },
+
+     {
+        "number":"000057", 
+        "duration": 4.0,
+        "employee": "Flávio",
+        "equipment": "A04"
+     },
+
+     {
+        "number":"000059", 
+        "duration": 5.0,
+        "employee": "Regina",
+        "equipment": "A05"
+     },
+
+     {
+        "number":"000061", 
+        "duration": 2.0,
+        "employee": "Abraão",
+        "equipment": "A02"
+     },
+
+     {
+        "number":"000063", 
+        "duration": 3.0,
+        "employee": "Arthur",
+        "equipment": "A03"
+     },
+
+     {
+        "number":"000065", 
+        "duration": 4.0,
+        "employee": "Cristina",
+        "equipment": "A04"
+     },
+
+     {
+        "number":"000067", 
+        "duration": 5.0,
+        "employee": "Flávio",
+        "equipment": "A05"
+     },
+
+     {
+        "number":"000069", 
+        "duration": 1.0,
+        "employee": "Regina",
+        "equipment": "A01"
+     },
+
+     {
+        "number":"000071", 
+        "duration": 3.0,
+        "employee": "Abraão",
+        "equipment": "A03"
+     },
+
+     {
+        "number":"000073", 
+        "duration": 4.0,
+        "employee": "Arthur",
+        "equipment": "A04"
+     },
+
+     {
+        "number":"000075", 
+        "duration": 5.0,
+        "employee": "Cristina",
+        "equipment": "A05"
+     },
+
+     {
+        "number":"000077", 
+        "duration": 1.0,
+        "employee": "Flávio",
+        "equipment": "A01"
+     },
+
+     {
+        "number":"000079", 
+        "duration": 2.0,
+        "employee": "Regina",
+        "equipment": "A02"
+     },
+
+     {
+        "number":"000081", 
+        "duration": 4.0,
+        "employee": "Abraão",
+        "equipment": "A04"
+     },
+
+     {
+        "number":"000083", 
+        "duration": 5.0,
+        "employee": "Arthur",
+        "equipment": "A05"
+     },
+
+     {
+        "number":"000085", 
+        "duration": 1.0,
+        "employee": "Cristina",
+        "equipment": "A01"
+     },
+
+     {
+        "number":"000087", 
+        "duration": 2.0,
+        "employee": "Flávio",
+        "equipment": "A02"
+     },
+
+     {
+        "number":"000089", 
+        "duration": 3.0,
+        "employee": "Regina",
+        "equipment": "A03"
+     },
+
+     {
+        "number":"000091", 
+        "duration": 5.0,
+        "employee": "Abraão",
+        "equipment": "A05"
+     },
+
+     {
+        "number":"000093", 
+        "duration": 1.0,
+        "employee": "Arthur",
+        "equipment": "A01"
+     },
+
+     {
+        "number":"000095", 
+        "duration": 2.0,
+        "employee": "Cristina",
+        "equipment": "A02"
+     },
+
+     {
+        "number":"000097", 
+        "duration": 3.0,
+        "employee": "Flávio",
+        "equipment": "A03"
+     },
+
+     {
+        "number":"000099", 
+        "duration": 4.0,
+        "employee": "Regina",
+        "equipment": "A04"
+     }
+    
+   ]
+}

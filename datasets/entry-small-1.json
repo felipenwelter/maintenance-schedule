@@ -1,0 +1,129 @@
+{
+
+   "employees_comment": {
+                  "name": "name of employee (primary key)",
+                  "hourly-wage": "hourly wage, decimal"
+               },
+
+   "period_comment": { 
+                  "start": "first day to allocate task, format YYYY-MM-DD",
+                  "end": "last day to allocate task, format YYYY-MM-DD"
+               },
+               
+   "task_comment": { 
+                  "number": "must be the primary key of the task",
+                  "date": "date suggested to execution, format YYYY-MM-DD",
+                  "duration": "duration time, in hours",
+                  "employee": "name of the employee who execute the task",
+                  "equipment": "identification of the equipment",
+                  "equipment-criticality": "1 (more), 2 or 3 (less) indicates the criticality"
+               },
+
+   "employees": [
+
+        {
+           "name": "Abraão",
+           "hourly-wage": "4.00"
+        },
+
+        {
+           "name": "Arthur",
+           "hourly-wage": "8.30"
+        },
+
+        {
+           "name": "Cristina",
+           "hourly-wage": "9.00"
+        }
+   ],
+
+   "equipments": [
+
+        {
+           "name": "A01",
+           "hourly-cost": "4.20"
+        },
+
+        {
+           "name": "A02",
+           "hourly-cost": "5.10"
+        },
+
+        {
+           "name": "A03",
+           "hourly-cost": "7.45"
+        }
+   ],
+   
+   "period": 
+      {
+         "start":"2020-12-01",
+         "end":"2020-12-03"
+      },
+
+   "tasks": [
+
+      {
+        "number":"000001", 
+        "duration": 1.0,
+        "employee": "Abraão",
+        "equipment": "A01"
+      },
+
+     {
+        "number":"000003", 
+        "duration": 2.0,
+        "employee": "Arthur",
+        "equipment": "A02"
+     },
+
+     {
+        "number":"000005", 
+        "duration": 3.0,
+        "employee": "Cristina",
+        "equipment": "A03"
+     },
+
+     {
+        "number":"000011", 
+        "duration": 2.0,
+        "employee": "Abraão",
+        "equipment": "A02"
+     },
+
+     {
+        "number":"000013", 
+        "duration": 3.0,
+        "employee": "Arthur",
+        "equipment": "A03"
+     },
+
+     {
+        "number":"000015", 
+        "duration": 4.0,
+        "employee": "Cristina",
+        "equipment": "A01"
+     },
+
+     {
+        "number":"000021", 
+        "duration": 3.0,
+        "employee": "Abraão",
+        "equipment": "A03"
+     },
+
+    {
+        "number":"000023", 
+        "duration": 4.0,
+        "employee": "Arthur",
+        "equipment": "A01"
+    },
+
+    {
+        "number":"000025", 
+        "duration": 5.0,
+        "employee": "Cristina",
+        "equipment": "A02"
+    }
+   ]
+}

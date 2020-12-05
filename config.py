@@ -1,11 +1,11 @@
-task_dataset = "entry"
+task_dataset = "entry-small-2"
 
 # number of individuals for each population
 population_size = 100
 
 # number of generations (rounds)
-generations = 300
-exitAfter = 100
+generations = 3000
+exitAfter = 400
 
 # for controlling the time scheduling, in minutes
 block_size = 10 # in minutes (less than or equal 1 hour)
@@ -21,4 +21,4 @@ paceMethod = 1  # 0 = exploitation -> exploration OR 1 = exploration -> exploita
 
 # define fitness calc, one must be True
 useEmployeeWage = True
-useEquipmentCost = False
+useEquipmentCost = True

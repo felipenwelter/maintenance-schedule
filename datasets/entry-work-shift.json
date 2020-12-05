@@ -2,6 +2,575 @@
    "workshift": [
 
       {
+         "employee": "Abraão",
+         "shift": [
+            {
+               "day": "monday",
+               "start": "22:00",
+               "end": "23:59"
+            },
+            {
+               "day": "tuesday",
+               "start": "00:00",
+               "end": "06:00"
+            },
+            {
+               "day": "tuesday",
+               "start": "22:00",
+               "end": "23:59"
+            },
+            {
+               "day": "wednesday",
+               "start": "00:00",
+               "end": "06:00"
+            },
+            {
+               "day": "wednesday",
+               "start": "22:00",
+               "end": "23:59"
+            },
+            {
+               "day": "thursday",
+               "start": "00:00",
+               "end": "06:00"
+            },
+            {
+               "day": "thursday",
+               "start": "22:00",
+               "end": "23:59"
+            },
+            {
+               "day": "friday",
+               "start": "00:00",
+               "end": "06:00"
+            },
+            {
+               "day": "friday",
+               "start": "22:00",
+               "end": "23:59"
+            },
+            {
+               "day": "saturday",
+               "start": "00:00",
+               "end": "06:00"
+            }
+         ]
+      },
+
+      {
+         "employee": "Alan",
+         "shift": [
+            {
+               "day": "monday",
+               "start": "06:00",
+               "end": "09:00"
+            },
+            {
+               "day": "monday",
+               "start": "10:00",
+               "end": "14:00"
+            },
+            {
+               "day": "tuesday",
+               "start": "06:00",
+               "end": "09:00"
+            },
+            {
+               "day": "tuesday",
+               "start": "10:00",
+               "end": "14:00"
+            },
+            {
+               "day": "wednesday",
+               "start": "06:00",
+               "end": "09:00"
+            },
+            {
+               "day": "wednesday",
+               "start": "10:00",
+               "end": "14:00"
+            },
+            {
+               "day": "thursday",
+               "start": "06:00",
+               "end": "09:00"
+            },
+            {
+               "day": "thursday",
+               "start": "10:00",
+               "end": "14:00"
+            },
+            {
+               "day": "friday",
+               "start": "06:00",
+               "end": "09:00"
+            },
+            {
+               "day": "friday",
+               "start": "10:00",
+               "end": "14:00"
+            }
+         ]
+      },
+
+      {
+         "employee": "Arthur",
+         "shift": [
+            {
+               "day": "monday",
+               "start": "14:00",
+               "end": "18:00"
+            },
+            {
+               "day": "monday",
+               "start": "19:00",
+               "end": "22:00"
+            },
+            {
+               "day": "tuesday",
+               "start": "14:00",
+               "end": "18:00"
+            },
+            {
+               "day": "tuesday",
+               "start": "19:00",
+               "end": "22:00"
+            },
+            {
+               "day": "wednesday",
+               "start": "14:00",
+               "end": "18:00"
+            },
+            {
+               "day": "wednesday",
+               "start": "19:00",
+               "end": "22:00"
+            },
+            {
+               "day": "thursday",
+               "start": "14:00",
+               "end": "18:00"
+            },
+            {
+               "day": "thursday",
+               "start": "19:00",
+               "end": "22:00"
+            },
+            {
+               "day": "friday",
+               "start": "14:00",
+               "end": "18:00"
+            },
+            {
+               "day": "friday",
+               "start": "19:00",
+               "end": "22:00"
+            }
+         ]
+      },
+
+      {
+         "employee": "Celso",
+         "shift": [
+            {
+               "day": "wednesday",
+               "start": "14:00",
+               "end": "18:00"
+            },
+            {
+               "day": "wednesday",
+               "start": "19:00",
+               "end": "21:00"
+            },
+            {
+               "day": "thursday",
+               "start": "14:00",
+               "end": "18:00"
+            },
+            {
+               "day": "thursday",
+               "start": "19:00",
+               "end": "21:00"
+            },
+            {
+               "day": "friday",
+               "start": "14:00",
+               "end": "18:00"
+            },
+            {
+               "day": "friday",
+               "start": "19:00",
+               "end": "21:00"
+            },
+            {
+               "day": "saturday",
+               "start": "14:00",
+               "end": "18:00"
+            },
+            {
+               "day": "saturday",
+               "start": "19:00",
+               "end": "21:00"
+            },
+            {
+               "day": "sunday",
+               "start": "14:00",
+               "end": "18:00"
+            },
+            {
+               "day": "sunday",
+               "start": "19:00",
+               "end": "21:00"
+            }
+         ]
+      },
+
+      {
+         "employee": "Cristina",
+         "shift": [
+            {
+               "day": "monday",
+               "start": "22:00",
+               "end": "23:59"
+            },
+            {
+               "day": "tuesday",
+               "start": "00:00",
+               "end": "06:00"
+            },
+            {
+               "day": "tuesday",
+               "start": "22:00",
+               "end": "23:59"
+            },
+            {
+               "day": "wednesday",
+               "start": "00:00",
+               "end": "06:00"
+            },
+            {
+               "day": "wednesday",
+               "start": "22:00",
+               "end": "23:59"
+            },
+            {
+               "day": "thursday",
+               "start": "00:00",
+               "end": "06:00"
+            },
+            {
+               "day": "thursday",
+               "start": "22:00",
+               "end": "23:59"
+            },
+            {
+               "day": "friday",
+               "start": "00:00",
+               "end": "06:00"
+            },
+            {
+               "day": "friday",
+               "start": "22:00",
+               "end": "23:59"
+            },
+            {
+               "day": "saturday",
+               "start": "00:00",
+               "end": "06:00"
+            }
+         ]
+      },
+
+      {
+         "employee": "Eloisa",
+         "shift": [
+            {
+               "day": "monday",
+               "start": "22:00",
+               "end": "23:59"
+            },
+            {
+               "day": "tuesday",
+               "start": "00:00",
+               "end": "06:00"
+            },
+            {
+               "day": "tuesday",
+               "start": "22:00",
+               "end": "23:59"
+            },
+            {
+               "day": "wednesday",
+               "start": "00:00",
+               "end": "06:00"
+            },
+            {
+               "day": "wednesday",
+               "start": "22:00",
+               "end": "23:59"
+            },
+            {
+               "day": "thursday",
+               "start": "00:00",
+               "end": "06:00"
+            },
+            {
+               "day": "thursday",
+               "start": "22:00",
+               "end": "23:59"
+            },
+            {
+               "day": "friday",
+               "start": "00:00",
+               "end": "06:00"
+            },
+            {
+               "day": "friday",
+               "start": "22:00",
+               "end": "23:59"
+            },
+            {
+               "day": "saturday",
+               "start": "00:00",
+               "end": "06:00"
+            }
+         ]
+      },
+
+      {
+         "employee": "Flávio",
+         "shift": [
+            {
+               "day": "monday",
+               "start": "06:00",
+               "end": "09:00"
+            },
+            {
+               "day": "monday",
+               "start": "10:00",
+               "end": "14:00"
+            },
+            {
+               "day": "tuesday",
+               "start": "06:00",
+               "end": "09:00"
+            },
+            {
+               "day": "tuesday",
+               "start": "10:00",
+               "end": "14:00"
+            },
+            {
+               "day": "wednesday",
+               "start": "06:00",
+               "end": "09:00"
+            },
+            {
+               "day": "wednesday",
+               "start": "10:00",
+               "end": "14:00"
+            },
+            {
+               "day": "thursday",
+               "start": "06:00",
+               "end": "09:00"
+            },
+            {
+               "day": "thursday",
+               "start": "10:00",
+               "end": "14:00"
+            },
+            {
+               "day": "friday",
+               "start": "06:00",
+               "end": "09:00"
+            },
+            {
+               "day": "friday",
+               "start": "10:00",
+               "end": "14:00"
+            }
+         ]
+      },
+
+      {
+         "employee": "Marcos",
+         "shift": [
+            {
+               "day": "monday",
+               "start": "14:00",
+               "end": "18:00"
+            },
+            {
+               "day": "monday",
+               "start": "19:00",
+               "end": "22:00"
+            },
+            {
+               "day": "tuesday",
+               "start": "14:00",
+               "end": "18:00"
+            },
+            {
+               "day": "tuesday",
+               "start": "19:00",
+               "end": "22:00"
+            },
+            {
+               "day": "wednesday",
+               "start": "14:00",
+               "end": "18:00"
+            },
+            {
+               "day": "wednesday",
+               "start": "19:00",
+               "end": "22:00"
+            },
+            {
+               "day": "thursday",
+               "start": "14:00",
+               "end": "18:00"
+            },
+            {
+               "day": "thursday",
+               "start": "19:00",
+               "end": "22:00"
+            },
+            {
+               "day": "friday",
+               "start": "14:00",
+               "end": "18:00"
+            },
+            {
+               "day": "friday",
+               "start": "19:00",
+               "end": "22:00"
+            }
+         ]
+      },
+
+      {
+         "employee": "Regina",
+         "shift": [
+            {
+               "day": "wednesday",
+               "start": "14:00",
+               "end": "18:00"
+            },
+            {
+               "day": "wednesday",
+               "start": "19:00",
+               "end": "21:00"
+            },
+            {
+               "day": "thursday",
+               "start": "14:00",
+               "end": "18:00"
+            },
+            {
+               "day": "thursday",
+               "start": "19:00",
+               "end": "21:00"
+            },
+            {
+               "day": "friday",
+               "start": "14:00",
+               "end": "18:00"
+            },
+            {
+               "day": "friday",
+               "start": "19:00",
+               "end": "21:00"
+            },
+            {
+               "day": "saturday",
+               "start": "14:00",
+               "end": "18:00"
+            },
+            {
+               "day": "saturday",
+               "start": "19:00",
+               "end": "21:00"
+            },
+            {
+               "day": "sunday",
+               "start": "14:00",
+               "end": "18:00"
+            },
+            {
+               "day": "sunday",
+               "start": "19:00",
+               "end": "21:00"
+            }
+         ]
+      },
+
+      {
+         "employee": "Silvio",
+         "shift": [
+            {
+               "day": "monday",
+               "start": "22:00",
+               "end": "23:59"
+            },
+            {
+               "day": "tuesday",
+               "start": "00:00",
+               "end": "06:00"
+            },
+            {
+               "day": "tuesday",
+               "start": "22:00",
+               "end": "23:59"
+            },
+            {
+               "day": "wednesday",
+               "start": "00:00",
+               "end": "06:00"
+            },
+            {
+               "day": "wednesday",
+               "start": "22:00",
+               "end": "23:59"
+            },
+            {
+               "day": "thursday",
+               "start": "00:00",
+               "end": "06:00"
+            },
+            {
+               "day": "thursday",
+               "start": "22:00",
+               "end": "23:59"
+            },
+            {
+               "day": "friday",
+               "start": "00:00",
+               "end": "06:00"
+            },
+            {
+               "day": "friday",
+               "start": "22:00",
+               "end": "23:59"
+            },
+            {
+               "day": "saturday",
+               "start": "00:00",
+               "end": "06:00"
+            }
+         ]
+      },
+
+
+
+
+
+
+
+
+      
+
+      {
          "employee": "Nelson",
          "shift": [
             {
@@ -191,6 +760,118 @@
                "day": "friday",
                "start": "10:30",
                "end": "12:00"
+            }
+         ]
+      },
+
+      {
+         "employee": "Paulo",
+         "shift": [
+            {
+               "day": "monday",
+               "start": "07:00",
+               "end": "11:00"
+            },
+            {
+               "day": "monday",
+               "start": "12:00",
+               "end": "15:00"
+            },
+            {
+               "day": "tuesday",
+               "start": "07:00",
+               "end": "11:00"
+            },
+            {
+               "day": "tuesday",
+               "start": "12:00",
+               "end": "15:00"
+            },
+            {
+               "day": "wednesday",
+               "start": "07:00",
+               "end": "11:00"
+            },
+            {
+               "day": "wednesday",
+               "start": "12:00",
+               "end": "15:00"
+            },
+            {
+               "day": "thursday",
+               "start": "07:00",
+               "end": "11:00"
+            },
+            {
+               "day": "thursday",
+               "start": "12:00",
+               "end": "15:00"
+            },
+            {
+               "day": "friday",
+               "start": "07:00",
+               "end": "11:00"
+            },
+            {
+               "day": "friday",
+               "start": "12:00",
+               "end": "15:00"
+            }
+         ]
+      },
+
+      {
+         "employee": "Gerson",
+         "shift": [
+            {
+               "day": "monday",
+               "start": "20:00",
+               "end": "23:59"
+            },
+            {
+               "day": "tuesday",
+               "start": "00:00",
+               "end": "02:00"
+            },
+            {
+               "day": "tuesday",
+               "start": "20:00",
+               "end": "23:59"
+            },
+            {
+               "day": "wednesday",
+               "start": "00:00",
+               "end": "02:00"
+            },
+            {
+               "day": "wednesday",
+               "start": "20:00",
+               "end": "23:59"
+            },
+            {
+               "day": "thursday",
+               "start": "00:00",
+               "end": "02:00"
+            },
+            {
+               "day": "thursday",
+               "start": "20:00",
+               "end": "23:59"
+            },
+            {
+               "day": "friday",
+               "start": "00:00",
+               "end": "02:00"
+            },
+            {
+               "day": "friday",
+               "start": "20:00",
+               "end": "23:59"
+            },
+            {
+               "day": "saturday",
+               "start": "00:00",
+               "end": "02:00"
             }
          ]
       }
