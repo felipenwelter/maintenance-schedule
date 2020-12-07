@@ -210,7 +210,7 @@ class Population:
         # complete the population with new individuals using crossover
         while len(self.chromosomes) < self.size:
             
-            if (ancestor_pop.getBestFitness() >= 0):
+            if len(ancestor_pop.list_fitness) >= 2: #(ancestor_pop.getBestFitness() >= 0):
                 chroms = self.crossover(ancestor_pop)
 
                 for chrom in chroms:
@@ -300,7 +300,7 @@ class Population:
             c1 = ancestor_pop.list_fitness[p1][0]
             c2 = ancestor_pop.list_fitness[p2][0]
 
-            #print("number of good solutions = ", limit+1, "selected = ", p1, p2, p3)
+            #print("number of good solutions = ", limit+1, "selected = ", p1, p2)
         
         # in this case uses the roulette wheel method to select feasible parents
         else: #(config.selectParentsMethod == 'roulette'): 

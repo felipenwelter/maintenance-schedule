@@ -2,6 +2,7 @@ import config
 from population import Population
 import plot
 import json
+import time as t
 
 
 #---------------------------------------------------------------
@@ -19,6 +20,9 @@ class geneticAlgorithm:
         self.no_change_generations = 0
         self.generation_count = 0
         self.plot = True
+        self.startTime = t.time()
+        self.bestTime = t.time()
+        self.endTime = t.time()
 
         # Read json file and set some attributes for the population
         with open(f'datasets/{self.file_tasks}.json') as json_file:
@@ -60,14 +64,28 @@ class geneticAlgorithm:
             new_fitness = newPop.getBestFitness()
             best_fitness = best_pop.getBestFitness()
 
-            if new_fitness < best_fitness:
-                newPop.autoAdjust()
-                best_pop = newPop
-                best_fitness = newPop.getBestFitness() # after auto adjustment
-                noChange = 0
-                #best_pop.gantt() #pra ver o que muda cada vez que melhora o fitness
+            if (new_fitness != -1 and best_fitness != -1):
+                if new_fitness < best_fitness:
+                    if (config.autoAdjust):
+                        newPop.autoAdjust()
+                    best_pop = newPop
+                    best_fitness = newPop.getBestFitness() # after auto adjustment
+                    noChange = 0
+                    self.bestTime = t.time()
+                    #best_pop.gantt() #pra ver o que muda cada vez que melhora o fitness
+                else:
+                    noChange += 1
             else:
-                noChange += 1
+                if (best_fitness == -1 and new_fitness >= 0):
+                    if (config.autoAdjust):
+                        newPop.autoAdjust()
+                    best_pop = newPop
+                    best_fitness = newPop.getBestFitness() # after auto adjustment
+                    noChange = 0
+                    self.bestTime = t.time()
+                    #best_pop.gantt() #pra ver o que muda cada vez que melhora o fitness
+                #else:
+                #    noChange += 1
             
             self.no_change_generations = noChange
             newPop.print()
@@ -79,9 +97,11 @@ class geneticAlgorithm:
             # identify if the solution converged to global miminum
             if (best_fitness == 0):
                 print("converged - round", self.generation_count)
+                self.endTime = t.time()
                 break
             elif (noChange > config.exitAfter):
                 print("exit after", config.exitAfter, "generations without improvements - round", self.generation_count)
+                self.endTime = t.time()
                 break
             
             # set the population for the next generation
@@ -94,5 +114,6 @@ class geneticAlgorithm:
             best_pop.gantt()
 
             # plot the evolution graph
-            plot.plot(chronology_fitness, chronology_feasible)
-        
+            plot.plot(chronology_fitness,'cost')
+            plot.plot(chronology_feasible,'feasible')
+            #plot.plot(chronology_fitness,'cost',chronology_feasible)

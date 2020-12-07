@@ -1,0 +1,162 @@
+{
+
+   "employees_comment": {
+                  "name": "name of employee (primary key)",
+                  "hourly-wage": "hourly wage, decimal"
+               },
+
+   "period_comment": { 
+                  "start": "first day to allocate task, format YYYY-MM-DD",
+                  "end": "last day to allocate task, format YYYY-MM-DD"
+               },
+               
+   "task_comment": { 
+                  "number": "must be the primary key of the task",
+                  "date": "date suggested to execution, format YYYY-MM-DD",
+                  "duration": "duration time, in hours",
+                  "employee": "name of the employee who execute the task",
+                  "equipment": "identification of the equipment",
+                  "equipment-criticality": "1 (more), 2 or 3 (less) indicates the criticality"
+               },
+
+   "employees": [
+
+      {
+         "name": "Antonio",
+         "hourly-wage": "7.16"
+      },
+      
+      {
+         "name": "Luiza",
+         "hourly-wage": "8.39"
+      },
+
+      {
+         "name": "Nelson",
+         "hourly-wage": "12.90"
+      },
+
+      {
+         "name": "Max",
+         "hourly-wage": "9.19"
+      }
+   ],
+
+   "equipments": [
+
+      {
+         "name": "A1",
+         "hourly-cost": "11.40"
+      },
+      
+      {
+         "name": "A2",
+         "hourly-cost": "16.12"
+      },
+
+      {
+         "name": "A3",
+         "hourly-cost": "13.29"
+      }
+   ],
+   
+   "period": 
+      {
+         "start":"2020-11-16",
+         "end":"2020-11-17"
+      },
+
+   "tasks": [
+
+      {
+         "number":"300881", 
+         "date": "2020-11-16",
+         "duration": 1.2,
+         "employee": "Antonio",
+         "equipment": "A1",
+         "equipment-criticality": 1
+      },
+
+      {
+         "number":"400881", 
+         "date": "2020-11-16",
+         "duration": 0.4,
+         "employee": "Antonio",
+         "equipment": "A1",
+         "equipment-criticality": 1
+      },
+
+      {
+         "number":"000882",
+         "date": "2020-11-17",
+         "duration": 3,
+         "employee": "Antonio",
+         "equipment": "A2",
+         "equipment-criticality": 2
+      },
+
+      {
+         "number":"000883",
+         "date": "2020-11-17",
+         "duration": 3,
+         "employee": "Antonio",
+         "equipment": "A2",
+         "equipment-criticality": 2
+      },
+
+      {
+         "number":"000138",
+         "date": "2020-11-16",
+         "duration": 4,
+         "employee": "Luiza",
+         "equipment": "A2",
+         "equipment-criticality": 2
+      },
+
+      {
+         "number":"000139",
+         "date": "2020-11-16",
+         "duration": 2,
+         "employee": "Luiza",
+         "equipment": "A2",
+         "equipment-criticality": 2
+      },
+
+      {
+         "number":"038202",
+         "date": "2020-11-17",
+         "duration": 1,
+         "employee": "Nelson",
+         "equipment": "A2",
+         "equipment-criticality": 2
+      },
+
+      {
+         "number":"038203",
+         "date": "2020-11-17",
+         "duration": 4,
+         "employee": "Nelson",
+         "equipment": "A2",
+         "equipment-criticality": 2
+      },
+
+      {
+         "number":"001171",
+         "date": "2020-11-16",
+         "duration": 4,
+         "employee": "Max",
+         "equipment": "A3",
+         "equipment-criticality": 3
+      },
+
+      {
+         "number":"001172",
+         "date": "2020-11-17",
+         "duration": 3,
+         "employee": "Max",
+         "equipment": "A3",
+         "equipment-criticality": 3
+      }
+
+   ]
+}

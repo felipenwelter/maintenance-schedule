@@ -113,7 +113,7 @@
 
      {
         "number":"000009", 
-        "duration": 5.0,
+        "duration": 1.5,
         "employee": "Regina",
         "equipment": "A05"
      },
@@ -141,7 +141,7 @@
 
      {
         "number":"000017", 
-        "duration": 5.0,
+        "duration": 1.5,
         "employee": "Flávio",
         "equipment": "A05"
      },
@@ -169,7 +169,7 @@
 
     {
         "number":"000025", 
-        "duration": 5.0,
+        "duration": 1.5,
         "employee": "Cristina",
         "equipment": "A05"
     },
@@ -197,7 +197,7 @@
 
     {
         "number":"000033", 
-        "duration": 5.0,
+        "duration": 1.5,
         "employee": "Arthur",
         "equipment": "A05"
     },
@@ -225,7 +225,7 @@
 
     {
         "number":"000041", 
-        "duration": 5.0,
+        "duration": 1.5,
         "employee": "Abraão",
         "equipment": "A05"
      },
@@ -288,7 +288,7 @@
 
      {
         "number":"000059", 
-        "duration": 5.0,
+        "duration": 1.5,
         "employee": "Regina",
         "equipment": "A05"
      },
@@ -316,7 +316,7 @@
 
      {
         "number":"000067", 
-        "duration": 5.0,
+        "duration": 1.5,
         "employee": "Flávio",
         "equipment": "A05"
      },
@@ -344,7 +344,7 @@
 
      {
         "number":"000075", 
-        "duration": 5.0,
+        "duration": 1.5,
         "employee": "Cristina",
         "equipment": "A05"
      },
@@ -372,7 +372,7 @@
 
      {
         "number":"000083", 
-        "duration": 5.0,
+        "duration": 1.5,
         "employee": "Arthur",
         "equipment": "A05"
      },
@@ -400,7 +400,7 @@
 
      {
         "number":"000091", 
-        "duration": 5.0,
+        "duration": 1.5,
         "employee": "Abraão",
         "equipment": "A05"
      },

@@ -279,7 +279,7 @@ class Chromosome:
         interval_max = int( ( self.limits[1] * (self.limits[0]+1) / 2 ) * pace)
 
         # defines if should use the whole range or just a width
-        if config.usePaceWidth == True:
+        if config.usePaceWidth == True and noChange <= 30:
             interval = int( self.limits[1] * (self.limits[0]+1) / 2 )
             interval = int( interval * 0.2)
             interval_min = interval_max - interval
@@ -295,6 +295,8 @@ class Chromosome:
             # add the mutation value
             plus = int(random.randint( interval_min, interval_max) ) * direction
             self.addTimeBlocks(i,plus)
+
+        #print("no change", noChange, "pace ", pace,"interval", interval_min, "-", interval_max, "plus", plus )
 
         return
 

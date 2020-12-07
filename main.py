@@ -10,6 +10,7 @@ print("UDESC 2020 - Computação Natural")
 
 results = []
 
+
 #for i in range(1,20):
 ga = geneticAlgorithm()
 #ga.plot = False
@@ -20,3 +21,6 @@ ga.run()
 
 #print(results)
 #print( round( sum(i for i in results) / len(results), 2) )
+
+print(f"spent {ga.endTime - ga.startTime} sec to finish ")
+print(f"spent {ga.bestTime - ga.startTime} sec to find that answer ")
