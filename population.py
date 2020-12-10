@@ -170,12 +170,14 @@ class Population:
 
         if ( len(self.list_fitness) > 0 ):
             pct = self.getFeasiblePct()
-            print("total of feasible solutions: ", len(self.list_fitness),"(", int(pct) ,"% ) and",self.ga.no_change_generations,"no change - round",self.ga.generation_count )
-            print("best fitness = ", self.list_fitness[0][1])
+            if self.ga.print:
+                print("total of feasible solutions: ", len(self.list_fitness),"(", int(pct) ,"% ) and",self.ga.no_change_generations,"no change - round",self.ga.generation_count )
+                print("best fitness = ", self.list_fitness[0][1])
             #for i in self.list_fitness:
             #    print(i[1], " ", self.chromosomes[i[0]].genes)
         else:
-            print("no feasible solutions")
+            if self.ga.print:
+                print("no feasible solutions")
 
 
         
@@ -359,7 +361,8 @@ class Population:
                     c.update() # update task list and calc fitness
 
                     while (c.fitness != -1) and (c.fitness < fitness):
-                        print( "adjusting - ")
+                        if self.ga.print:
+                            print( "adjusting - ")
                         fitness = c.fitness
                         c.addTimeBlocks(i,-passs)
                         c.update() # update task list and calc fitness                  
@@ -371,7 +374,8 @@ class Population:
                 elif c.fitness < fitness: # melhorou
 
                     while (c.fitness != -1) and (c.fitness < fitness):
-                        print( "adjusting + ")
+                        if self.ga.print:
+                            print( "adjusting + ")
                         fitness = c.fitness
                         c.addTimeBlocks(i,passs)
                         c.update() # update task list and calc fitness

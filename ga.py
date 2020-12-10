@@ -19,7 +19,12 @@ class geneticAlgorithm:
 
         self.no_change_generations = 0
         self.generation_count = 0
+        self.bestGen = 0
+        self.bestFitness = -1
+
         self.plot = True
+        self.print = True
+
         self.startTime = t.time()
         self.bestTime = t.time()
         self.endTime = t.time()
@@ -72,6 +77,8 @@ class geneticAlgorithm:
                     best_fitness = newPop.getBestFitness() # after auto adjustment
                     noChange = 0
                     self.bestTime = t.time()
+                    self.bestGen = self.generation_count
+                    self.bestFitness = best_fitness
                     #best_pop.gantt() #pra ver o que muda cada vez que melhora o fitness
                 else:
                     noChange += 1
@@ -83,6 +90,8 @@ class geneticAlgorithm:
                     best_fitness = newPop.getBestFitness() # after auto adjustment
                     noChange = 0
                     self.bestTime = t.time()
+                    self.bestGen = self.generation_count
+                    self.bestFitness = best_fitness
                     #best_pop.gantt() #pra ver o que muda cada vez que melhora o fitness
                 #else:
                 #    noChange += 1
@@ -97,17 +106,15 @@ class geneticAlgorithm:
             # identify if the solution converged to global miminum
             if (best_fitness == 0):
                 print("converged - round", self.generation_count)
-                self.endTime = t.time()
                 break
             elif (noChange > config.exitAfter):
                 print("exit after", config.exitAfter, "generations without improvements - round", self.generation_count)
-                self.endTime = t.time()
                 break
             
             # set the population for the next generation
             population = newPop
             
-
+        self.endTime = t.time()
         
         if (self.plot == True):
             # show the last solution generated

@@ -1,7 +1,7 @@
-task_dataset = "entry-medium-1"
+task_dataset = "entry-small-1"
 
 # number of individuals for each population
-population_size = 100
+population_size = 40
 
 # number of generations (rounds)
 generations = 1000
@@ -15,13 +15,13 @@ selectParentsMethod = 'roulette' # random or roulette
 
 # define mutation (2~5)
 mutationRate = 5
-usePace = True
+usePace = False
 usePaceWidth = True #no need to change
 paceMethod = 1 # 0 = exploitation -> exploration OR 1 = exploration -> exploitation;
 
 # define fitness calc, one must be True
 useEmployeeWage = True
-useEquipmentCost = False
+useEquipmentCost = True
 
 # try adjusting populations when there is any improvement
 autoAdjust = True
