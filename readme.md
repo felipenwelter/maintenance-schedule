@@ -58,5 +58,6 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 - Auto adjustment of parameters, like population size and number of generations;
 - Consider employee specialties to auto allocate tasks;
 - Multiobjective, adding employee ociosity;
+- Use previous calculated solutions' fitness to reduce processing time; 
 - Tasks dependency, reducing makespan.
 
